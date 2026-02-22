@@ -16,10 +16,13 @@ React.js frontend application for FanMeet platform.
 npm install
 ```
 
-2. Create a `.env` file in the root directory:
+2. Create a `.env` file in the root directory (copy from `.env.example`):
 ```env
-REACT_APP_API_URL=http://localhost:5000/api
+REACT_APP_API_URL=http://localhost:5000
 ```
+   - For local development: `http://localhost:5000`
+   - For remote server: `http://your-server-url:5000`
+   - **Note:** The `/api` suffix is automatically appended, so don't include it in the URL
 
 3. Start the development server:
 ```bash
@@ -27,6 +30,8 @@ npm start
 ```
 
 The app will open at `http://localhost:3000`
+
+**Important:** If you change the `.env` file, you must restart the development server for changes to take effect.
 
 ## API Integration
 
@@ -58,4 +63,5 @@ fanmeet_frontend/
 ├── package.json
 └── README.md
 ```
+
 

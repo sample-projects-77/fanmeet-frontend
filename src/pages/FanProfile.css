@@ -1,0 +1,218 @@
+/* Fan Profile – same dark theme, profile card + settings list */
+
+.fan-profile-page {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.fan-profile-main {
+  padding: 24px 20px 48px;
+}
+
+.fan-profile-container {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.fan-profile-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 24px 0;
+  text-align: center;
+}
+
+/* ----- Profile card ----- */
+.fan-profile-card {
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+.fan-profile-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.fan-profile-avatar-wrap {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--profile-icon-blue);
+}
+
+.fan-profile-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fan-profile-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.fan-profile-avatar-placeholder svg {
+  width: 32px;
+  height: 32px;
+}
+
+.fan-profile-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fan-profile-username {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.fan-profile-email {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.fan-profile-edit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 14px 20px;
+  background: var(--bg-input);
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.fan-profile-edit-btn:hover {
+  background: #353538;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.fan-profile-edit-btn svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* ----- Settings list card ----- */
+.fan-profile-settings {
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.fan-profile-setting-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px 18px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  text-decoration: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.fan-profile-setting-row:last-child {
+  border-bottom: none;
+}
+
+.fan-profile-setting-row:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.fan-profile-setting-row--button {
+  cursor: pointer;
+}
+
+.fan-profile-setting-row--danger:hover {
+  background: rgba(229, 115, 115, 0.08);
+}
+
+.fan-profile-setting-row--button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.fan-profile-setting-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fan-profile-setting-icon svg {
+  width: 22px;
+  height: 22px;
+  color: #fff;
+}
+
+.fan-profile-setting-icon--blue {
+  background: var(--profile-icon-blue);
+}
+
+.fan-profile-setting-icon--yellow {
+  background: var(--profile-icon-yellow);
+}
+
+.fan-profile-setting-icon--red {
+  background: var(--profile-icon-red);
+}
+
+.fan-profile-setting-label {
+  flex: 1;
+}
+
+.fan-profile-setting-arrow {
+  color: var(--text-muted);
+  font-size: 1.25rem;
+  font-weight: 300;
+}
+
+@media (min-width: 520px) {
+  .fan-profile-container {
+    max-width: 520px;
+  }
+  .fan-profile-card {
+    padding: 28px;
+  }
+  .fan-profile-avatar-wrap {
+    width: 72px;
+    height: 72px;
+  }
+  .fan-profile-avatar-placeholder svg {
+    width: 36px;
+    height: 36px;
+  }
+}

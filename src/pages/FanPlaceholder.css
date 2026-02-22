@@ -1,0 +1,52 @@
+.fan-placeholder {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.fan-placeholder-nav {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.fan-placeholder-nav a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.9375rem;
+}
+
+.fan-placeholder-nav a:hover {
+  color: var(--accent-yellow);
+}
+
+.fan-placeholder-main {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.fan-placeholder-main h1 {
+  font-size: 1.5rem;
+  margin-bottom: 12px;
+}
+
+.fan-placeholder-main p {
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+.fan-placeholder-back {
+  display: inline-block;
+  padding: 10px 20px;
+  background: var(--accent-yellow);
+  color: #1A1A1A;
+  border-radius: var(--radius);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
+.fan-placeholder-back:hover {
+  background: #FFC933;
+}

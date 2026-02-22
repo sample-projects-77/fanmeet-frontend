@@ -1,0 +1,131 @@
+.welcome-page {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 20px 32px;
+}
+
+.welcome-content {
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+.app-icon {
+  margin-bottom: 24px;
+}
+
+.app-icon-gradient {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+  border-radius: 22px;
+  background: linear-gradient(90deg, #6DD5ED 0%, #9B6BCC 50%, #C4458A 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 32px rgba(155, 107, 204, 0.35);
+}
+
+.app-icon-symbol {
+  width: 52px;
+  height: 52px;
+}
+
+.welcome-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+
+.welcome-tagline {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  margin-bottom: 40px;
+  padding: 0 8px;
+}
+
+.welcome-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 32px;
+}
+
+.welcome-actions .btn {
+  display: block;
+  width: 100%;
+  padding: 16px 24px;
+  border-radius: var(--radius);
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-sans);
+}
+
+.welcome-actions .btn:active {
+  transform: scale(0.98);
+}
+
+.btn-primary {
+  background: var(--accent-yellow);
+  color: #1A1A1A;
+}
+
+.btn-primary:hover {
+  background: #FFC933;
+  box-shadow: 0 6px 24px rgba(250, 188, 42, 0.4);
+}
+
+.btn-secondary {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 2px solid var(--border-light);
+}
+
+.btn-secondary:hover {
+  border-color: rgba(255, 255, 255, 0.35);
+  background: #252528;
+}
+
+.welcome-login {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.welcome-login-link {
+  color: var(--text-primary);
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.welcome-login-link:hover {
+  color: var(--accent-yellow);
+}
+
+@media (min-width: 480px) {
+  .welcome-title {
+    font-size: 32px;
+  }
+  .welcome-tagline {
+    font-size: 16px;
+  }
+  .app-icon-gradient {
+    width: 112px;
+    height: 112px;
+    border-radius: 24px;
+  }
+  .app-icon-symbol {
+    width: 58px;
+    height: 58px;
+  }
+}

@@ -13,9 +13,8 @@ const Signup = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    firstName: '',
-    lastName: '',
-    category: '',
+    userName: '', // required by backend (unique username)
+    bio: '',      // optional for creator
   });
   const [avatar, setAvatar] = useState(null);
   const [error, setError] = useState('');
@@ -49,31 +48,24 @@ const Signup = () => {
     setError('');
     setLoading(true);
 
-    // Validate required fields
-    if (!formData.email || !formData.password || !formData.firstName || !formData.lastName) {
-      setError('Please fill in all required fields.');
+    // Validate required fields (backend: email, password, userName for both)
+    if (!formData.email || !formData.password || !formData.userName) {
+      setError('Please fill in email, password, and username.');
       setLoading(false);
-      return;
-    }
-
-    if (userType === 'creator' && !formData.category) {
-      setError('Category is required for creators.');
-      setLoading(false);
+      isSubmitting = false;
+      isSubmittingRef.current = false;
       return;
     }
 
     try {
-      // Create FormData for multipart/form-data
+      // Create FormData for multipart/form-data (backend expects userName, not firstName/lastName)
       const submitData = new FormData();
       submitData.append('email', formData.email);
       submitData.append('password', formData.password);
-      submitData.append('firstName', formData.firstName);
-      submitData.append('lastName', formData.lastName);
-      
-      if (userType === 'creator') {
-        submitData.append('category', formData.category);
+      submitData.append('userName', formData.userName.trim());
+      if (userType === 'creator' && formData.bio) {
+        submitData.append('bio', formData.bio.trim());
       }
-      
       if (avatar) {
         submitData.append('avatar', avatar);
       }
@@ -92,9 +84,12 @@ const Signup = () => {
           localStorage.setItem('user', JSON.stringify(response.data.user));
         }
         
-        alert('Signup successful!');
-        // TODO: Navigate to dashboard based on role
-        // navigate(`/${response.data.user.role}/dashboard`);
+        const role = response.data.user?.role || userType;
+        if (role === 'creator') {
+          navigate('/creator/dashboard', { replace: true });
+        } else {
+          navigate('/fan/home', { replace: true });
+        }
       } else {
         setError(response.error || response.message || 'Signup failed. Please try again.');
       }
@@ -130,7 +125,7 @@ const Signup = () => {
             className={`type-button ${userType === 'fan' ? 'active' : ''}`}
             onClick={() => {
               setUserType('fan');
-              setFormData({ ...formData, category: '' });
+              setFormData({ ...formData, bio: '' });
             }}
           >
             Fan
@@ -147,32 +142,17 @@ const Signup = () => {
         {error && <div className="error-message">{error}</div>}
 
         <form onSubmit={handleSubmit} className="signup-form">
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="firstName">First Name</label>
-              <input
-                type="text"
-                id="firstName"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleChange}
-                required
-                placeholder="First name"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="lastName">Last Name</label>
-              <input
-                type="text"
-                id="lastName"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-                required
-                placeholder="Last name"
-              />
-            </div>
+          <div className="form-group">
+            <label htmlFor="userName">Username</label>
+            <input
+              type="text"
+              id="userName"
+              name="userName"
+              value={formData.userName}
+              onChange={handleChange}
+              required
+              placeholder="Unique username (e.g. johndoe)"
+            />
           </div>
 
           <div className="form-group">
@@ -203,15 +183,14 @@ const Signup = () => {
 
           {userType === 'creator' && (
             <div className="form-group">
-              <label htmlFor="category">Category</label>
-              <input
-                type="text"
-                id="category"
-                name="category"
-                value={formData.category}
+              <label htmlFor="bio">Bio (optional)</label>
+              <textarea
+                id="bio"
+                name="bio"
+                value={formData.bio}
                 onChange={handleChange}
-                required
-                placeholder="e.g., Fitness & Personal Training"
+                placeholder="Short bio (e.g., Fitness trainer, 10 years experience)"
+                rows={3}
               />
             </div>
           )}
@@ -249,4 +228,5 @@ const Signup = () => {
 };
 
 export default Signup;
+
 

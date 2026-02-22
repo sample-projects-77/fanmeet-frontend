@@ -1,0 +1,259 @@
+/* Fan Dashboard – web-optimized, same color scheme as mobile */
+
+.fan-dashboard {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* ----- Main content ----- */
+.fan-dashboard-main {
+  padding: 32px 24px 48px;
+}
+
+.fan-dashboard-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.fan-dashboard-loading,
+.fan-dashboard-error {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text-secondary);
+}
+
+.fan-dashboard-error {
+  color: var(--required);
+  background: rgba(229, 115, 115, 0.1);
+  border-radius: var(--radius-lg);
+  margin-bottom: 24px;
+}
+
+/* ----- Hero card (Fan Dashboard welcome) ----- */
+.fan-hero-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 28px 32px;
+  margin-bottom: 40px;
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.fan-hero-glow {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 180px;
+  background: linear-gradient(90deg, rgba(250, 188, 42, 0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.fan-hero-icon {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-yellow);
+}
+
+.fan-hero-icon svg {
+  width: 36px;
+  height: 36px;
+}
+
+.fan-hero-text {
+  position: relative;
+}
+
+.fan-hero-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  letter-spacing: -0.02em;
+}
+
+.fan-hero-welcome {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ----- Fan Overview section ----- */
+.fan-overview {
+  margin-bottom: 40px;
+}
+
+.fan-overview-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0 0 20px 0;
+  color: var(--text-primary);
+}
+
+.fan-overview-accent {
+  width: 4px;
+  height: 22px;
+  border-radius: 2px;
+  background: var(--accent-green);
+  flex-shrink: 0;
+}
+
+.fan-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (min-width: 560px) {
+  .fan-stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.fan-stat-card {
+  position: relative;
+  padding: 20px;
+  border-radius: var(--radius);
+  background: var(--card-bg-blue);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 120px;
+}
+
+.fan-stat-card--gold .fan-stat-icon {
+  color: var(--accent-yellow);
+}
+
+.fan-stat-card--blue .fan-stat-icon {
+  color: #60a5fa;
+}
+
+.fan-stat-card--green .fan-stat-icon {
+  color: var(--accent-green);
+}
+
+.fan-stat-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.fan-stat-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.fan-stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.fan-stat-label {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+/* ----- Quick actions ----- */
+.fan-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+@media (min-width: 480px) {
+  .fan-actions {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.fan-action-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  background: var(--card-bg);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+}
+
+.fan-action-card:hover {
+  border-color: rgba(250, 188, 42, 0.35);
+  background: rgba(37, 37, 40, 0.9);
+  transform: translateY(-2px);
+}
+
+.fan-action-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-yellow);
+  flex-shrink: 0;
+}
+
+.fan-action-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.fan-action-label {
+  flex: 1;
+  font-size: 1rem;
+}
+
+.fan-action-arrow {
+  color: var(--text-muted);
+  font-size: 1.25rem;
+}
+
+.fan-action-card:hover .fan-action-arrow {
+  color: var(--accent-yellow);
+}
+
+/* ----- Mobile ----- */
+@media (max-width: 768px) {
+  .fan-dashboard-main {
+    padding: 24px 16px 40px;
+  }
+
+  .fan-hero-card {
+    padding: 22px 20px;
+    gap: 16px;
+  }
+
+  .fan-hero-icon {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+  }
+
+  .fan-hero-icon svg {
+    width: 30px;
+    height: 30px;
+  }
+
+  .fan-hero-title {
+    font-size: 1.25rem;
+  }
+}

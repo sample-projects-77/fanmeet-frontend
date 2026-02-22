@@ -1,0 +1,126 @@
+/* Creator Offers – table with Day, Time, Duration, Price */
+
+.creator-offers-page {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.creator-offers-main {
+  padding: 24px 20px 48px;
+}
+
+.creator-offers-container {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.creator-offers-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 0;
+}
+
+.creator-offers-back {
+  position: absolute;
+  left: 0;
+  color: var(--text-primary);
+  font-size: 24px;
+  text-decoration: none;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.creator-offers-back:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+}
+
+.creator-offers-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.creator-offers-divider {
+  height: 2px;
+  background: var(--accent-yellow);
+  margin: 20px 0 24px 0;
+  border-radius: 1px;
+}
+
+.creator-offers-error {
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  background: rgba(229, 115, 115, 0.12);
+  color: var(--required);
+  border-radius: var(--radius);
+  font-size: 0.9375rem;
+}
+
+.creator-offers-loading,
+.creator-offers-empty {
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+}
+
+.creator-offers-table-wrap {
+  overflow-x: auto;
+}
+
+.creator-offers-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+
+.creator-offers-table thead {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.creator-offers-table th {
+  text-align: left;
+  padding: 14px 12px 12px 0;
+  font-weight: 600;
+  color: var(--accent-yellow);
+}
+
+.creator-offers-th-price {
+  text-align: left;
+}
+
+.creator-offers-table tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.creator-offers-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.creator-offers-table td {
+  padding: 14px 12px 14px 0;
+  color: var(--text-primary);
+  vertical-align: top;
+}
+
+.creator-offers-table td:first-child {
+  padding-left: 0;
+}
+
+.creator-offers-price {
+  text-align: left;
+  font-weight: 500;
+  color: var(--accent-green);
+}
+
+@media (min-width: 600px) {
+  .creator-offers-table th,
+  .creator-offers-table td {
+    padding: 16px 16px 16px 0;
+  }
+}
