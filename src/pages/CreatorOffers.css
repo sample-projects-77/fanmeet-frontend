@@ -1,9 +1,10 @@
-/* Creator Offers – table with Day, Time, Duration, Price */
+/* Creator Offers – Flutter table: darkBlueShade3 header, secondaryColor border, b2 headers, green price */
 
 .creator-offers-page {
   min-height: 100vh;
   background: var(--bg-primary);
   color: var(--text-primary);
+  font-family: var(--font-sans);
 }
 
 .creator-offers-main {
@@ -20,13 +21,13 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  margin-bottom: 0;
+  margin-bottom: 20px;
 }
 
 .creator-offers-back {
   position: absolute;
   left: 0;
-  color: var(--text-primary);
+  color: var(--white);
   font-size: 24px;
   text-decoration: none;
   line-height: 1;
@@ -36,37 +37,38 @@
 
 .creator-offers-back:hover {
   background: rgba(255, 255, 255, 0.08);
-  color: var(--text-primary);
+  color: var(--white);
 }
 
 .creator-offers-title {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-family: var(--font-sans);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--white);
   margin: 0;
 }
 
 .creator-offers-divider {
-  height: 2px;
-  background: var(--accent-yellow);
-  margin: 20px 0 24px 0;
-  border-radius: 1px;
+  display: none;
 }
 
 .creator-offers-error {
   padding: 12px 16px;
   margin-bottom: 16px;
   background: rgba(229, 115, 115, 0.12);
-  color: var(--required);
+  color: var(--red);
   border-radius: var(--radius);
-  font-size: 0.9375rem;
+  font-size: 12px;
+  font-weight: 400;
 }
 
 .creator-offers-loading,
 .creator-offers-empty {
   padding: 32px 16px;
   text-align: center;
-  color: var(--text-secondary);
-  font-size: 0.9375rem;
+  color: var(--tertiary-color);
+  font-size: 12px;
+  font-weight: 400;
 }
 
 .creator-offers-table-wrap {
@@ -76,26 +78,47 @@
 .creator-offers-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.9375rem;
+  font-family: var(--font-sans);
 }
 
-.creator-offers-table thead {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+/* Table header – Flutter: Container darkBlueShade3, padding 12, border bottom secondaryColor 0.5, width 2 */
+.creator-offers-table thead tr {
+  background: var(--dark-blue-shade-3);
+  border-bottom: 2px solid rgba(244, 192, 70, 0.5);
 }
 
 .creator-offers-table th {
   text-align: left;
-  padding: 14px 12px 12px 0;
-  font-weight: 600;
-  color: var(--accent-yellow);
+  padding: 12px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--secondary-color);
+  font-family: var(--font-sans);
+}
+
+.creator-offers-table th:first-child {
+  padding-left: 12px;
+}
+
+/* Day column flex 2 equivalent – first column gets more space */
+.creator-offers-table .creator-offers-th-day {
+  min-width: 140px;
+}
+
+.creator-offers-th-action {
+  width: 1%;
+  white-space: nowrap;
+  min-width: 100px;
 }
 
 .creator-offers-th-price {
   text-align: left;
 }
 
+/* Data rows – separator line between rows */
 .creator-offers-table tbody tr {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(244, 192, 70, 0.2);
+  background: var(--primary-color);
 }
 
 .creator-offers-table tbody tr:last-child {
@@ -103,24 +126,54 @@
 }
 
 .creator-offers-table td {
-  padding: 14px 12px 14px 0;
-  color: var(--text-primary);
-  vertical-align: top;
+  padding: 12px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--white);
+  vertical-align: middle;
+  font-family: var(--font-sans);
 }
 
 .creator-offers-table td:first-child {
-  padding-left: 0;
+  padding-left: 12px;
 }
 
-.creator-offers-price {
+.creator-offers-table td.creator-offers-price {
   text-align: left;
+  font-size: 12px;
+  font-weight: 400;
+  color: #4e9d75;
+}
+
+/* Book now button – pill shape, background #3c341f, text secondaryColor (yellow/gold), single line */
+.creator-offers-book-btn {
+  display: inline-block;
+  padding: 12px 24px;
+  border-radius: 999px;
+  background: #3c341f;
+  color: var(--secondary-color);
+  font-family: var(--font-sans);
+  font-size: 16px;
   font-weight: 500;
-  color: var(--accent-green);
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s, transform 0.1s;
+}
+
+.creator-offers-book-btn:hover {
+  background: #4a4228;
+  color: var(--secondary-color);
+}
+
+.creator-offers-book-btn:active {
+  transform: scale(0.98);
 }
 
 @media (min-width: 600px) {
   .creator-offers-table th,
   .creator-offers-table td {
-    padding: 16px 16px 16px 0;
+    padding: 12px 16px;
   }
 }

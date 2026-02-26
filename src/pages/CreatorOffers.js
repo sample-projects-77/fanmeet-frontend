@@ -13,6 +13,29 @@ function formatPrice(priceCents, currency = 'EUR') {
   return `${value} ${currency}`;
 }
 
+/** Format date string (e.g. "2026-12-25" or ISO) to "Thursday, Dec 25" */
+function formatDay(dateStr) {
+  if (!dateStr) return '—';
+  try {
+    const iso = typeof dateStr === 'string' && dateStr.includes('T') ? dateStr : `${dateStr}T12:00:00`;
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return dateStr;
+    const dayName = d.toLocaleDateString('en-US', { weekday: 'long' });
+    const monthShort = d.toLocaleDateString('en-US', { month: 'short' });
+    const day = d.getDate();
+    return `${dayName}, ${monthShort} ${day}`;
+  } catch {
+    return dateStr;
+  }
+}
+
+/** Format time range from startTime and endTime (e.g. "14:30", "15:00") */
+function formatTimeRange(startTime, endTime) {
+  if (!startTime && !endTime) return '—';
+  if (!startTime || !endTime) return startTime || endTime || '—';
+  return `${startTime} - ${endTime}`;
+}
+
 function CreatorOffers() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -46,7 +69,8 @@ function CreatorOffers() {
     setLoading(true);
     setError(null);
     try {
-      const res = await offerAPI.getMyOffers(1, 100);
+      const creatorId = user.id?.toString?.().replace(/^creator_/, '') || user.id;
+      const res = await offerAPI.getCreatorScheduledOffers(creatorId, { page: 1, itemsPerPage: 100 });
       if (res.StatusCode === 200 && res.data) {
         setOffers(res.data.offers || []);
         setPagination(res.data.pagination || null);
@@ -99,7 +123,8 @@ function CreatorOffers() {
               <table className="creator-offers-table">
                 <thead>
                   <tr>
-                    <th>Offer</th>
+                    <th className="creator-offers-th-day">Day</th>
+                    <th>Time</th>
                     <th>Duration</th>
                     <th className="creator-offers-th-price">Price</th>
                   </tr>
@@ -107,8 +132,9 @@ function CreatorOffers() {
                 <tbody>
                   {offers.map((offer) => (
                     <tr key={offer.id}>
-                      <td>{offer.title || '—'}</td>
-                      <td>{offer.durationMinutes != null ? `${offer.durationMinutes} Min.` : '—'}</td>
+                      <td>{formatDay(offer.date)}</td>
+                      <td>{formatTimeRange(offer.startTime, offer.endTime)}</td>
+                      <td>{(offer.duration ?? offer.durationMinutes) != null ? `${offer.duration ?? offer.durationMinutes} Min.` : '—'}</td>
                       <td className="creator-offers-price">
                         {formatPrice(offer.priceCents, offer.currency)}
                       </td>
