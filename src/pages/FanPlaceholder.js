@@ -33,17 +33,33 @@ export function FanCreators() {
   );
 }
 
-export function FanCreatorProfile() {
+export function FanCreatorOffers() {
   const { creatorId } = useParams();
   return (
     <div className="fan-placeholder">
       <header className="fan-placeholder-nav">
-        <Link to="/fan/search">← Search</Link>
+        <Link to={`/fan/creators/${creatorId}`}>← Creator</Link>
       </header>
       <main className="fan-placeholder-main">
-        <h1>Creator profile</h1>
-        <p>Profile and booking for creator {creatorId} will appear here. Coming soon.</p>
-        <Link to="/fan/search" className="fan-placeholder-back">Back to Search</Link>
+        <h1>Creator offers</h1>
+        <p>Offers for creator {creatorId} will appear here. Coming soon.</p>
+        <Link to={`/fan/creators/${creatorId}`} className="fan-placeholder-back">Back to Creator</Link>
+      </main>
+    </div>
+  );
+}
+
+export function FanCreatorReviews() {
+  const { creatorId } = useParams();
+  return (
+    <div className="fan-placeholder">
+      <header className="fan-placeholder-nav">
+        <Link to={`/fan/creators/${creatorId}`}>← Creator</Link>
+      </header>
+      <main className="fan-placeholder-main">
+        <h1>Creator reviews</h1>
+        <p>Reviews for creator {creatorId} will appear here. Coming soon.</p>
+        <Link to={`/fan/creators/${creatorId}`} className="fan-placeholder-back">Back to Creator</Link>
       </main>
     </div>
   );

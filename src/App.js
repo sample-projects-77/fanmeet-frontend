@@ -9,14 +9,16 @@ import FanSearch from './pages/FanSearch';
 import FanProfile from './pages/FanProfile';
 import FanProfileEdit from './pages/FanProfileEdit';
 import FanChats from './pages/FanChats';
-import { FanCreators, FanCreatorProfile, FanBookings, FanChatConversation } from './pages/FanPlaceholder';
+import { FanCreators, FanBookings, FanChatConversation, FanCreatorOffers, FanCreatorReviews } from './pages/FanPlaceholder';
+import FanCreatorProfile from './pages/FanCreatorProfile';
 import { FanProfileChangePassword, FanProfileLanguage, FanProfileBlocked } from './pages/FanProfilePlaceholder';
 import CreatorDashboard from './pages/CreatorDashboard';
 import CreatorOffers from './pages/CreatorOffers';
-import { CreatorReviews, CreatorChatConversation } from './pages/CreatorPlaceholder';
+import { CreatorReviews, CreatorChatConversation, CreatorCreatorOffers, CreatorCreatorReviews, CreatorProfileEdit, CreatorProfileChangePassword, CreatorProfileLanguage, CreatorProfileBlocked } from './pages/CreatorPlaceholder';
 import CreatorSearch from './pages/CreatorSearch';
 import CreatorChats from './pages/CreatorChats';
 import CreatorProfile from './pages/CreatorProfile';
+import CreatorCreatorProfile from './pages/CreatorCreatorProfile';
 import './App.css';
 
 function App() {
@@ -32,6 +34,8 @@ function App() {
           <Route path="/fan/search" element={<FanSearch />} />
           <Route path="/fan/creators" element={<FanCreators />} />
           <Route path="/fan/creators/:creatorId" element={<FanCreatorProfile />} />
+          <Route path="/fan/creators/:creatorId/offers" element={<FanCreatorOffers />} />
+          <Route path="/fan/creators/:creatorId/reviews" element={<FanCreatorReviews />} />
           <Route path="/fan/bookings" element={<FanBookings />} />
           <Route path="/fan/chats" element={<FanChats />} />
           <Route path="/fan/chats/:channelId" element={<FanChatConversation />} />
@@ -43,9 +47,16 @@ function App() {
           <Route path="/creator/dashboard" element={<CreatorDashboard />} />
           <Route path="/creator/offers" element={<CreatorOffers />} />
           <Route path="/creator/search" element={<CreatorSearch />} />
+          <Route path="/creator/creators/:creatorId" element={<CreatorCreatorProfile />} />
+          <Route path="/creator/creators/:creatorId/offers" element={<CreatorCreatorOffers />} />
+          <Route path="/creator/creators/:creatorId/reviews" element={<CreatorCreatorReviews />} />
           <Route path="/creator/chats" element={<CreatorChats />} />
           <Route path="/creator/chats/:channelId" element={<CreatorChatConversation />} />
           <Route path="/creator/profile" element={<CreatorProfile />} />
+          <Route path="/creator/profile/edit" element={<CreatorProfileEdit />} />
+          <Route path="/creator/profile/change-password" element={<CreatorProfileChangePassword />} />
+          <Route path="/creator/profile/language" element={<CreatorProfileLanguage />} />
+          <Route path="/creator/profile/blocked" element={<CreatorProfileBlocked />} />
           <Route path="/creator/reviews" element={<CreatorReviews />} />
           <Route path="/signup" element={<Navigate to="/" replace />} />
         </Routes>

@@ -123,7 +123,7 @@ function CreatorSearch() {
                 {creators.map((c) => (
                   <Link
                     key={c.id}
-                    to={`/fan/creators/${c.id}`}
+                    to={`/creator/creators/${c.id}`}
                     className="creator-search-creator-card"
                   >
                     <div className="creator-search-avatar-wrap">

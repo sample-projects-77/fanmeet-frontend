@@ -117,6 +117,13 @@ export const profileAPI = {
     return response.data;
   },
 
+  // Get creator public profile by id (for fan creator details page)
+  getCreatorById: async (creatorId) => {
+    const id = String(creatorId).replace(/^creator_/, '');
+    const response = await api.get(`/creators/${encodeURIComponent(id)}`);
+    return response.data;
+  },
+
   // Get my full profile (fan or creator)
   getMyProfile: async () => {
     const response = await api.get('/profile/me');
