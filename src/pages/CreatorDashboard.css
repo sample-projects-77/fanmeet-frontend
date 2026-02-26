@@ -15,11 +15,61 @@
   margin: 0 auto;
 }
 
-.creator-dashboard-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin: 0 0 24px 0;
-  text-align: center;
+/* DashboardWelcomeHeader – gradient card + welcome back badge (Flutter match) */
+.creator-dashboard-welcome {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  background: linear-gradient(
+    to bottom right,
+    rgba(244, 192, 70, 0.15),
+    rgba(244, 192, 70, 0.05),
+    transparent
+  );
+  border-radius: 20px;
+  border: 1px solid rgba(244, 192, 70, 0.2);
+  box-sizing: border-box;
+}
+
+.creator-dashboard-welcome-badge {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  padding: 12px;
+  background: linear-gradient(
+    to bottom right,
+    rgba(244, 192, 70, 0.3),
+    rgba(244, 192, 70, 0.1)
+  );
+  border-radius: 16px;
+  font-size: 28px;
+  line-height: 1;
+  box-sizing: border-box;
+}
+
+.creator-dashboard-welcome-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.creator-dashboard-welcome-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 4px 0;
+  letter-spacing: -0.02em;
+}
+
+.creator-dashboard-welcome-subtitle {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--dark-grey-text);
+  margin: 0;
 }
 
 .creator-dashboard-loading,
@@ -30,81 +80,151 @@
 }
 
 .creator-dashboard-error {
-  color: var(--required);
-  background: rgba(229, 115, 115, 0.1);
-  border-radius: var(--radius-lg);
+  color: var(--red);
+  background: rgba(255, 92, 92, 0.1);
+  border-radius: 16px;
   margin-bottom: 20px;
+  border: 1px solid rgba(255, 92, 92, 0.2);
 }
 
-/* ----- Metric cards ----- */
+/* ----- Creator Overview (section title + accent bar, Flutter match) ----- */
+.creator-overview {
+  margin-bottom: 24px;
+}
+
+.creator-overview-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--tertiary-color);
+  margin: 0 0 16px 0;
+  letter-spacing: -0.02em;
+}
+
+.creator-overview-title::before {
+  content: '';
+  width: 4px;
+  min-width: 4px;
+  height: 22px;
+  border-radius: 2px;
+  background: var(--secondary-color);
+}
+
+/* ----- DashboardStatCard (Flutter): gradient, border, shadow, icon box, h2/b2 text ----- */
 .creator-metrics {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: auto auto;
-  gap: 14px;
-  margin-bottom: 24px;
+  gap: 12px;
+}
+
+.creator-metric-card {
+  padding: 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(42, 46, 54, 0.5); /* lightGreyShade3 alpha 0.5 */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 0;
 }
 
 .creator-metric-card--earnings {
   grid-column: 1 / -1;
-  background: var(--creator-card-green);
-  border-radius: var(--radius-lg);
-  padding: 20px 22px;
-  position: relative;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.creator-metric-card--sessions,
-.creator-metric-card--rating {
-  padding: 18px 20px;
-  border-radius: var(--radius-lg);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  min-height: 100px;
+  background: linear-gradient(
+    to bottom right,
+    rgba(46, 204, 113, 0.08),   /* greenSuccess 0.08 */
+    transparent
+  );
+  background-color: var(--dark-blue-shade-3);
+  box-shadow: 0 4px 20px rgba(46, 204, 113, 0.1);  /* iconColor greenSuccess 0.1 */
 }
 
 .creator-metric-card--sessions {
-  background: var(--creator-card-blue);
+  background: linear-gradient(
+    to bottom right,
+    rgba(91, 159, 255, 0.08),   /* blueAccent 0.08 */
+    transparent
+  );
+  background-color: var(--dark-blue-shade-3);
+  box-shadow: 0 4px 20px rgba(91, 159, 255, 0.1);  /* iconColor blueAccent 0.1 */
 }
 
 .creator-metric-card--rating {
-  background: var(--creator-card-gold);
+  background: linear-gradient(
+    to bottom right,
+    rgba(244, 192, 70, 0.08),   /* secondaryColor 0.08 */
+    transparent
+  );
+  background-color: var(--dark-blue-shade-3);
+  box-shadow: 0 4px 20px rgba(244, 192, 70, 0.1);  /* iconColor secondaryColor 0.1 */
 }
 
-.creator-metric-icon {
+/* Icon container: gradient 0.2 → 0.05, padding 10, radius 12 */
+.creator-metric-icon-wrap {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  color: var(--accent-yellow);
-  margin-bottom: 8px;
+  padding: 10px;
+  border-radius: 12px;
+  margin-bottom: 16px;
 }
 
-.creator-metric-icon svg {
-  width: 28px;
-  height: 28px;
+.creator-metric-icon-wrap svg {
+  width: 22px;
+  height: 22px;
 }
 
+.creator-metric-icon-wrap--earnings {
+  background: linear-gradient(
+    to bottom right,
+    rgba(46, 204, 113, 0.2),
+    rgba(46, 204, 113, 0.05)
+  );
+  color: var(--green-success);
+}
+
+.creator-metric-icon-wrap--sessions {
+  background: linear-gradient(
+    to bottom right,
+    rgba(91, 159, 255, 0.2),
+    rgba(91, 159, 255, 0.05)
+  );
+  color: var(--blue-accent);
+}
+
+.creator-metric-icon-wrap--rating {
+  background: linear-gradient(
+    to bottom right,
+    rgba(244, 192, 70, 0.2),
+    rgba(244, 192, 70, 0.05)
+  );
+  color: var(--secondary-color);
+}
+
+/* Value: h2.copyWith(fontWeight: w800) */
 .creator-metric-value {
   display: block;
   font-size: 1.75rem;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: -0.02em;
-  color: var(--text-primary);
-  margin-bottom: 2px;
+  color: var(--tertiary-color);
+  margin-bottom: 6px;
 }
 
 .creator-metric-card--earnings .creator-metric-value {
   font-size: 2rem;
 }
 
+/* Label: b2, darkGreyTextColor, fontSize 13 */
 .creator-metric-label {
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--dark-grey-text);
 }
 
-/* ----- Action cards ----- */
+/* ----- DashboardActionButton (My Offers) + ShareProfileButton (Share) – Flutter match ----- */
 .creator-actions {
   display: flex;
   flex-direction: column;
@@ -115,44 +235,112 @@
 .creator-action-card {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 18px 20px;
-  background: var(--card-bg);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: var(--radius);
-  color: var(--text-primary);
-  text-decoration: none;
-  font-weight: 500;
-  transition: border-color 0.15s, background 0.15s;
-  width: 100%;
   text-align: left;
   font-family: var(--font-sans);
-  font-size: 1rem;
   cursor: pointer;
+  box-sizing: border-box;
+  border-radius: 16px;
+  text-decoration: none;
+  border: none;
+  width: 100%;
 }
 
-.creator-action-card--button {
-  background: var(--card-bg);
+/* My Offers – DashboardActionButton: gradient darkBlueShade3 → 0.8, border 1.5 secondary 0.3, shadow */
+.creator-action-card--offers {
+  padding: 18px 20px;
+  gap: 14px;
+  background: linear-gradient(
+    to bottom right,
+    var(--dark-blue-shade-3),
+    rgba(28, 31, 38, 0.8)
+  );
+  border: 1.5px solid rgba(244, 192, 70, 0.3);
+  box-shadow: 0 4px 15px rgba(244, 192, 70, 0.15);
+  transition: transform 0.1s, box-shadow 0.2s;
 }
 
-.creator-action-card:hover {
-  border-color: rgba(250, 188, 42, 0.35);
-  background: rgba(37, 37, 40, 0.9);
+.creator-action-card--offers:hover {
+  box-shadow: 0 4px 20px rgba(244, 192, 70, 0.2);
 }
 
-.creator-action-icon {
-  width: 44px;
-  height: 44px;
+.creator-action-card--offers:active {
+  transform: scale(0.98);
+}
+
+/* Icon wrap – My Offers: padding 8, secondaryColor 0.2, radius 10 */
+.creator-action-icon-wrap--offers {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--accent-yellow);
+  padding: 8px;
+  border-radius: 10px;
+  background: rgba(244, 192, 70, 0.2);
+  color: var(--secondary-color);
   flex-shrink: 0;
 }
 
-.creator-action-icon svg {
-  width: 26px;
-  height: 26px;
+.creator-action-icon-wrap--offers svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* My Offers label: b1, 15px, w600 */
+.creator-action-card--offers .creator-action-label {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--tertiary-color);
+}
+
+/* Arrow – My Offers: padding 6, circle, white 0.1, icon tertiaryColor 14px */
+.creator-action-arrow-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--tertiary-color);
+  flex-shrink: 0;
+}
+
+.creator-action-arrow-wrap svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Share My Profile – ShareProfileButton: gradient secondary 0.15 → 0.05, border 1 secondary 0.2 */
+.creator-action-card--share {
+  padding: 16px 20px;
+  gap: 16px;
+  background: linear-gradient(
+    to bottom right,
+    rgba(244, 192, 70, 0.15),
+    rgba(244, 192, 70, 0.05)
+  );
+  border: 1px solid rgba(244, 192, 70, 0.2);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.creator-action-card--share:hover {
+  border-color: rgba(244, 192, 70, 0.35);
+}
+
+/* Icon wrap – Share: padding 10, secondaryColor 0.15, radius 12 */
+.creator-action-icon-wrap--share {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(244, 192, 70, 0.15);
+  color: var(--secondary-color);
+  flex-shrink: 0;
+}
+
+.creator-action-icon-wrap--share svg {
+  width: 20px;
+  height: 20px;
 }
 
 .creator-action-text {
@@ -163,27 +351,32 @@
   gap: 2px;
 }
 
-.creator-action-label {
+/* Share label + subtitle: 16px w600 tertiaryColor, 14px tertiary 0.6 */
+.creator-action-card--share .creator-action-label {
+  font-size: 16px;
   font-weight: 600;
+  color: var(--tertiary-color);
 }
 
 .creator-action-subtitle {
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
+  font-size: 14px;
+  color: rgba(226, 229, 234, 0.6);  /* tertiaryColor 0.6 */
   font-weight: 400;
 }
 
-.creator-action-arrow {
-  color: var(--text-muted);
-  font-size: 1.25rem;
-  flex-shrink: 0;
+/* Arrow – Share: secondaryColor 0.6, size 16 */
+.creator-action-arrow-wrap--share {
+  background: transparent;
+  padding: 0;
+  color: rgba(244, 192, 70, 0.6);
 }
 
-.creator-action-card:hover .creator-action-arrow {
-  color: var(--accent-yellow);
+.creator-action-arrow-wrap--share svg {
+  width: 16px;
+  height: 16px;
 }
 
-/* ----- Category ----- */
+/* ----- Category (b2 style: 13–14px, darkGreyText) ----- */
 .creator-category {
   display: flex;
   flex-direction: column;
@@ -191,20 +384,21 @@
 }
 
 .creator-category-label {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dark-grey-text);
 }
 
 .creator-category-pill {
   display: inline-block;
   padding: 10px 18px;
   border-radius: 999px;
-  background: var(--creator-card-gold);
-  color: var(--text-primary);
-  font-size: 0.9375rem;
+  background: var(--dark-blue-shade-3);
+  color: var(--tertiary-color);
+  font-size: 14px;
   font-weight: 500;
   width: fit-content;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(244, 192, 70, 0.2);
 }
 
 @media (min-width: 480px) {

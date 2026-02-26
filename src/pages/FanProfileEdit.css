@@ -94,7 +94,7 @@
   height: 44px;
   border-radius: 50%;
   background: var(--accent-yellow);
-  color: #1A1A1A;
+  color: var(--black);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -138,34 +138,37 @@
 
 .fan-profile-edit-field label {
   font-size: 14px;
-  font-weight: 500;
-  color: var(--text-primary);
+  font-weight: 600;
+  color: var(--tertiary-color);
 }
 
 .fan-profile-edit-field .required {
-  color: var(--required);
+  color: var(--red);
 }
 
+/* TNSTextField-aligned */
 .fan-profile-edit-field input {
   width: 100%;
-  padding: 14px 16px;
-  border-radius: var(--radius);
-  border: none;
-  background: var(--bg-input);
-  color: var(--text-primary);
-  font-size: 1rem;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid var(--outline-input-border);
+  background: var(--input-background);
+  color: var(--tertiary-color);
+  font-size: 16px;
+  font-weight: 400;
   font-family: var(--font-sans);
-  transition: background 0.15s, box-shadow 0.15s;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  box-sizing: border-box;
 }
 
 .fan-profile-edit-field input::placeholder {
-  color: var(--text-muted);
+  color: var(--dark-grey-text);
 }
 
 .fan-profile-edit-field input:focus {
-  outline: none;
-  background: #353538;
-  box-shadow: 0 0 0 2px rgba(250, 188, 42, 0.25);
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 2px var(--focus-ring);
 }
 
 .fan-profile-edit-field input.fan-profile-edit-input-readonly,
@@ -182,7 +185,7 @@
   border-radius: var(--radius);
   border: none;
   background: var(--accent-yellow);
-  color: #1A1A1A;
+  color: var(--black);
   font-size: 1rem;
   font-weight: 700;
   font-family: var(--font-sans);

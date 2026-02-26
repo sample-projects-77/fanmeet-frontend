@@ -62,6 +62,25 @@ const Login = () => {
         {error && <div className="auth-error">{error}</div>}
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="auth-field">
+            <label className="auth-role-label">I am a</label>
+            <div className="auth-role-selector">
+              <button
+                type="button"
+                className={`auth-role-btn ${formData.role === 'fan' ? 'active' : ''}`}
+                onClick={() => setFormData({ ...formData, role: 'fan' })}
+              >
+                Fan
+              </button>
+              <button
+                type="button"
+                className={`auth-role-btn ${formData.role === 'creator' ? 'active' : ''}`}
+                onClick={() => setFormData({ ...formData, role: 'creator' })}
+              >
+                Creator
+              </button>
+            </div>
+          </div>
+          <div className="auth-field">
             <label htmlFor="email">Email <span className="required">*</span></label>
             <input
               type="email"
@@ -98,25 +117,6 @@ const Login = () => {
                 ) : (
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                 )}
-              </button>
-            </div>
-          </div>
-          <div className="auth-field">
-            <label>Login as</label>
-            <div className="auth-role-selector">
-              <button
-                type="button"
-                className={`auth-role-btn ${formData.role === 'fan' ? 'active' : ''}`}
-                onClick={() => setFormData({ ...formData, role: 'fan' })}
-              >
-                Fan
-              </button>
-              <button
-                type="button"
-                className={`auth-role-btn ${formData.role === 'creator' ? 'active' : ''}`}
-                onClick={() => setFormData({ ...formData, role: 'creator' })}
-              >
-                Creator
               </button>
             </div>
           </div>

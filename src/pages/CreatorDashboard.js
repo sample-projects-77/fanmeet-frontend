@@ -84,53 +84,70 @@ function CreatorDashboard() {
       <CreatorNav active="creator" userName={user?.userName} onLogout={handleLogout} />
       <main className="creator-dashboard-main">
         <div className="creator-dashboard-container">
-          <h1 className="creator-dashboard-title">Creator</h1>
+          <header className="creator-dashboard-welcome">
+            <div className="creator-dashboard-welcome-badge" aria-hidden>
+              ✨
+            </div>
+            <div className="creator-dashboard-welcome-text">
+              <h1 className="creator-dashboard-welcome-title">Creator Dashboard</h1>
+              <p className="creator-dashboard-welcome-subtitle">
+                Welcome back, {user?.userName ?? 'Creator'}
+              </p>
+            </div>
+          </header>
 
           {error && (
             <div className="creator-dashboard-error">{error}</div>
           )}
 
-          <section className="creator-metrics">
+          <section className="creator-overview">
+            <h2 className="creator-overview-title">Creator Overview</h2>
+            <div className="creator-metrics">
             <div className="creator-metric-card creator-metric-card--earnings">
-              <span className="creator-metric-icon" aria-hidden>
+              <div className="creator-metric-icon-wrap creator-metric-icon-wrap--earnings" aria-hidden>
                 <CoinIcon />
-              </span>
-              <span className="creator-metric-value">€{Number(earnings).toFixed(0)}</span>
+              </div>
+              <span className="creator-metric-value">€{Number(earnings).toFixed(0).replace('.', ',')}</span>
               <span className="creator-metric-label">Earnings</span>
             </div>
             <div className="creator-metric-card creator-metric-card--sessions">
-              <span className="creator-metric-icon" aria-hidden>
+              <div className="creator-metric-icon-wrap creator-metric-icon-wrap--sessions" aria-hidden>
                 <CalendarIcon />
-              </span>
+              </div>
               <span className="creator-metric-value">{sessions}</span>
               <span className="creator-metric-label">Sessions</span>
             </div>
             <div className="creator-metric-card creator-metric-card--rating">
-              <span className="creator-metric-icon" aria-hidden>
+              <div className="creator-metric-icon-wrap creator-metric-icon-wrap--rating" aria-hidden>
                 <StarIcon />
-              </span>
+              </div>
               <span className="creator-metric-value">{rating.toFixed(1).replace('.', ',')}</span>
               <span className="creator-metric-label">Rating</span>
+            </div>
             </div>
           </section>
 
           <section className="creator-actions">
-            <Link to="/creator/offers" className="creator-action-card">
-              <span className="creator-action-icon">
+            <Link to="/creator/offers" className="creator-action-card creator-action-card--offers">
+              <span className="creator-action-icon-wrap creator-action-icon-wrap--offers">
                 <PeopleIcon />
               </span>
               <span className="creator-action-label">My Offers</span>
-              <span className="creator-action-arrow">›</span>
+              <span className="creator-action-arrow-wrap" aria-hidden>
+                <ArrowIcon />
+              </span>
             </Link>
-            <button type="button" className="creator-action-card creator-action-card--button" onClick={handleShare}>
-              <span className="creator-action-icon">
+            <button type="button" className="creator-action-card creator-action-card--share" onClick={handleShare}>
+              <span className="creator-action-icon-wrap creator-action-icon-wrap--share">
                 <ShareIcon />
               </span>
               <div className="creator-action-text">
                 <span className="creator-action-label">Share My Profile</span>
                 <span className="creator-action-subtitle">Invite fans to connect with you</span>
               </div>
-              <span className="creator-action-arrow">›</span>
+              <span className="creator-action-arrow-wrap creator-action-arrow-wrap--share" aria-hidden>
+                <ArrowIcon />
+              </span>
             </button>
           </section>
 
@@ -191,6 +208,14 @@ function ShareIcon() {
       <circle cx="18" cy="19" r="3" />
       <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
       <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+    </svg>
+  );
+}
+
+function ArrowIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M5 12h14M12 5l7 7-7 7" />
     </svg>
   );
 }

@@ -1,29 +1,219 @@
-/* Fan Session / FanMeet – dark theme (matches mobile app) */
+/* FanMeet – theme aligned with Flutter AppColors */
+
 :root {
-  --bg-primary: #1A1A1A;
-  --bg-secondary: #1C1C1E;
-  --bg-input: #2C2C2E;
-  --text-primary: #FFFFFF;
-  --text-secondary: rgba(255, 255, 255, 0.7);
-  --text-muted: #999999;
-  --accent-yellow: #FABC2A;
+  /* ========== Core surfaces (Flutter AppColors) ========== */
+  --primary-color: #0F1115;           /* scaffold background */
+  --dark-blue-shade-3: #1C1F26;      /* cards / elevated surfaces */
+  --tertiary-color: #E2E5EA;         /* high-emphasis text/icons */
+
+  /* ========== Accents ========== */
+  --secondary-color: #F4C046;        /* brand accent / buttons */
+  --amber: #F4C046;                  /* toast/info accent match */
+  --green-success: #2ECC71;
+  --red: #FF5C5C;
+  --blue-accent: #5B9FFF;            /* sessions / info blue */
+  --icon-blue: #4A90E2;              /* key icon / password icon background */
+
+  /* ========== Text ========== */
+  --white: #FFFFFF;
+  --black: #050608;
+  --dark-grey-text: #AEB3BD;         /* secondary text */
+  --light-grey: #8F949E;             /* hints/subtext */
+
+  /* ========== Borders / dividers ========== */
+  --light-grey-shade-3: #2A2E36;     /* tile borders/dividers */
+  --text-field-border: #2F343C;
+  --outline-input-border: #3A4048;
+  --chat-divider: #2E333B;
+
+  /* ========== Inputs ========== */
+  --input-background: #16191F;
+
+  /* ========== Effects ========== */
+  --secondary-splash-12: rgba(244, 192, 70, 0.12);  /* 12% opacity */
+  --tertiary-alpha-12: rgba(226, 229, 234, 0.12);  /* RoleSelector border */
+  --focus-ring: rgba(244, 192, 70, 0.35);           /* input/button focus */
+  --shadow-color: rgba(0, 0, 0, 0.07);              /* 7% opacity */
+
+  /* ========== Semantic mapping (used across the app) ========== */
+  --bg-primary: var(--primary-color);
+  --bg-secondary: var(--dark-blue-shade-3);
+  --bg-input: var(--input-background);
+  --text-primary: var(--white);
+  --text-high: var(--tertiary-color);   /* high-emphasis text/icons */
+  --text-secondary: var(--dark-grey-text);
+  --text-muted: var(--light-grey);
+  --accent-yellow: var(--secondary-color);
   --accent-yellow-alt: #FDD648;
-  --border-light: rgba(255, 255, 255, 0.2);
-  --required: #E57373;
+  --border-light: var(--light-grey-shade-3);
+  --border-input: var(--text-field-border);
+  --border-outline: var(--outline-input-border);
+  --required: var(--red);
   --radius: 12px;
   --radius-lg: 16px;
   --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-  /* Dashboard accents */
-  --accent-green: #4ADE80;
-  --accent-green-dim: rgba(74, 222, 128, 0.2);
-  --card-bg: #252528;
+
+  /* Dashboard / UI accents */
+  --accent-green: var(--green-success);
+  --accent-green-dim: rgba(46, 204, 113, 0.2);
+  --card-bg: var(--dark-blue-shade-3);
   --card-bg-blue: #1e2a38;
-  /* Profile settings icons */
-  --profile-icon-blue: #5B8DEE;
-  --profile-icon-yellow: #FABC2A;
-  --profile-icon-red: #E57373;
-  /* Creator dashboard cards */
+  --profile-icon-blue: var(--icon-blue);
+  --profile-icon-yellow: var(--secondary-color);
+  --profile-icon-red: var(--red);
   --creator-card-green: #166534;
   --creator-card-blue: #1e3a5f;
   --creator-card-gold: #854d0e;
+}
+
+/* ========== TNSTextField-aligned (app-wide text fields) ========== */
+
+.tns-text-field-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--tertiary-color);
+  margin-bottom: 0;
+}
+
+.tns-text-field-label .required {
+  color: var(--red);
+}
+
+.tns-text-field,
+input.tns-text-field,
+textarea.tns-text-field {
+  width: 100%;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid var(--outline-input-border);
+  background: var(--input-background);
+  color: var(--tertiary-color);
+  font-size: 16px;
+  font-weight: 400;
+  font-family: var(--font-sans);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  box-sizing: border-box;
+  caret-color: var(--secondary-color);
+}
+
+.tns-text-field::placeholder,
+input.tns-text-field::placeholder,
+textarea.tns-text-field::placeholder {
+  color: var(--dark-grey-text);
+}
+
+.tns-text-field:focus,
+input.tns-text-field:focus,
+textarea.tns-text-field:focus {
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 2px var(--focus-ring);
+}
+
+.tns-text-field.error,
+.tns-text-field-wrap.has-error .tns-text-field,
+.tns-text-field-wrap.has-error input,
+.tns-text-field-wrap.has-error textarea {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.tns-text-field-error {
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--red);
+}
+
+/* ========== TNSButton-aligned: primary, secondary, tertiary ========== */
+
+.btn-primary,
+.btn-secondary,
+.btn-tertiary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 24px;
+  border-radius: 16px;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s;
+  text-decoration: none;
+  box-sizing: border-box;
+  border-width: 1px;
+  border-style: solid;
+}
+
+.btn-primary:active:not(:disabled),
+.btn-secondary:active:not(:disabled),
+.btn-tertiary:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn-primary:disabled,
+.btn-secondary:disabled,
+.btn-tertiary:disabled {
+  cursor: not-allowed;
+}
+
+/* Primary: TNSButton default – amber fill, dark text */
+.btn-primary {
+  background: var(--secondary-color);
+  color: var(--primary-color);
+  border-color: var(--secondary-color);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #FFC933;
+  border-color: #FFC933;
+}
+
+.btn-primary:disabled {
+  color: var(--dark-grey-text);
+  background: rgba(244, 192, 70, 0.5);
+  border-color: rgba(244, 192, 70, 0.5);
+}
+
+/* Secondary: TNSButton.secondary – role selector style */
+.btn-secondary {
+  background: var(--input-background);
+  color: var(--tertiary-color);
+  border-color: var(--outline-input-border);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--input-background);
+  border-color: var(--light-grey-shade-3);
+  color: var(--text-primary);
+}
+
+.btn-secondary:disabled {
+  color: var(--dark-grey-text);
+  background: var(--input-background);
+  border-color: var(--outline-input-border);
+}
+
+/* Tertiary: TNSButton.tertiary – danger/red outline */
+.btn-tertiary {
+  background: var(--primary-color);
+  color: var(--red);
+  border-color: var(--red);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.btn-tertiary:hover:not(:disabled) {
+  background: rgba(255, 92, 92, 0.1);
+  border-color: var(--red);
+}
+
+.btn-tertiary:disabled {
+  color: var(--dark-grey-text);
+  background: var(--input-background);
+  border-color: rgba(255, 92, 92, 0.5);
 }
