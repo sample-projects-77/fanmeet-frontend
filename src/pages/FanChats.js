@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { chatAPI } from '../services/api';
 import FanNav from '../components/FanNav';
+import LoadingSpinner from '../components/LoadingSpinner';
+import EmptyWidget from '../components/EmptyWidget';
+import ErrorWidget from '../components/ErrorWidget';
 import './FanChats.css';
 
 function formatChatTime(isoString) {
@@ -40,6 +43,8 @@ function FanChats() {
     }
 
     const fetchChannels = async () => {
+      setLoading(true);
+      setError(null);
       try {
         const res = await chatAPI.getIndividualChannels();
         if (res.StatusCode === 200 && res.data?.channels) {
@@ -57,6 +62,24 @@ function FanChats() {
     fetchChannels();
   }, [navigate]);
 
+  const refetch = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await chatAPI.getIndividualChannels();
+      if (res.StatusCode === 200 && res.data?.channels) {
+        setChannels(res.data.channels);
+      } else {
+        setChannels([]);
+      }
+    } catch (err) {
+      setError(err.response?.data?.error || err.message || 'Failed to load chats');
+      setChannels([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -72,19 +95,12 @@ function FanChats() {
         <div className="fan-chats-container">
           <h1 className="fan-chats-title">Chats</h1>
 
-          {error && (
-            <div className="fan-chats-error">{error}</div>
-          )}
-
-          {loading ? (
-            <div className="fan-chats-loading">Loading chats…</div>
+          {error ? (
+            <ErrorWidget errorText={error} onRetry={refetch} />
+          ) : loading ? (
+            <LoadingSpinner />
           ) : channels.length === 0 ? (
-            <div className="fan-chats-empty">
-              <div className="fan-chats-empty-icon" aria-hidden>
-                <InfoIcon />
-              </div>
-              <p className="fan-chats-empty-text">You have no chats</p>
-            </div>
+            <EmptyWidget text="You have no chats" />
           ) : (
             <ul className="fan-chats-list">
               {channels.map((ch) => (
@@ -121,16 +137,6 @@ function FanChats() {
         </div>
       </main>
     </div>
-  );
-}
-
-function InfoIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10" />
-      <line x1="12" y1="16" x2="12" y2="12" />
-      <line x1="12" y1="8" x2="12.01" y2="8" />
-    </svg>
   );
 }
 

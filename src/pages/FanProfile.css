@@ -1,13 +1,13 @@
-/* Fan Profile – same dark theme, profile card + settings list */
+/* Profile (Fan & Creator) – Flutter ProfileCard + AccountSettingsSection */
 
 .fan-profile-page {
   min-height: 100vh;
-  background: var(--bg-primary);
+  background: var(--primary-color);
   color: var(--text-primary);
 }
 
 .fan-profile-main {
-  padding: 24px 20px 48px;
+  padding: 16px 16px 48px;
 }
 
 .fan-profile-container {
@@ -16,35 +16,35 @@
 }
 
 .fan-profile-title {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  margin: 0 0 24px 0;
+  margin: 0 0 16px 0;
   text-align: center;
+  color: var(--tertiary-color);
 }
 
-/* ----- Profile card ----- */
+/* ----- ProfileCard: darkBlueShade3, padding 20, radius 16 ----- */
 .fan-profile-card {
-  background: var(--card-bg);
-  border-radius: var(--radius-lg);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  padding: 24px;
-  margin-bottom: 20px;
+  background: var(--dark-blue-shade-3);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
 }
 
 .fan-profile-header {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .fan-profile-avatar-wrap {
   flex-shrink: 0;
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
   overflow: hidden;
-  background: var(--profile-icon-blue);
+  background: var(--dark-blue-shade-3);
 }
 
 .fan-profile-avatar-img {
@@ -59,12 +59,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--tertiary-color);
+  background: var(--light-grey-shade-3);
 }
 
 .fan-profile-avatar-placeholder svg {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
 }
 
 .fan-profile-info {
@@ -72,54 +73,59 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
 }
 
 .fan-profile-username {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--text-primary);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--tertiary-color);
 }
 
 .fan-profile-email {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
+  font-size: 14px;
+  color: var(--dark-grey-text);
 }
 
+/* Edit button: TNSButton.secondary – inputBackgroundColor, tertiaryColor, outlineInputBorder */
 .fan-profile-edit-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
   width: 100%;
-  padding: 14px 20px;
-  background: var(--bg-input);
-  border-radius: var(--radius);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  color: var(--text-primary);
-  font-size: 0.9375rem;
+  padding: 16px 24px;
+  background: var(--input-background);
+  border-radius: 16px;
+  border: 1px solid var(--outline-input-border);
+  color: var(--tertiary-color);
+  font-size: 15px;
   font-weight: 500;
   text-decoration: none;
-  transition: border-color 0.15s, background 0.15s;
+  transition: border-color 0.2s, background 0.2s;
+  font-family: var(--font-sans);
 }
 
 .fan-profile-edit-btn:hover {
-  background: #353538;
-  border-color: rgba(255, 255, 255, 0.1);
+  background: var(--input-background);
+  border-color: var(--light-grey-shade-3);
 }
 
 .fan-profile-edit-btn svg {
   width: 20px;
   height: 20px;
   flex-shrink: 0;
+  color: var(--tertiary-color);
 }
 
-/* ----- Settings list card ----- */
+/* ----- AccountSettingsSection: darkBlueShade3, padding 20, radius 16, 16px gap ----- */
 .fan-profile-settings {
-  background: var(--card-bg);
-  border-radius: var(--radius-lg);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  overflow: hidden;
+  background: var(--dark-blue-shade-3);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .fan-profile-setting-row {
@@ -127,11 +133,10 @@
   align-items: center;
   gap: 14px;
   width: 100%;
-  padding: 16px 18px;
+  padding: 0;
   background: none;
   border: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  color: var(--text-primary);
+  color: var(--tertiary-color);
   font-size: 1rem;
   font-weight: 500;
   font-family: var(--font-sans);
@@ -139,10 +144,7 @@
   text-align: left;
   cursor: pointer;
   transition: background 0.15s;
-}
-
-.fan-profile-setting-row:last-child {
-  border-bottom: none;
+  border-radius: 12px;
 }
 
 .fan-profile-setting-row:hover {
@@ -154,7 +156,7 @@
 }
 
 .fan-profile-setting-row--danger:hover {
-  background: rgba(229, 115, 115, 0.08);
+  background: rgba(255, 92, 92, 0.08);
 }
 
 .fan-profile-setting-row--button:disabled {
@@ -178,16 +180,24 @@
   color: #fff;
 }
 
+/* Flutter: Change Password -> iconBlue */
 .fan-profile-setting-icon--blue {
-  background: var(--profile-icon-blue);
+  background: var(--icon-blue);
 }
 
+/* Flutter: Change User Preferences -> secondaryColor */
 .fan-profile-setting-icon--yellow {
-  background: var(--profile-icon-yellow);
+  background: var(--secondary-color);
 }
 
+/* Flutter: Blocked Users & Delete Account -> red */
 .fan-profile-setting-icon--red {
-  background: var(--profile-icon-red);
+  background: var(--red);
+}
+
+/* Flutter: Logout -> blueAccent */
+.fan-profile-setting-icon--blue-accent {
+  background: var(--blue-accent);
 }
 
 .fan-profile-setting-label {
@@ -195,7 +205,7 @@
 }
 
 .fan-profile-setting-arrow {
-  color: var(--text-muted);
+  color: var(--light-grey);
   font-size: 1.25rem;
   font-weight: 300;
 }
@@ -204,15 +214,13 @@
   .fan-profile-container {
     max-width: 520px;
   }
+  .fan-profile-main {
+    padding: 16px 20px 48px;
+  }
   .fan-profile-card {
-    padding: 28px;
+    padding: 24px;
   }
-  .fan-profile-avatar-wrap {
-    width: 72px;
-    height: 72px;
-  }
-  .fan-profile-avatar-placeholder svg {
-    width: 36px;
-    height: 36px;
+  .fan-profile-settings {
+    padding: 24px;
   }
 }

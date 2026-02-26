@@ -139,6 +139,16 @@ export const profileAPI = {
     });
     return response.data;
   },
+
+  // Update creator profile (multipart: userName, avatarUrl file)
+  updateCreatorProfile: async (formData) => {
+    const response = await api.patch('/creators/me', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
 };
 
 // Chat (requires auth)

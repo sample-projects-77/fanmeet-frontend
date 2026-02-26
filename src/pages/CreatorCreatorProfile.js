@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { profileAPI } from '../services/api';
 import CreatorNav from '../components/CreatorNav';
+import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorWidget from '../components/ErrorWidget';
 import './FanCreatorProfile.css';
 
 function CreatorCreatorProfile() {
@@ -26,26 +28,27 @@ function CreatorCreatorProfile() {
     }
   }, [navigate]);
 
-  useEffect(() => {
+  const fetchCreator = useCallback(async () => {
     if (!creatorId) return;
-    const fetchCreator = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await profileAPI.getCreatorById(creatorId);
-        if (res.StatusCode === 200 && res.data) {
-          setCreator(res.data);
-        } else {
-          setError(res.error || 'Creator not found');
-        }
-      } catch (err) {
-        setError(err.response?.data?.error || err.message || 'Something went wrong');
-      } finally {
-        setLoading(false);
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await profileAPI.getCreatorById(creatorId);
+      if (res.StatusCode === 200 && res.data) {
+        setCreator(res.data);
+      } else {
+        setError(res.error || 'Creator not found');
       }
-    };
-    fetchCreator();
+    } catch (err) {
+      setError(err.response?.data?.error || err.message || 'Something went wrong');
+    } finally {
+      setLoading(false);
+    }
   }, [creatorId]);
+
+  useEffect(() => {
+    fetchCreator();
+  }, [fetchCreator]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -65,10 +68,10 @@ function CreatorCreatorProfile() {
       <CreatorNav active="search" userName={user.userName} onLogout={handleLogout} />
       <main className="fan-creator-details-main">
         {loading && !creator ? (
-          <div className="fan-creator-details-loading">Loading creator…</div>
+          <LoadingSpinner />
         ) : error ? (
-          <div className="fan-creator-details-error">
-            {error}
+          <div className="fan-creator-details-error-wrap">
+            <ErrorWidget errorText={error} onRetry={fetchCreator} />
             <Link to="/creator/search" className="fan-creator-details-back-link">← Back to Search</Link>
           </div>
         ) : creator ? (

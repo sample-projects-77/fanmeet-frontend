@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { profileAPI } from '../services/api';
 import './FanProfileEdit.css';
 
 function FanProfileEdit() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isCreator = location.pathname.startsWith('/creator');
+  const profilePath = isCreator ? '/creator/profile' : '/fan/profile';
+
   const [user, setUser] = useState(null);
   const [userName, setUserName] = useState('');
   const [avatarFile, setAvatarFile] = useState(null);
@@ -60,7 +64,8 @@ function FanProfileEdit() {
       formData.append('userName', userName.trim());
       if (avatarFile) formData.append('avatarUrl', avatarFile);
 
-      const res = await profileAPI.updateFanProfile(formData);
+      const updateProfile = isCreator ? profileAPI.updateCreatorProfile : profileAPI.updateFanProfile;
+      const res = await updateProfile(formData);
       if (res.StatusCode === 200 && res.data) {
         const updated = {
           ...user,
@@ -69,7 +74,7 @@ function FanProfileEdit() {
           avatarUrl: res.data.avatarUrl ?? user.avatarUrl,
         };
         localStorage.setItem('user', JSON.stringify(updated));
-        navigate('/fan/profile', { replace: true });
+        navigate(profilePath, { replace: true });
       } else {
         setError(res.error || 'Failed to save.');
       }
@@ -89,7 +94,7 @@ function FanProfileEdit() {
   return (
     <div className="fan-profile-edit-page">
       <header className="fan-profile-edit-header">
-        <Link to="/fan/profile" className="fan-profile-edit-back" aria-label="Back">
+        <Link to={profilePath} className="fan-profile-edit-back" aria-label="Back">
           ←
         </Link>
         <h1 className="fan-profile-edit-title">Edit Profile</h1>

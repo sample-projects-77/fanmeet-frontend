@@ -14,7 +14,7 @@ import FanCreatorProfile from './pages/FanCreatorProfile';
 import { FanProfileChangePassword, FanProfileLanguage, FanProfileBlocked } from './pages/FanProfilePlaceholder';
 import CreatorDashboard from './pages/CreatorDashboard';
 import CreatorOffers from './pages/CreatorOffers';
-import { CreatorReviews, CreatorChatConversation, CreatorCreatorOffers, CreatorCreatorReviews, CreatorProfileEdit, CreatorProfileChangePassword, CreatorProfileLanguage, CreatorProfileBlocked } from './pages/CreatorPlaceholder';
+import { CreatorReviews, CreatorChatConversation, CreatorCreatorOffers, CreatorCreatorReviews, CreatorProfileChangePassword, CreatorProfileLanguage, CreatorProfileBlocked } from './pages/CreatorPlaceholder';
 import CreatorSearch from './pages/CreatorSearch';
 import CreatorChats from './pages/CreatorChats';
 import CreatorProfile from './pages/CreatorProfile';
@@ -53,7 +53,7 @@ function App() {
           <Route path="/creator/chats" element={<CreatorChats />} />
           <Route path="/creator/chats/:channelId" element={<CreatorChatConversation />} />
           <Route path="/creator/profile" element={<CreatorProfile />} />
-          <Route path="/creator/profile/edit" element={<CreatorProfileEdit />} />
+          <Route path="/creator/profile/edit" element={<FanProfileEdit />} />
           <Route path="/creator/profile/change-password" element={<CreatorProfileChangePassword />} />
           <Route path="/creator/profile/language" element={<CreatorProfileLanguage />} />
           <Route path="/creator/profile/blocked" element={<CreatorProfileBlocked />} />

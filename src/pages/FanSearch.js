@@ -2,6 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { profileAPI } from '../services/api';
 import FanNav from '../components/FanNav';
+import LoadingSpinner from '../components/LoadingSpinner';
+import EmptyWidget from '../components/EmptyWidget';
+import ErrorWidget from '../components/ErrorWidget';
 import './FanSearch.css';
 
 const SEARCH_DEBOUNCE_MS = 350;
@@ -110,15 +113,17 @@ function FanSearch() {
               Popular Creators
               <span className="fan-search-flame" aria-label="Popular">🔥</span>
             </h2>
-            {error && (
-              <div className="fan-search-error">{error}</div>
-            )}
-            {loading ? (
-              <div className="fan-search-loading">Loading creators…</div>
+            {error ? (
+              <ErrorWidget
+                errorText={error}
+                onRetry={() => fetchCreators(query)}
+              />
+            ) : loading ? (
+              <LoadingSpinner />
             ) : creators.length === 0 ? (
-              <div className="fan-search-empty">
-                {query ? 'No creators match your search.' : 'No creators yet.'}
-              </div>
+              <EmptyWidget
+                text={query ? 'No creators match your search.' : 'No creators yet.'}
+              />
             ) : (
               <div className="fan-search-grid">
                 {creators.map((c) => (

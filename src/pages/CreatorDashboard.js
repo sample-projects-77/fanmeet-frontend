@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { dashboardAPI } from '../services/api';
 import CreatorNav from '../components/CreatorNav';
+import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorWidget from '../components/ErrorWidget';
 import './CreatorDashboard.css';
 
 function CreatorDashboard() {
@@ -27,6 +29,8 @@ function CreatorDashboard() {
 
     const fetchDashboard = async () => {
       try {
+        setLoading(true);
+        setError(null);
         const res = await dashboardAPI.getCreatorDashboard();
         if (res.StatusCode === 200 && res.data) {
           setData(res.data);
@@ -41,6 +45,26 @@ function CreatorDashboard() {
     };
     fetchDashboard();
   }, [navigate]);
+
+  const refetch = useCallback(async () => {
+    const token = localStorage.getItem('token');
+    const userJson = localStorage.getItem('user');
+    if (!token || !userJson) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await dashboardAPI.getCreatorDashboard();
+      if (res.StatusCode === 200 && res.data) {
+        setData(res.data);
+      } else {
+        setError(res.error || 'Failed to load dashboard');
+      }
+    } catch (err) {
+      setError(err.response?.data?.error || err.message || 'Something went wrong');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -63,12 +87,23 @@ function CreatorDashboard() {
     }
   };
 
-  if (loading && !data) {
+  if (loading && !data && !error) {
     return (
       <div className="creator-dashboard">
         <CreatorNav active="creator" userName={user?.userName} onLogout={handleLogout} />
         <main className="creator-dashboard-main">
-          <div className="creator-dashboard-loading">Loading your dashboard…</div>
+          <LoadingSpinner />
+        </main>
+      </div>
+    );
+  }
+
+  if (error && !data) {
+    return (
+      <div className="creator-dashboard">
+        <CreatorNav active="creator" userName={user?.userName} onLogout={handleLogout} />
+        <main className="creator-dashboard-main">
+          <ErrorWidget errorText={error} onRetry={refetch} />
         </main>
       </div>
     );

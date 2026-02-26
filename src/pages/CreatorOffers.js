@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { offerAPI } from '../services/api';
 import CreatorNav from '../components/CreatorNav';
+import LoadingSpinner from '../components/LoadingSpinner';
+import EmptyWidget from '../components/EmptyWidget';
+import ErrorWidget from '../components/ErrorWidget';
 import './CreatorOffers.css';
 
 function formatPrice(priceCents, currency = 'EUR') {
@@ -38,30 +41,30 @@ function CreatorOffers() {
     }
   }, [navigate]);
 
-  useEffect(() => {
+  const fetchOffers = useCallback(async () => {
     if (!user?.id) return;
-    const fetchOffers = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        // GET /api/creators/me/offers returns your offer types (title, duration, price) from the DB
-        const res = await offerAPI.getMyOffers(1, 100);
-        if (res.StatusCode === 200 && res.data) {
-          setOffers(res.data.offers || []);
-          setPagination(res.data.pagination || null);
-        } else {
-          setError(res.error || 'Failed to load offers');
-          setOffers([]);
-        }
-      } catch (err) {
-        setError(err.response?.data?.error || err.message || 'Something went wrong');
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await offerAPI.getMyOffers(1, 100);
+      if (res.StatusCode === 200 && res.data) {
+        setOffers(res.data.offers || []);
+        setPagination(res.data.pagination || null);
+      } else {
+        setError(res.error || 'Failed to load offers');
         setOffers([]);
-      } finally {
-        setLoading(false);
       }
-    };
-    fetchOffers();
+    } catch (err) {
+      setError(err.response?.data?.error || err.message || 'Something went wrong');
+      setOffers([]);
+    } finally {
+      setLoading(false);
+    }
   }, [user?.id]);
+
+  useEffect(() => {
+    fetchOffers();
+  }, [fetchOffers]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -85,14 +88,12 @@ function CreatorOffers() {
 
           <div className="creator-offers-divider" aria-hidden />
 
-          {error && (
-            <div className="creator-offers-error">{error}</div>
-          )}
-
-          {loading ? (
-            <div className="creator-offers-loading">Loading offers…</div>
+          {error ? (
+            <ErrorWidget errorText={error} onRetry={fetchOffers} />
+          ) : loading ? (
+            <LoadingSpinner />
           ) : offers.length === 0 ? (
-            <div className="creator-offers-empty">You have no offers yet.</div>
+            <EmptyWidget text="You have no offers yet." />
           ) : (
             <div className="creator-offers-table-wrap">
               <table className="creator-offers-table">

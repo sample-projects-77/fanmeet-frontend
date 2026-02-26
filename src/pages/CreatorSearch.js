@@ -2,6 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { profileAPI } from '../services/api';
 import CreatorNav from '../components/CreatorNav';
+import LoadingSpinner from '../components/LoadingSpinner';
+import EmptyWidget from '../components/EmptyWidget';
+import ErrorWidget from '../components/ErrorWidget';
 import './CreatorSearch.css';
 
 const SEARCH_DEBOUNCE_MS = 350;
@@ -109,15 +112,17 @@ function CreatorSearch() {
               Popular Creators
               <span className="creator-search-flame" aria-label="Popular">🔥</span>
             </h2>
-            {error && (
-              <div className="creator-search-error">{error}</div>
-            )}
-            {loading ? (
-              <div className="creator-search-loading">Loading creators…</div>
+            {error ? (
+              <ErrorWidget
+                errorText={error}
+                onRetry={() => fetchCreators(query)}
+              />
+            ) : loading ? (
+              <LoadingSpinner />
             ) : creators.length === 0 ? (
-              <div className="creator-search-empty">
-                {query ? 'No creators match your search.' : 'No creators yet.'}
-              </div>
+              <EmptyWidget
+                text={query ? 'No creators match your search.' : 'No creators yet.'}
+              />
             ) : (
               <div className="creator-search-grid">
                 {creators.map((c) => (

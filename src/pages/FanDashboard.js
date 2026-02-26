@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { dashboardAPI } from '../services/api';
 import FanNav from '../components/FanNav';
+import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorWidget from '../components/ErrorWidget';
 import './FanDashboard.css';
 
 function FanDashboard() {
@@ -27,6 +29,8 @@ function FanDashboard() {
 
     const fetchDashboard = async () => {
       try {
+        setLoading(true);
+        setError(null);
         const res = await dashboardAPI.getFanDashboard();
         if (res.StatusCode === 200 && res.data) {
           setData(res.data);
@@ -42,18 +46,49 @@ function FanDashboard() {
     fetchDashboard();
   }, [navigate]);
 
+  const refetch = useCallback(async () => {
+    const token = localStorage.getItem('token');
+    const userJson = localStorage.getItem('user');
+    if (!token || !userJson) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await dashboardAPI.getFanDashboard();
+      if (res.StatusCode === 200 && res.data) {
+        setData(res.data);
+      } else {
+        setError(res.error || 'Failed to load dashboard');
+      }
+    } catch (err) {
+      setError(err.response?.data?.error || err.message || 'Something went wrong');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     navigate('/', { replace: true });
   };
 
-  if (loading && !data) {
+  if (loading && !data && !error) {
     return (
       <div className="fan-dashboard">
         <FanNav active="fan" userName={user?.userName} onLogout={handleLogout} />
         <main className="fan-dashboard-main">
-          <div className="fan-dashboard-loading">Loading your dashboard…</div>
+          <LoadingSpinner />
+        </main>
+      </div>
+    );
+  }
+
+  if (error && !data) {
+    return (
+      <div className="fan-dashboard">
+        <FanNav active="fan" userName={user?.userName} onLogout={handleLogout} />
+        <main className="fan-dashboard-main">
+          <ErrorWidget errorText={error} onRetry={refetch} />
         </main>
       </div>
     );
@@ -72,9 +107,7 @@ function FanDashboard() {
       <main className="fan-dashboard-main">
         <div className="fan-dashboard-container">
           {error && (
-            <div className="fan-dashboard-error">
-              {error}
-            </div>
+            <div className="fan-dashboard-error">{error}</div>
           )}
           <section className="fan-hero-card">
             <div className="fan-hero-glow" aria-hidden />

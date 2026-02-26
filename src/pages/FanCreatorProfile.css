@@ -22,7 +22,8 @@
   color: var(--dark-grey-text);
 }
 
-.fan-creator-details-error {
+.fan-creator-details-error,
+.fan-creator-details-error-wrap {
   display: flex;
   flex-direction: column;
   gap: 16px;

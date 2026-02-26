@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { chatAPI } from '../services/api';
 import CreatorNav from '../components/CreatorNav';
+import LoadingSpinner from '../components/LoadingSpinner';
+import EmptyWidget from '../components/EmptyWidget';
+import ErrorWidget from '../components/ErrorWidget';
 import './CreatorChats.css';
 
 function formatChatTime(isoString) {
@@ -40,6 +43,8 @@ function CreatorChats() {
     }
 
     const fetchChannels = async () => {
+      setLoading(true);
+      setError(null);
       try {
         const res = await chatAPI.getIndividualChannels();
         if (res.StatusCode === 200 && res.data?.channels) {
@@ -57,6 +62,24 @@ function CreatorChats() {
     fetchChannels();
   }, [navigate]);
 
+  const refetch = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await chatAPI.getIndividualChannels();
+      if (res.StatusCode === 200 && res.data?.channels) {
+        setChannels(res.data.channels);
+      } else {
+        setChannels([]);
+      }
+    } catch (err) {
+      setError(err.response?.data?.error || err.message || 'Failed to load chats');
+      setChannels([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -72,19 +95,12 @@ function CreatorChats() {
         <div className="creator-chats-container">
           <h1 className="creator-chats-title">Chats</h1>
 
-          {error && (
-            <div className="creator-chats-error">{error}</div>
-          )}
-
-          {loading ? (
-            <div className="creator-chats-loading">Loading chats…</div>
+          {error ? (
+            <ErrorWidget errorText={error} onRetry={refetch} />
+          ) : loading ? (
+            <LoadingSpinner />
           ) : channels.length === 0 ? (
-            <div className="creator-chats-empty">
-              <div className="creator-chats-empty-icon" aria-hidden>
-                <InfoIcon />
-              </div>
-              <p className="creator-chats-empty-text">You have no chats</p>
-            </div>
+            <EmptyWidget text="You have no chats" />
           ) : (
             <ul className="creator-chats-list">
               {channels.map((ch) => (
@@ -129,16 +145,6 @@ function CreatorChats() {
         </div>
       </main>
     </div>
-  );
-}
-
-function InfoIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10" />
-      <line x1="12" y1="16" x2="12" y2="12" />
-      <line x1="12" y1="8" x2="12.01" y2="8" />
-    </svg>
   );
 }
 

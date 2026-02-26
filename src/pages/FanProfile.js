@@ -98,7 +98,7 @@ function FanProfile() {
             </Link>
             <Link to="/fan/profile/language" className="fan-profile-setting-row">
               <span className="fan-profile-setting-icon fan-profile-setting-icon--yellow">
-                <LanguageIcon />
+                <SettingsIcon />
               </span>
               <span className="fan-profile-setting-label">Change Language</span>
               <span className="fan-profile-setting-arrow">›</span>
@@ -115,7 +115,7 @@ function FanProfile() {
               className="fan-profile-setting-row fan-profile-setting-row--button"
               onClick={handleLogout}
             >
-              <span className="fan-profile-setting-icon fan-profile-setting-icon--blue">
+              <span className="fan-profile-setting-icon fan-profile-setting-icon--blue-accent">
                 <LogoutIcon />
               </span>
               <span className="fan-profile-setting-label">Logout</span>
@@ -168,16 +168,7 @@ function KeyIcon() {
   );
 }
 
-function LanguageIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10" />
-      <line x1="2" y1="12" x2="22" y2="12" />
-      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-    </svg>
-  );
-}
-
+/* Blocked Users: outlined person with block line */
 function BlockedIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -198,12 +189,14 @@ function LogoutIcon() {
   );
 }
 
+/* Delete Account: person with x mark */
 function DeleteIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
       <circle cx="9" cy="7" r="4" />
-      <line x1="17" y1="11" x2="23" y2="11" />
+      <line x1="18" y1="8" x2="23" y2="13" />
+      <line x1="23" y1="8" x2="18" y2="13" />
     </svg>
   );
 }
