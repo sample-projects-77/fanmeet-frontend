@@ -175,6 +175,19 @@ export const offerAPI = {
   },
 };
 
+// Reviews (get reviews for a user, e.g. creator)
+export const reviewAPI = {
+  getUserReviews: async (userId, { page = 1, itemsPerPage = 20, role } = {}) => {
+    const params = new URLSearchParams();
+    params.set('page', String(page));
+    params.set('itemsPerPage', String(itemsPerPage));
+    if (role) params.set('role', role);
+    const id = String(userId).replace(/^creator_/, '').replace(/^fan_/, '');
+    const response = await api.get(`/users/${encodeURIComponent(id)}/reviews?${params.toString()}`);
+    return response.data;
+  },
+};
+
 export default api;
 
 

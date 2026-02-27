@@ -1,0 +1,151 @@
+/* Fan Creator Reviews – dark theme, card list, star rating (match image) */
+
+.fan-creator-reviews-page {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+
+.fan-creator-reviews-main {
+  padding: 24px 20px 48px;
+}
+
+.fan-creator-reviews-container {
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.fan-creator-reviews-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.fan-creator-reviews-back {
+  position: absolute;
+  left: 0;
+  color: var(--white);
+  font-size: 24px;
+  text-decoration: none;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.fan-creator-reviews-back:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--white);
+}
+
+.fan-creator-reviews-title {
+  font-family: var(--font-sans);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--white);
+  margin: 0;
+}
+
+.fan-creator-reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.fan-creator-review-card {
+  background: var(--dark-blue-shade-3);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+}
+
+.fan-creator-review-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.fan-creator-review-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.fan-creator-review-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--outline-input-border);
+  flex-shrink: 0;
+}
+
+.fan-creator-review-avatar-initial {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--outline-input-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--white);
+  font-family: var(--font-sans);
+}
+
+.fan-creator-review-meta {
+  min-width: 0;
+}
+
+.fan-creator-review-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--white);
+  margin: 0 0 2px 0;
+}
+
+.fan-creator-review-date {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--dark-grey-text);
+  margin: 0;
+}
+
+.fan-creator-review-stars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.fan-creator-review-stars svg {
+  width: 18px;
+  height: 18px;
+}
+
+.fan-creator-review-comment {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--white);
+  margin: 0;
+  line-height: 1.45;
+}
+
+/* Star icon – filled (yellow) and outline */
+.fan-creator-review-star-filled {
+  color: var(--secondary-color);
+}
+
+.fan-creator-review-star-empty {
+  color: var(--secondary-color);
+  opacity: 0.35;
+}

@@ -156,7 +156,7 @@ function FanDashboard() {
           </section>
 
           <section className="fan-actions">
-            <Link to="/fan/creators" className="fan-action-card">
+            <Link to="/fan/search" className="fan-action-card">
               <span className="fan-action-icon"><PeopleIcon /></span>
               <span className="fan-action-label">Browse creators</span>
               <span className="fan-action-arrow">→</span>
