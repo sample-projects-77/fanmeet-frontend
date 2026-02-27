@@ -8,11 +8,11 @@
 
 /* ----- Main content ----- */
 .fan-dashboard-main {
-  padding: 32px 24px 48px;
+  padding: 24px 20px 48px;
 }
 
 .fan-dashboard-container {
-  max-width: 900px;
+  max-width: 560px;
   margin: 0 auto;
 }
 
@@ -118,55 +118,107 @@
 
 @media (min-width: 560px) {
   .fan-stats-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 .fan-stat-card {
   position: relative;
-  padding: 20px;
-  border-radius: var(--radius);
-  background: var(--card-bg-blue);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(42, 46, 54, 0.5); /* lightGreyShade3 alpha 0.5 */
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 8px;
   min-height: 120px;
+  text-align: left;
 }
 
-.fan-stat-card--gold .fan-stat-icon {
-  color: var(--accent-yellow);
+/* Match CreatorDashboard stat card gradients/shadows */
+.fan-stat-card--gold {
+  background: linear-gradient(
+    to bottom right,
+    rgba(244, 192, 70, 0.08),
+    transparent
+  );
+  background-color: var(--dark-blue-shade-3);
+  box-shadow: 0 4px 20px rgba(244, 192, 70, 0.1);
 }
 
-.fan-stat-card--blue .fan-stat-icon {
-  color: #60a5fa;
+.fan-stat-card--blue {
+  background: linear-gradient(
+    to bottom right,
+    rgba(91, 159, 255, 0.08),
+    transparent
+  );
+  background-color: var(--dark-blue-shade-3);
+  box-shadow: 0 4px 20px rgba(91, 159, 255, 0.1);
 }
 
-.fan-stat-card--green .fan-stat-icon {
-  color: var(--accent-green);
+.fan-stat-card--green {
+  background: linear-gradient(
+    to bottom right,
+    rgba(46, 204, 113, 0.08),
+    transparent
+  );
+  background-color: var(--dark-blue-shade-3);
+  box-shadow: 0 4px 20px rgba(46, 204, 113, 0.1);
 }
 
 .fan-stat-icon {
-  width: 24px;
-  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border-radius: 12px;
+  margin-bottom: 16px;
   flex-shrink: 0;
 }
 
 .fan-stat-icon svg {
-  width: 100%;
-  height: 100%;
+  width: 22px;
+  height: 22px;
+}
+
+.fan-stat-card--gold .fan-stat-icon {
+  background: linear-gradient(
+    to bottom right,
+    rgba(244, 192, 70, 0.2),
+    rgba(244, 192, 70, 0.05)
+  );
+  color: var(--secondary-color);
+}
+
+.fan-stat-card--blue .fan-stat-icon {
+  background: linear-gradient(
+    to bottom right,
+    rgba(91, 159, 255, 0.2),
+    rgba(91, 159, 255, 0.05)
+  );
+  color: var(--blue-accent);
+}
+
+.fan-stat-card--green .fan-stat-icon {
+  background: linear-gradient(
+    to bottom right,
+    rgba(46, 204, 113, 0.2),
+    rgba(46, 204, 113, 0.05)
+  );
+  color: var(--green-success);
 }
 
 .fan-stat-value {
   font-size: 1.75rem;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: -0.02em;
-  color: var(--text-primary);
+  color: var(--tertiary-color);
 }
 
 .fan-stat-label {
-  font-size: 0.8125rem;
-  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--dark-grey-text);
 }
 
 /* ----- Quick actions ----- */

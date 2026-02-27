@@ -140,18 +140,6 @@ function FanDashboard() {
                 label="Rating"
                 variant="gold"
               />
-              <StatCard
-                icon={<EuroIcon />}
-                value={`€${Number(stats.totalSpent).toFixed(2)}`}
-                label="Total spent"
-                variant="green"
-              />
-              <StatCard
-                icon={<UpcomingIcon />}
-                value={stats.upcoming}
-                label="Upcoming"
-                variant="blue"
-              />
             </div>
           </section>
 
