@@ -130,6 +130,14 @@
   font-size: 0.9375rem;
 }
 
+.fan-profile-edit-success {
+  padding: 12px 16px;
+  background: rgba(46, 204, 113, 0.12);
+  color: var(--green-success);
+  border-radius: var(--radius);
+  font-size: 0.9375rem;
+}
+
 .fan-profile-edit-field {
   display: flex;
   flex-direction: column;
@@ -160,6 +168,26 @@
   transition: border-color 0.2s, box-shadow 0.2s;
   outline: none;
   box-sizing: border-box;
+}
+
+.fan-profile-edit-field select {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid var(--outline-input-border);
+  background: var(--input-background);
+  color: var(--tertiary-color);
+  font-size: 16px;
+  font-weight: 400;
+  font-family: var(--font-sans);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.fan-profile-edit-field select:focus {
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 2px var(--focus-ring);
 }
 
 .fan-profile-edit-field input::placeholder {

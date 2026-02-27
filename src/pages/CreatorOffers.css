@@ -5,15 +5,22 @@
   background: var(--bg-primary);
   color: var(--text-primary);
   font-family: var(--font-sans);
+  display: flex;
+  flex-direction: column;
 }
 
 .creator-offers-main {
-  padding: 24px 20px 48px;
+  padding: 24px 20px 96px; /* extra bottom space for fixed button */
+  flex: 1;
+  display: flex;
 }
 
 .creator-offers-container {
   max-width: 720px;
   margin: 0 auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .creator-offers-header {
@@ -168,6 +175,41 @@
 }
 
 .creator-offers-book-btn:active {
+  transform: scale(0.98);
+}
+
+/* Add Time Slot button – full-width yellow button at bottom */
+.creator-offers-add-slot-wrap {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 24px;
+  display: flex;
+  justify-content: center;
+  pointer-events: none; /* allow underlying page clicks except button */
+}
+
+.creator-offers-add-slot-button {
+  width: 100%;
+  max-width: 360px;
+  padding: 16px 24px;
+  border-radius: var(--radius);
+  border: none;
+  background: var(--accent-yellow);
+  color: var(--black);
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  pointer-events: auto;
+}
+
+.creator-offers-add-slot-button:hover {
+  background: #FFC933;
+}
+
+.creator-offers-add-slot-button:active {
   transform: scale(0.98);
 }
 

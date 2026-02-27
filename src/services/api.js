@@ -91,6 +91,21 @@ export const userAPI = {
     const response = await api.patch('/user/language', { locale });
     return response.data;
   },
+
+  // Blocked users (requires auth)
+  listBlockedUsers: async (page = 1, itemsPerPage = 20) => {
+    const params = new URLSearchParams();
+    params.set('page', String(page));
+    params.set('itemsPerPage', String(itemsPerPage));
+    const response = await api.get(`/users/me/blocked-users?${params.toString()}`);
+    return response.data;
+  },
+
+  unblockUser: async (userId) => {
+    const safeId = String(userId);
+    const response = await api.delete(`/users/me/blocked-users/${encodeURIComponent(safeId)}`);
+    return response.data;
+  },
 };
 
 // Dashboard API (requires auth)

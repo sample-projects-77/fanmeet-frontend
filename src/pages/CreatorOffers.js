@@ -107,7 +107,7 @@ function CreatorOffers() {
             <Link to="/creator/dashboard" className="creator-offers-back" aria-label="Back">
               ←
             </Link>
-            <h1 className="creator-offers-title">Offers</h1>
+            <h1 className="creator-offers-title">Set Your Availability</h1>
           </header>
 
           <div className="creator-offers-divider" aria-hidden />
@@ -117,7 +117,7 @@ function CreatorOffers() {
           ) : loading ? (
             <LoadingSpinner />
           ) : offers.length === 0 ? (
-            <EmptyWidget text="You have no offers yet." />
+            <EmptyWidget text="You have no time slots yet." />
           ) : (
             <div className="creator-offers-table-wrap">
               <table className="creator-offers-table">
@@ -144,6 +144,15 @@ function CreatorOffers() {
               </table>
             </div>
           )}
+
+          <div className="creator-offers-add-slot-wrap">
+            <button
+              type="button"
+              className="creator-offers-add-slot-button"
+            >
+              Add Time Slot
+            </button>
+          </div>
         </div>
       </main>
     </div>
