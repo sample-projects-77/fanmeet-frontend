@@ -188,6 +188,19 @@ export const offerAPI = {
     const response = await api.get(`/creators/${encodeURIComponent(creatorId)}/offers/scheduled?${params.toString()}`);
     return response.data;
   },
+
+  // Create a scheduled offer (creator availability time slot)
+  createScheduledOffer: async ({ dateIso, startTime, endTime, duration, priceCents }) => {
+    const payload = {
+      date: dateIso,
+      startTime,
+      endTime,
+      duration,
+      priceCents,
+    };
+    const response = await api.post('/creators/me/offers/scheduled', payload);
+    return response.data;
+  },
 };
 
 // Reviews (get reviews for a user, e.g. creator)

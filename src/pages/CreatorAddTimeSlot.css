@@ -1,0 +1,227 @@
+/* Creator Add Time Slot – match profile/edit styling and mobile design */
+
+.creator-add-slot-page {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+
+.creator-add-slot-main {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 24px 20px 32px;
+}
+
+.creator-add-slot-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.creator-add-slot-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.creator-add-slot-back {
+  position: absolute;
+  left: 0;
+  color: var(--text-primary);
+  font-size: 24px;
+  text-decoration: none;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.creator-add-slot-back:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.creator-add-slot-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  text-align: center;
+}
+
+.creator-add-slot-subtitle {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+}
+
+.creator-add-slot-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.creator-add-slot-error {
+  padding: 12px 16px;
+  background: rgba(229, 115, 115, 0.12);
+  color: var(--required);
+  border-radius: var(--radius);
+  font-size: 0.9375rem;
+}
+
+.creator-add-slot-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.creator-add-slot-field label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--tertiary-color);
+}
+
+.creator-add-slot-input-wrap {
+  border-radius: 16px;
+  border: 1px solid var(--outline-input-border);
+  background: var(--input-background);
+  padding: 0;
+  overflow: hidden;
+}
+
+.creator-add-slot-input-wrap input {
+  width: 100%;
+  padding: 14px 16px;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--tertiary-color);
+  font-size: 16px;
+  font-family: var(--font-sans);
+  box-sizing: border-box;
+}
+
+.creator-add-slot-input-wrap.creator-add-slot-datepicker-wrap {
+  padding: 0 0 0 0;
+}
+
+.creator-add-slot-datepicker-wrapper {
+  width: 100%;
+}
+
+.creator-add-slot-datepicker-wrapper input {
+  width: 100%;
+  padding: 14px 16px;
+  border: none;
+  background: transparent;
+  color: var(--tertiary-color);
+}
+
+.creator-add-slot-datepicker-wrapper input::placeholder {
+  color: var(--dark-grey-text);
+}
+
+.creator-add-slot-datepicker {
+  background: #181a20;
+  border: 1px solid var(--outline-input-border);
+  color: var(--tertiary-color);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+
+.creator-add-slot-datepicker .react-datepicker__header {
+  background-color: #181a20;
+  border-bottom: 1px solid var(--outline-input-border);
+}
+
+.creator-add-slot-datepicker .react-datepicker__current-month,
+.creator-add-slot-datepicker .react-datepicker-time__header,
+.creator-add-slot-datepicker .react-datepicker-year-header {
+  color: var(--tertiary-color);
+}
+
+.creator-add-slot-datepicker .react-datepicker__day-name,
+.creator-add-slot-datepicker .react-datepicker__day,
+.creator-add-slot-datepicker .react-datepicker__time-name {
+  color: var(--tertiary-color);
+}
+
+.creator-add-slot-datepicker .react-datepicker__day--disabled {
+  color: var(--text-muted);
+}
+
+.creator-add-slot-datepicker .react-datepicker__day--selected,
+.creator-add-slot-datepicker .react-datepicker__day--keyboard-selected {
+  background-color: var(--accent-yellow);
+  color: var(--black);
+}
+
+.creator-add-slot-datepicker .react-datepicker__day--today {
+  border-radius: 999px;
+  border: 1px solid var(--accent-yellow);
+}
+
+.creator-add-slot-input-wrap input::placeholder {
+  color: var(--dark-grey-text);
+}
+
+.creator-add-slot-duration-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.creator-add-slot-duration-pill {
+  flex: 1;
+  min-width: 80px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--outline-input-border);
+  background: var(--input-background);
+  color: var(--tertiary-color);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s;
+}
+
+.creator-add-slot-duration-pill--active {
+  background: var(--accent-yellow);
+  border-color: var(--accent-yellow);
+  color: var(--black);
+}
+
+.creator-add-slot-duration-pill:active {
+  transform: scale(0.97);
+}
+
+.creator-add-slot-submit-wrap {
+  margin-top: 8px;
+}
+
+.creator-add-slot-submit {
+  width: 100%;
+  padding: 16px 24px;
+  border-radius: var(--radius);
+  border: none;
+  background: var(--accent-yellow);
+  color: var(--black);
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.creator-add-slot-submit:hover:not(:disabled) {
+  background: #FFC933;
+}
+
+.creator-add-slot-submit:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.creator-add-slot-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+

@@ -149,6 +149,7 @@ function CreatorOffers() {
             <button
               type="button"
               className="creator-offers-add-slot-button"
+              onClick={() => navigate('/creator/offers/add-time-slot')}
             >
               Add Time Slot
             </button>

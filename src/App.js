@@ -16,6 +16,7 @@ import FanCreatorOffers from './pages/FanCreatorOffers';
 import { FanProfileChangePassword, FanProfileLanguage, FanProfileBlocked } from './pages/FanProfilePlaceholder';
 import CreatorDashboard from './pages/CreatorDashboard';
 import CreatorOffers from './pages/CreatorOffers';
+import CreatorAddTimeSlot from './pages/CreatorAddTimeSlot';
 import { CreatorReviews, CreatorChatConversation, CreatorCreatorOffers, CreatorCreatorReviews, CreatorProfileChangePassword, CreatorProfileLanguage, CreatorProfileBlocked } from './pages/CreatorPlaceholder';
 import CreatorSearch from './pages/CreatorSearch';
 import CreatorChats from './pages/CreatorChats';
@@ -48,6 +49,7 @@ function App() {
           <Route path="/fan/profile/blocked" element={<FanProfileBlocked />} />
           <Route path="/creator/dashboard" element={<CreatorDashboard />} />
           <Route path="/creator/offers" element={<CreatorOffers />} />
+          <Route path="/creator/offers/add-time-slot" element={<CreatorAddTimeSlot />} />
           <Route path="/creator/search" element={<CreatorSearch />} />
           <Route path="/creator/creators/:creatorId" element={<CreatorCreatorProfile />} />
           <Route path="/creator/creators/:creatorId/offers" element={<CreatorCreatorOffers />} />
