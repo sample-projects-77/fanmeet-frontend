@@ -219,6 +219,17 @@
   transform: scale(0.98);
 }
 
+.fan-creator-details-actions button.fan-creator-details-action-btn {
+  width: 100%;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.fan-creator-details-actions button.fan-creator-details-action-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 .fan-creator-details-action-icon-wrap {
   display: flex;
   align-items: center;

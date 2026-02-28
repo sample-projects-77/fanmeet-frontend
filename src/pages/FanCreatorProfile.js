@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { profileAPI } from '../services/api';
+import { profileAPI, chatAPI } from '../services/api';
 import FanNav from '../components/FanNav';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorWidget from '../components/ErrorWidget';
@@ -17,6 +17,7 @@ function FanCreatorProfile() {
   const [creator, setCreator] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [startingChat, setStartingChat] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -59,6 +60,25 @@ function FanCreatorProfile() {
     localStorage.removeItem('user');
     navigate('/', { replace: true });
   };
+
+  const handleMessageClick = useCallback(async () => {
+    if (!creator) return;
+    const otherUserId = creator._id || creator.id || creatorId;
+    if (!otherUserId) return;
+    setStartingChat(true);
+    try {
+      const res = await chatAPI.createOrGetIndividualChannel(otherUserId);
+      if (res.StatusCode === 200 && res.data?.channel?.id) {
+        navigate(`/fan/chats/${res.data.channel.id}`);
+      } else {
+        setError(res.error || 'Could not start chat');
+      }
+    } catch (err) {
+      setError(err.response?.data?.error || err.message || 'Could not start chat');
+    } finally {
+      setStartingChat(false);
+    }
+  }, [creator, creatorId, navigate]);
 
   if (!user) return null;
 
@@ -128,15 +148,22 @@ function FanCreatorProfile() {
 
             {/* Message, See offers, See reviews – DashboardActionButton style */}
             <nav className="fan-creator-details-actions">
-              <Link to={`/fan/chats`} className="fan-creator-details-action-btn">
+              <button
+                type="button"
+                className="fan-creator-details-action-btn fan-creator-details-action-btn--message"
+                onClick={handleMessageClick}
+                disabled={startingChat}
+              >
                 <span className="fan-creator-details-action-icon-wrap">
                   <MessageIcon />
                 </span>
-                <span className="fan-creator-details-action-label">Message</span>
+                <span className="fan-creator-details-action-label">
+                  {startingChat ? 'Starting…' : 'Message'}
+                </span>
                 <span className="fan-creator-details-action-arrow-wrap">
                   <ArrowIcon />
                 </span>
-              </Link>
+              </button>
               <Link to={`/fan/creators/${creatorId}/offers`} className="fan-creator-details-action-btn">
                 <span className="fan-creator-details-action-icon-wrap">
                   <OffersIcon />

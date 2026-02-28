@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { chatAPI } from '../services/api';
+import { useChat } from '../context/ChatContext';
 import FanNav from '../components/FanNav';
 import LoadingSpinner from '../components/LoadingSpinner';
 import EmptyWidget from '../components/EmptyWidget';
@@ -23,8 +24,10 @@ function formatChatTime(isoString) {
 
 function FanChats() {
   const navigate = useNavigate();
+  const { client, connect, disconnect, connecting } = useChat();
   const [user, setUser] = useState(null);
   const [channels, setChannels] = useState([]);
+  const [memberInfoMap, setMemberInfoMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -62,9 +65,32 @@ function FanChats() {
     fetchChannels();
   }, [navigate]);
 
+  // Connect Stream client when on this page so we can fetch member names/avatars
+  useEffect(() => {
+    if (!client && !connecting) connect();
+  }, [client, connecting, connect]);
+
+  // Enrich channel list with usernames and avatars from Stream (same source as conversation header)
+  useEffect(() => {
+    if (!client || channels.length === 0) return;
+    const otherIds = [...new Set(channels.map((ch) => ch.otherMemberId).filter(Boolean))];
+    if (otherIds.length === 0) return;
+    client
+      .queryUsers({ id: { $in: otherIds } })
+      .then((res) => {
+        const map = {};
+        (res.users || []).forEach((u) => {
+          map[u.id] = { name: u.name || 'User', image: u.image || null };
+        });
+        setMemberInfoMap(map);
+      })
+      .catch(() => {});
+  }, [client, channels]);
+
   const refetch = useCallback(async () => {
     setLoading(true);
     setError(null);
+    setMemberInfoMap({});
     try {
       const res = await chatAPI.getIndividualChannels();
       if (res.StatusCode === 200 && res.data?.channels) {
@@ -79,8 +105,8 @@ function FanChats() {
       setLoading(false);
     }
   }, []);
-
   const handleLogout = () => {
+    disconnect?.();
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     navigate('/', { replace: true });
@@ -103,35 +129,45 @@ function FanChats() {
             <EmptyWidget text="You have no chats" />
           ) : (
             <ul className="fan-chats-list">
-              {channels.map((ch) => (
+              {channels.map((ch) => {
+                const displayName = (memberInfoMap[ch.otherMemberId]?.name || ch.otherMemberDisplayName) || 'User';
+                const avatarUrl = memberInfoMap[ch.otherMemberId]?.image || ch.otherMemberAvatarUrl;
+                return (
                 <li key={ch.id}>
                   <Link to={`/fan/chats/${ch.id}`} className="fan-chats-row">
                     <div className="fan-chats-avatar-wrap">
-                      <div className="fan-chats-avatar-placeholder">
-                        <PersonIcon />
-                      </div>
+                      {avatarUrl ? (
+                        <img
+                          src={avatarUrl}
+                          alt=""
+                          className="fan-chats-avatar-img"
+                        />
+                      ) : (
+                        <div className="fan-chats-avatar-placeholder">
+                          <PersonIcon />
+                        </div>
+                      )}
                     </div>
                     <div className="fan-chats-content">
-                      <div className="fan-chats-row-top">
-                        <span className="fan-chats-name">
-                          {ch.otherMemberDisplayName || 'User'}
-                        </span>
-                        <span className="fan-chats-time">
-                          {formatChatTime(ch.lastMessageAt || ch.lastMessage?.createdAt)}
-                        </span>
-                      </div>
-                      <div className="fan-chats-row-bottom">
-                        <span className="fan-chats-preview">
-                          {ch.lastMessage?.text || 'No messages yet'}
-                        </span>
-                        {ch.unreadCount > 0 && (
-                          <span className="fan-chats-unread">{ch.unreadCount}</span>
-                        )}
-                      </div>
+                      <span className="fan-chats-name">
+                        {displayName}
+                      </span>
+                      <span className="fan-chats-preview">
+                        {ch.lastMessage?.text || 'No messages yet'}
+                      </span>
+                    </div>
+                    <div className="fan-chats-right">
+                      <span className="fan-chats-time">
+                        {formatChatTime(ch.lastMessageAt || ch.lastMessage?.createdAt)}
+                      </span>
+                      {ch.unreadCount > 0 && (
+                        <span className="fan-chats-unread">{ch.unreadCount}</span>
+                      )}
                     </div>
                   </Link>
                 </li>
-              ))}
+              );
+              })}
             </ul>
           )}
         </div>

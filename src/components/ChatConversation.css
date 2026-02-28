@@ -1,0 +1,397 @@
+.chat-conversation-page {
+  min-height: 100vh;
+  background: var(--bg-primary, #0f0f0f);
+  color: var(--text-primary, #e0e0e0);
+}
+
+.chat-conversation-main {
+  padding: 16px 20px 48px;
+}
+
+.chat-conversation-wrap {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 120px);
+  min-height: 400px;
+}
+
+.chat-conversation-back {
+  margin-bottom: 12px;
+}
+
+.chat-conversation-back a {
+  color: var(--text-secondary, #888);
+  text-decoration: none;
+  font-size: 0.9375rem;
+}
+
+.chat-conversation-back a:hover {
+  color: var(--text-primary, #e0e0e0);
+}
+
+.chat-conversation-stream {
+  flex: 1;
+  min-height: 0;
+  border-radius: var(--radius, 8px);
+  overflow: hidden;
+  background: var(--bg-primary);
+}
+
+.chat-conversation-loading,
+.chat-conversation-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.chat-conversation-error p {
+  margin: 0 0 16px 0;
+  color: var(--text-secondary, #888);
+}
+
+.chat-conversation-error a {
+  color: var(--accent, #6c5ce7);
+  text-decoration: none;
+}
+
+/* Scope Stream Chat theme to our container */
+.chat-conversation-stream .str-chat {
+  height: 100%;
+}
+
+.chat-conversation-stream .str-chat__main-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* ========== Chat conversation – match Flutter / web theme ========== */
+.chat-conversation-stream .str-chat {
+  /* Use same background as rest of web app */
+  --str-chat__background-color: var(--bg-primary);
+  --str-chat__secondary-background-color: var(--bg-secondary);
+  --str-chat__message-list-background-color: var(--bg-primary);
+  --str-chat__text-color: var(--text-primary);
+  --str-chat__text-low-emphasis-color: var(--text-secondary);
+  --str-chat__surface-color: rgba(255, 255, 255, 0.08);
+  /* Incoming bubble: light grey, dark text (picture) */
+  --str-chat__message-bubble-background-color: #E0E0E0;
+  --str-chat__message-bubble-color: #1a1a1a;
+  /* Sent message: blue accent, white text (not yellow) */
+  --str-chat__secondary-surface-color: #5B9FFF;
+  --str-chat__own-message-bubble-background-color: #5B9FFF;
+  --str-chat__own-message-bubble-color: #fff;
+  --str-chat__primary-surface-color: #5B9FFF;
+  --str-chat__primary-color: #fff;
+  /* Date separator: no background, text on chat background only */
+  --str-chat__date-separator-background-color: transparent;
+  --str-chat__date-separator-color: var(--text-secondary);
+  --str-chat__date-separator-border-radius: 0;
+  --str-chat__date-separator-line-color: transparent;
+  /* Message input: same as web surfaces */
+  --str-chat__message-input-background-color: var(--bg-secondary);
+  --str-chat__message-textarea-background-color: var(--bg-secondary);
+  --str-chat__message-textarea-border-inline-start: 1px solid rgba(255, 255, 255, 0.25);
+  --str-chat__message-textarea-border-inline-end: 1px solid rgba(255, 255, 255, 0.25);
+  --str-chat__message-textarea-border-block-start: 1px solid rgba(255, 255, 255, 0.25);
+  --str-chat__message-textarea-border-block-end: 1px solid rgba(255, 255, 255, 0.25);
+  --str-chat__message-textarea-border-radius: var(--radius);
+  --str-chat__message-textarea-color: var(--text-primary);
+  /* Send button only: yellow */
+  --str-chat__message-send-background-color: var(--secondary-color);
+  --str-chat__message-send-color: #1a1a1a;
+  --str-chat__message-send-border-radius: var(--radius);
+  --str-chat__message-input-tools-color: var(--text-primary);
+}
+
+/* Date separator: centered pill (Monday, Yesterday) - match Flutter */
+/* Date separator: text centered in the middle */
+.chat-conversation-stream .str-chat__date-separator {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 0 14px;
+}
+.chat-conversation-stream .str-chat__date-separator-line:nth-child(1) {
+  grid-column: 1;
+}
+.chat-conversation-stream .str-chat__date-separator-date {
+  grid-column: 2;
+  justify-self: center;
+  text-align: center;
+  padding: 8px 0;
+  border-radius: 0;
+  background: transparent !important;
+  color: var(--text-secondary) !important;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.chat-conversation-stream .str-chat__date-separator-line:nth-child(3) {
+  grid-column: 3;
+}
+.chat-conversation-stream .str-chat__date-separator-line {
+  max-width: 60px;
+  opacity: 0.25;
+}
+
+/* Message list: full width, zero right padding/margin so no gap between messages and scroll edge */
+.chat-conversation-stream .str-chat__list,
+.chat-conversation-stream .str-chat__message-list-scroll,
+.chat-conversation-stream .str-chat__ul,
+.chat-conversation-stream .str-chat__virtual-list {
+  width: 100%;
+  padding-inline-end: 0 !important;
+  padding-right: 0 !important;
+  margin-inline-end: 0 !important;
+  margin-right: 0 !important;
+}
+.chat-conversation-stream .str-chat__main-panel {
+  padding-inline-end: 0 !important;
+  padding-right: 0 !important;
+}
+/* Message row / list item: no right gap */
+.chat-conversation-stream .str-chat__message,
+.chat-conversation-stream .str-chat__li,
+.chat-conversation-stream [class*="virtual-list-message"] {
+  padding-inline-end: 0 !important;
+  margin-inline-end: 0 !important;
+}
+
+/* Hide scrollbar: target every descendant so we catch Virtuoso’s inner scroller no matter what */
+.chat-conversation-stream,
+.chat-conversation-stream * {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+.chat-conversation-stream::-webkit-scrollbar,
+.chat-conversation-stream *::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
+/* No clip so timestamp isn't cut off; scrollbar hidden via scrollbar-width/::-webkit-scrollbar above */
+.chat-conversation-stream .str-chat__message-list-scroll,
+.chat-conversation-stream [data-virtuoso-scroller] {
+  padding-right: 0 !important;
+}
+
+/* Message row: flex so avatar + message-inner only take their width (no 600px stretch) */
+.chat-conversation-stream .str-chat__message {
+  width: 100%;
+  max-width: 100%;
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+  column-gap: 8px !important;
+  row-gap: 0 !important;
+}
+.chat-conversation-stream .str-chat__message.str-chat__message--me {
+  justify-content: flex-end !important;
+}
+
+/* Message inner: never stretch to 600px – shrink to content; sent messages align content right */
+.chat-conversation-stream .str-chat__message-inner {
+  margin: 0 !important;
+  min-width: 0 !important;
+  max-width: 360px !important;
+  width: fit-content !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  flex: 0 0 auto !important;
+}
+.chat-conversation-stream .str-chat__message.str-chat__message--me .str-chat__message-inner {
+  align-items: flex-end !important;
+}
+
+/* Incoming message: light grey bubble, dark text, left-aligned with avatar */
+.chat-conversation-stream .str-chat__message.str-chat__message--other .str-chat__message-inner {
+  position: relative;
+  align-items: flex-start;
+}
+.chat-conversation-stream .str-chat__message.str-chat__message--other .str-chat__message-bubble {
+  border-radius: 18px 18px 18px 6px;
+  background: #E0E0E0 !important;
+  color: #1a1a1a !important;
+  position: relative;
+  box-shadow: none !important;
+  border: none !important;
+  max-width: min(80%, 320px) !important;
+  width: max-content;
+  min-width: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+.chat-conversation-stream .str-chat__message.str-chat__message--other .str-chat__message-text,
+.chat-conversation-stream .str-chat__message.str-chat__message--other .str-chat__message-bubble p {
+  color: #1a1a1a !important;
+}
+
+/* Message text: force wrap; long unbroken strings must not stretch the bubble */
+.chat-conversation-stream .str-chat__message-bubble .str-chat__message-text,
+.chat-conversation-stream .str-chat__message-bubble .str-chat__message-text-inner,
+.chat-conversation-stream .str-chat__message-bubble p {
+  word-break: break-word !important;
+  overflow-wrap: anywhere !important;
+  hyphens: none !important;
+  white-space: pre-wrap !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+/* Bubble: strict max-width so it never creates a wide gap; text wraps inside */
+.chat-conversation-stream .str-chat__message-inner .str-chat__message-bubble {
+  min-width: 0 !important;
+  max-width: min(80%, 320px) !important;
+  width: max-content !important;
+  padding: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+/* Left tail on incoming bubble */
+.chat-conversation-stream .str-chat__message.str-chat__message--other .str-chat__message-bubble::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  bottom: 8px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 6px 8px 6px 0;
+  border-color: transparent #E0E0E0 transparent transparent;
+}
+/* Sent message: blue bubble, white text, right-aligned; strict max-width, no wide gap */
+.chat-conversation-stream .str-chat__message.str-chat__message--me .str-chat__message-bubble {
+  border-radius: 18px 18px 6px 18px;
+  background: #5B9FFF !important;
+  color: #fff !important;
+  position: relative;
+  box-shadow: none !important;
+  border: none !important;
+  max-width: min(80%, 320px) !important;
+  width: max-content;
+  min-width: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+.chat-conversation-stream .str-chat__message.str-chat__message--me .str-chat__message-bubble::after {
+  content: '';
+  position: absolute;
+  right: -6px;
+  bottom: 8px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 6px 0 6px 8px;
+  border-color: transparent transparent transparent #5B9FFF;
+}
+
+/* Avatar next to messages: dark blue circle with white border (Flutter) */
+.chat-conversation-stream .str-chat__message-sender-avatar,
+.chat-conversation-stream .str-chat__message.str-chat__message--other .str-chat__avatar {
+  border: 2px solid rgba(255, 255, 255, 0.9) !important;
+  background: #1e3a5f !important;
+  border-radius: 50%;
+  overflow: hidden;
+}
+.chat-conversation-stream .str-chat__message-sender-avatar img,
+.chat-conversation-stream .str-chat__message.str-chat__message--other .str-chat__avatar img {
+  background: #1e3a5f;
+}
+
+/* Timestamp below message: no extra gap above it */
+.chat-conversation-stream .str-chat__message-metadata,
+.chat-conversation-stream .str-chat__message-timestamp,
+.chat-conversation-stream .str-chat__message-simple-timestamp {
+  font-size: 0.75rem !important;
+  color: var(--text-secondary) !important;
+  margin-top: 2px !important;
+  margin-bottom: 0 !important;
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border: none !important;
+  overflow: visible !important;
+  white-space: nowrap !important;
+  min-width: max-content !important;
+}
+/* Message row: no extra vertical gap between message and timestamp */
+.chat-conversation-stream .str-chat__message-inner {
+  gap: 0 !important;
+}
+.chat-conversation-stream .str-chat__message .str-chat__message-bubble {
+  margin-bottom: 0 !important;
+}
+
+/* Channel header: same as web app dark bar */
+.chat-conversation-stream .str-chat__channel-header {
+  background: var(--bg-secondary) !important;
+  border-bottom: 1px solid var(--border-light);
+  padding: 10px 16px;
+}
+.chat-conversation-stream .str-chat__channel-header .str-chat__channel-header-title {
+  color: var(--text-primary) !important;
+  font-weight: 600;
+  font-size: 1rem;
+}
+.chat-conversation-stream .str-chat__channel-header .str-chat__channel-header-subtitle {
+  color: var(--text-secondary) !important;
+  font-size: 0.8125rem;
+}
+/* Header avatar: dark blue + white ring like Flutter */
+.chat-conversation-stream .str-chat__channel-header .str-chat__avatar {
+  border: 2px solid rgba(255, 255, 255, 0.9) !important;
+  background: #1e3a5f !important;
+  border-radius: 50%;
+}
+
+/* Message input: same background as web, thin border */
+.chat-conversation-stream .str-chat__message-input-wrapper,
+.chat-conversation-stream .str-chat__message-input {
+  background: var(--bg-secondary) !important;
+  border-top: 1px solid var(--border-light);
+  padding: 12px 16px;
+}
+.chat-conversation-stream .str-chat__message-textarea-container,
+.chat-conversation-stream .str-chat__message-textarea-with-emoji-picker {
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: var(--bg-secondary);
+}
+/* Send button only: yellow (brand), dark icon */
+.chat-conversation-stream .str-chat__message-input .str-chat__send-button {
+  background: var(--secondary-color) !important;
+  color: #1a1a1a !important;
+  border-radius: var(--radius);
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+}
+.chat-conversation-stream .str-chat__send-button svg {
+  fill: #1a1a1a !important;
+}
+.chat-conversation-stream .str-chat__message-input input::placeholder,
+.chat-conversation-stream .str-chat__message-input textarea::placeholder {
+  color: var(--text-secondary);
+}

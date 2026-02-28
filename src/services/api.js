@@ -168,8 +168,16 @@ export const profileAPI = {
 
 // Chat (requires auth)
 export const chatAPI = {
+  getChatToken: async () => {
+    const response = await api.get('/chat/token');
+    return response.data;
+  },
   getIndividualChannels: async () => {
     const response = await api.get('/chat/individual-channels');
+    return response.data;
+  },
+  createOrGetIndividualChannel: async (otherUserId) => {
+    const response = await api.post('/chat/individual', { otherUserId });
     return response.data;
   },
 };

@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ChatProvider } from './context/ChatContext';
 import Welcome from './pages/Welcome';
 import Login from './pages/Login';
 import FanSignup from './pages/FanSignup';
@@ -9,7 +10,8 @@ import FanSearch from './pages/FanSearch';
 import FanProfile from './pages/FanProfile';
 import FanProfileEdit from './pages/FanProfileEdit';
 import FanChats from './pages/FanChats';
-import { FanCreators, FanBookings, FanChatConversation } from './pages/FanPlaceholder';
+import { FanCreators, FanBookings } from './pages/FanPlaceholder';
+import { FanChatConversationWithProvider } from './components/ChatConversation';
 import FanCreatorProfile from './pages/FanCreatorProfile';
 import FanCreatorReviews from './pages/FanCreatorReviews';
 import FanCreatorOffers from './pages/FanCreatorOffers';
@@ -17,7 +19,8 @@ import { FanProfileChangePassword, FanProfileLanguage, FanProfileBlocked } from 
 import CreatorDashboard from './pages/CreatorDashboard';
 import CreatorOffers from './pages/CreatorOffers';
 import CreatorAddTimeSlot from './pages/CreatorAddTimeSlot';
-import { CreatorReviews, CreatorChatConversation, CreatorCreatorOffers, CreatorCreatorReviews, CreatorProfileChangePassword, CreatorProfileLanguage, CreatorProfileBlocked } from './pages/CreatorPlaceholder';
+import { CreatorReviews, CreatorCreatorOffers, CreatorCreatorReviews, CreatorProfileChangePassword, CreatorProfileLanguage, CreatorProfileBlocked } from './pages/CreatorPlaceholder';
+import { CreatorChatConversationWithProvider } from './components/ChatConversation';
 import CreatorSearch from './pages/CreatorSearch';
 import CreatorChats from './pages/CreatorChats';
 import CreatorProfile from './pages/CreatorProfile';
@@ -27,8 +30,9 @@ import './App.css';
 function App() {
   return (
     <Router>
-      <div className="App">
-        <Routes>
+      <ChatProvider>
+        <div className="App">
+          <Routes>
           <Route path="/" element={<Welcome />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup/fan" element={<FanSignup />} />
@@ -41,7 +45,7 @@ function App() {
           <Route path="/fan/creators/:creatorId/reviews" element={<FanCreatorReviews />} />
           <Route path="/fan/bookings" element={<FanBookings />} />
           <Route path="/fan/chats" element={<FanChats />} />
-          <Route path="/fan/chats/:channelId" element={<FanChatConversation />} />
+          <Route path="/fan/chats/:channelId" element={<FanChatConversationWithProvider />} />
           <Route path="/fan/profile" element={<FanProfile />} />
           <Route path="/fan/profile/edit" element={<FanProfileEdit />} />
           <Route path="/fan/profile/change-password" element={<FanProfileChangePassword />} />
@@ -55,7 +59,7 @@ function App() {
           <Route path="/creator/creators/:creatorId/offers" element={<CreatorCreatorOffers />} />
           <Route path="/creator/creators/:creatorId/reviews" element={<CreatorCreatorReviews />} />
           <Route path="/creator/chats" element={<CreatorChats />} />
-          <Route path="/creator/chats/:channelId" element={<CreatorChatConversation />} />
+          <Route path="/creator/chats/:channelId" element={<CreatorChatConversationWithProvider />} />
           <Route path="/creator/profile" element={<CreatorProfile />} />
           <Route path="/creator/profile/edit" element={<FanProfileEdit />} />
           <Route path="/creator/profile/change-password" element={<CreatorProfileChangePassword />} />
@@ -63,8 +67,9 @@ function App() {
           <Route path="/creator/profile/blocked" element={<CreatorProfileBlocked />} />
           <Route path="/creator/reviews" element={<CreatorReviews />} />
           <Route path="/signup" element={<Navigate to="/" replace />} />
-        </Routes>
-      </div>
+          </Routes>
+        </div>
+      </ChatProvider>
     </Router>
   );
 }

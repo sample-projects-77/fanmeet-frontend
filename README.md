@@ -19,10 +19,12 @@ npm install
 2. Create a `.env` file in the root directory (copy from `.env.example`):
 ```env
 REACT_APP_API_URL=http://localhost:5000
+REACT_APP_STREAM_API_KEY=your_stream_chat_api_key
 ```
    - For local development: `http://localhost:5000`
    - For remote server: `http://your-server-url:5000`
    - **Note:** The `/api` suffix is automatically appended, so don't include it in the URL
+   - **Chat:** Set `REACT_APP_STREAM_API_KEY` to your GetStream Chat API key (same public key as in the backend `.env` as `STREAM_API_KEY`)
 
 3. Start the development server:
 ```bash
