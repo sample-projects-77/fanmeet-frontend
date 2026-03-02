@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { offerAPI } from '../services/api';
+import { offerAPI, bookingAPI } from '../services/api';
 import FanNav from '../components/FanNav';
 import LoadingSpinner from '../components/LoadingSpinner';
 import EmptyWidget from '../components/EmptyWidget';
@@ -34,6 +34,14 @@ function formatTimeRange(startTime, endTime) {
   return `${startTime} - ${endTime}`;
 }
 
+function buildStartTimeISO(offer) {
+  const dateRaw = (offer.date || '').toString();
+  const datePart = dateRaw.includes('T') ? dateRaw.split('T')[0] : dateRaw.split(' ')[0];
+  const timeStr = (offer.startTime || '00:00').trim();
+  const timePart = timeStr.length === 5 ? `${timeStr}:00` : timeStr;
+  return `${datePart}T${timePart}`;
+}
+
 function FanCreatorOffers() {
   const { creatorId } = useParams();
   const navigate = useNavigate();
@@ -41,6 +49,7 @@ function FanCreatorOffers() {
   const [offers, setOffers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [bookingInProgress, setBookingInProgress] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -85,6 +94,39 @@ function FanCreatorOffers() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     navigate('/', { replace: true });
+  };
+
+  const handleBookNow = async (offer) => {
+    const rawCreatorId = creatorId.toString().replace(/^creator_/, '');
+    const rawOfferId = (offer.id || '').replace(/^offer_/, '');
+    const startTimeISO = buildStartTimeISO(offer);
+    setBookingInProgress(offer.id);
+    setError(null);
+    try {
+      const createRes = await bookingAPI.createBooking({
+        creatorId: rawCreatorId,
+        offerId: rawOfferId,
+        startTime: startTimeISO,
+      });
+      if (createRes.StatusCode !== 200 || !createRes.data?.id) {
+        setError(createRes.error || 'Failed to create booking');
+        return;
+      }
+      // For testing without Stripe: optionally confirm so booking becomes paid/confirmed and video call can work
+      try {
+        await bookingAPI.confirmBooking(createRes.data.id, {
+          paymentProvider: 'stripe',
+          paymentIntentId: 'test_skip_payment',
+        });
+      } catch (_) {
+        // confirmBooking requires HOLD status; if booking was created as pending_payment it may fail. Still navigate.
+      }
+      navigate('/fan/bookings', { replace: true });
+    } catch (err) {
+      setError(err.response?.data?.error || err.message || 'Something went wrong');
+    } finally {
+      setBookingInProgress(null);
+    }
   };
 
   if (!user) return null;
@@ -132,8 +174,15 @@ function FanCreatorOffers() {
                       </td>
                       <td>
                         {offer.status === 'available' && (
-                          <span className="creator-offers-book-btn" role="button" tabIndex={0}>
-                            Book now
+                          <span
+                            className="creator-offers-book-btn"
+                            role="button"
+                            tabIndex={0}
+                            onClick={() => handleBookNow(offer)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleBookNow(offer)}
+                            aria-busy={bookingInProgress === offer.id}
+                          >
+                            {bookingInProgress === offer.id ? 'Booking…' : 'Book now'}
                           </span>
                         )}
                       </td>

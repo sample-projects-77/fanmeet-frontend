@@ -1,0 +1,112 @@
+/* Video call page – full-height layout for Stream Video SDK */
+
+.video-call-page {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  display: flex;
+  flex-direction: column;
+}
+
+.video-call-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--light-grey-shade-3);
+  flex-shrink: 0;
+}
+
+.video-call-header-in-call {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background: rgba(15, 17, 21, 0.9);
+}
+
+.video-call-back {
+  color: var(--white);
+  font-size: 18px;
+  text-decoration: none;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.video-call-back:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--white);
+}
+
+.video-call-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.video-call-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--white);
+}
+
+.video-call-timer {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--secondary-color);
+  font-variant-numeric: tabular-nums;
+  min-width: 3ch;
+}
+
+.video-call-leave-btn {
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+.video-call-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.video-call-loading {
+  gap: 16px;
+}
+
+.video-call-joining-text {
+  color: var(--dark-grey-text);
+  font-size: 14px;
+  margin: 0;
+}
+
+.video-call-cannot-join {
+  color: var(--tertiary-color);
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.video-call-in-call {
+  position: relative;
+  height: 100vh;
+}
+
+.video-call-layout {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding-top: 56px;
+}
+
+/* Override Stream SDK theme to match app dark theme */
+.video-call-page [class*="str-video"] {
+  --str-video-background-color: var(--bg-primary);
+  --str-video-text-color: var(--text-primary);
+}

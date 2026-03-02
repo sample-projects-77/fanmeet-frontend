@@ -10,7 +10,10 @@ import FanSearch from './pages/FanSearch';
 import FanProfile from './pages/FanProfile';
 import FanProfileEdit from './pages/FanProfileEdit';
 import FanChats from './pages/FanChats';
-import { FanCreators, FanBookings } from './pages/FanPlaceholder';
+import { FanCreators } from './pages/FanPlaceholder';
+import { FanAllSessions, CreatorAllSessions } from './pages/AllSessions';
+import { FanSessionDetail, CreatorSessionDetail } from './pages/SessionDetail';
+import { FanVideoCall, CreatorVideoCall } from './pages/VideoCall';
 import { FanChatConversationWithProvider } from './components/ChatConversation';
 import FanCreatorProfile from './pages/FanCreatorProfile';
 import FanCreatorReviews from './pages/FanCreatorReviews';
@@ -43,7 +46,9 @@ function App() {
           <Route path="/fan/creators/:creatorId" element={<FanCreatorProfile />} />
           <Route path="/fan/creators/:creatorId/offers" element={<FanCreatorOffers />} />
           <Route path="/fan/creators/:creatorId/reviews" element={<FanCreatorReviews />} />
-          <Route path="/fan/bookings" element={<FanBookings />} />
+          <Route path="/fan/bookings" element={<FanAllSessions />} />
+          <Route path="/fan/bookings/:bookingId" element={<FanSessionDetail />} />
+          <Route path="/fan/bookings/:bookingId/call" element={<FanVideoCall />} />
           <Route path="/fan/chats" element={<FanChats />} />
           <Route path="/fan/chats/:channelId" element={<FanChatConversationWithProvider />} />
           <Route path="/fan/profile" element={<FanProfile />} />
@@ -66,6 +71,9 @@ function App() {
           <Route path="/creator/profile/language" element={<CreatorProfileLanguage />} />
           <Route path="/creator/profile/blocked" element={<CreatorProfileBlocked />} />
           <Route path="/creator/reviews" element={<CreatorReviews />} />
+          <Route path="/creator/bookings" element={<CreatorAllSessions />} />
+          <Route path="/creator/bookings/:bookingId" element={<CreatorSessionDetail />} />
+          <Route path="/creator/bookings/:bookingId/call" element={<CreatorVideoCall />} />
           <Route path="/signup" element={<Navigate to="/" replace />} />
           </Routes>
         </div>

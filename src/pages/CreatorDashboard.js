@@ -163,6 +163,15 @@ function CreatorDashboard() {
           </section>
 
           <section className="creator-actions">
+            <Link to="/creator/bookings" className="creator-action-card creator-action-card--sessions">
+              <span className="creator-action-icon-wrap creator-action-icon-wrap--sessions">
+                <CalendarIcon />
+              </span>
+              <span className="creator-action-label">All Sessions</span>
+              <span className="creator-action-arrow-wrap" aria-hidden>
+                <ArrowIcon />
+              </span>
+            </Link>
             <Link to="/creator/offers" className="creator-action-card creator-action-card--offers">
               <span className="creator-action-icon-wrap creator-action-icon-wrap--offers">
                 <PeopleIcon />

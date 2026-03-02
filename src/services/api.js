@@ -166,6 +166,14 @@ export const profileAPI = {
   },
 };
 
+// Video (Stream Video token for in-app calls)
+export const videoAPI = {
+  getVideoToken: async () => {
+    const response = await api.get('/stream/video-token');
+    return response.data;
+  },
+};
+
 // Chat (requires auth)
 export const chatAPI = {
   getChatToken: async () => {
@@ -220,6 +228,60 @@ export const reviewAPI = {
     if (role) params.set('role', role);
     const id = String(userId).replace(/^creator_/, '').replace(/^fan_/, '');
     const response = await api.get(`/users/${encodeURIComponent(id)}/reviews?${params.toString()}`);
+    return response.data;
+  },
+};
+
+// Bookings (requires auth; fan vs creator endpoints)
+export const bookingAPI = {
+  createBooking: async ({ creatorId, offerId, startTime, meetingProvider } = {}) => {
+    const payload = { creatorId, offerId, startTime };
+    if (meetingProvider) payload.meetingProvider = meetingProvider;
+    const response = await api.post('/bookings', payload);
+    return response.data;
+  },
+  getFanBookings: async ({ status, page = 1, itemsPerPage = 20 } = {}) => {
+    const params = new URLSearchParams();
+    params.set('page', String(page));
+    params.set('itemsPerPage', String(itemsPerPage));
+    if (status) params.set('status', status);
+    const response = await api.get(`/fans/me/bookings?${params.toString()}`);
+    return response.data;
+  },
+  getCreatorBookings: async ({ status, page = 1, itemsPerPage = 20 } = {}) => {
+    const params = new URLSearchParams();
+    params.set('page', String(page));
+    params.set('itemsPerPage', String(itemsPerPage));
+    if (status) params.set('status', status);
+    const response = await api.get(`/creators/me/bookings?${params.toString()}`);
+    return response.data;
+  },
+  getBookingById: async (bookingId) => {
+    const id = String(bookingId).replace(/^booking_/, '');
+    const response = await api.get(`/bookings/${encodeURIComponent(id)}`);
+    return response.data;
+  },
+  confirmBooking: async (bookingId, { paymentProvider = 'stripe', paymentIntentId } = {}) => {
+    const id = String(bookingId).replace(/^booking_/, '');
+    const response = await api.post(`/bookings/${encodeURIComponent(id)}/confirm`, {
+      paymentProvider,
+      paymentIntentId: paymentIntentId || 'test_skip_payment',
+    });
+    return response.data;
+  },
+  startSession: async (bookingId) => {
+    const id = String(bookingId).replace(/^booking_/, '');
+    const response = await api.post(`/bookings/${encodeURIComponent(id)}/start`);
+    return response.data;
+  },
+  endSession: async (bookingId) => {
+    const id = String(bookingId).replace(/^booking_/, '');
+    const response = await api.post(`/bookings/${encodeURIComponent(id)}/end`);
+    return response.data;
+  },
+  cancelBooking: async (bookingId, reason) => {
+    const id = String(bookingId).replace(/^booking_/, '');
+    const response = await api.post(`/bookings/${encodeURIComponent(id)}/cancel`, { reason });
     return response.data;
   },
 };
