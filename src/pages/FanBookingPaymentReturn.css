@@ -1,0 +1,84 @@
+.fan-booking-payment-return-page {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  display: flex;
+  flex-direction: column;
+}
+
+.fan-booking-payment-return-main {
+  padding: 24px 20px 96px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fan-booking-payment-return-container {
+  max-width: 400px;
+  text-align: center;
+}
+
+.fan-booking-payment-return-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.fan-booking-payment-return-icon.success {
+  background: rgba(46, 204, 113, 0.2);
+  color: var(--green-success);
+}
+
+.fan-booking-payment-return-icon.failed {
+  background: rgba(255, 92, 92, 0.2);
+  color: var(--red);
+}
+
+.fan-booking-payment-return-icon.processing {
+  background: rgba(244, 192, 70, 0.2);
+  color: var(--secondary-color);
+}
+
+.fan-booking-payment-return-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--white);
+  margin: 0 0 12px 0;
+}
+
+.fan-booking-payment-return-text {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0 0 24px 0;
+}
+
+.fan-booking-payment-return-link {
+  display: inline-block;
+  padding: 12px 24px;
+  border-radius: 999px;
+  background: var(--secondary-color);
+  color: var(--black);
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  margin-bottom: 16px;
+}
+
+.fan-booking-payment-return-link:hover {
+  background: #FFC933;
+}
+
+.fan-booking-payment-return-redirect {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 0;
+}

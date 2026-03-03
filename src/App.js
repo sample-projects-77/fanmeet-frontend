@@ -18,6 +18,8 @@ import { FanChatConversationWithProvider } from './components/ChatConversation';
 import FanCreatorProfile from './pages/FanCreatorProfile';
 import FanCreatorReviews from './pages/FanCreatorReviews';
 import FanCreatorOffers from './pages/FanCreatorOffers';
+import FanBookingPayment from './pages/FanBookingPayment';
+import FanBookingPaymentReturn from './pages/FanBookingPaymentReturn';
 import { FanProfileChangePassword, FanProfileLanguage, FanProfileBlocked } from './pages/FanProfilePlaceholder';
 import CreatorDashboard from './pages/CreatorDashboard';
 import CreatorOffers from './pages/CreatorOffers';
@@ -47,6 +49,8 @@ function App() {
           <Route path="/fan/creators/:creatorId/offers" element={<FanCreatorOffers />} />
           <Route path="/fan/creators/:creatorId/reviews" element={<FanCreatorReviews />} />
           <Route path="/fan/bookings" element={<FanAllSessions />} />
+          <Route path="/fan/bookings/payment-return" element={<FanBookingPaymentReturn />} />
+          <Route path="/fan/bookings/:bookingId/pay" element={<FanBookingPayment />} />
           <Route path="/fan/bookings/:bookingId" element={<FanSessionDetail />} />
           <Route path="/fan/bookings/:bookingId/call" element={<FanVideoCall />} />
           <Route path="/fan/chats" element={<FanChats />} />

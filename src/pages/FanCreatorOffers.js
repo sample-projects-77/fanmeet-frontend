@@ -112,16 +112,7 @@ function FanCreatorOffers() {
         setError(createRes.error || 'Failed to create booking');
         return;
       }
-      // For testing without Stripe: optionally confirm so booking becomes paid/confirmed and video call can work
-      try {
-        await bookingAPI.confirmBooking(createRes.data.id, {
-          paymentProvider: 'stripe',
-          paymentIntentId: 'test_skip_payment',
-        });
-      } catch (_) {
-        // confirmBooking requires HOLD status; if booking was created as pending_payment it may fail. Still navigate.
-      }
-      navigate('/fan/bookings', { replace: true });
+      navigate(`/fan/bookings/${createRes.data.id}/pay`, { replace: true });
     } catch (err) {
       setError(err.response?.data?.error || err.message || 'Something went wrong');
     } finally {

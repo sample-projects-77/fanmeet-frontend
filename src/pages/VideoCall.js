@@ -76,6 +76,8 @@ function VideoCallContent({ bookingId, booking, user, onLeave, backUrl, backLabe
           return;
         }
         setCall(streamCall);
+        // Tell backend the meeting has started (paid → in_progress) so end session can run later
+        bookingAPI.startSession(bookingId).catch(() => {});
       } catch (err) {
         if (mounted) {
           setError(err.response?.data?.error || err.message || 'Failed to join call');
@@ -107,8 +109,10 @@ function VideoCallContent({ bookingId, booking, user, onLeave, backUrl, backLabe
     if (client) {
       client.disconnectUser().catch(() => {});
     }
+    // End session on backend when user leaves (so payment can be captured)
+    bookingAPI.endSession(bookingId).catch(() => {});
     onLeave();
-  }, [client, onLeave]);
+  }, [client, onLeave, bookingId]);
 
   // Start countdown when call is joined
   useEffect(() => {

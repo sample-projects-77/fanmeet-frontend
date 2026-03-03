@@ -286,6 +286,24 @@ export const bookingAPI = {
   },
 };
 
+// Payments – Stripe (requires auth; fan creates payment for booking)
+export const paymentAPI = {
+  getStripePublishableKey: async () => {
+    const response = await api.get('/payments/stripe-key');
+    return response.data;
+  },
+  createPayment: async (bookingId) => {
+    const id = String(bookingId).replace(/^booking_/, '');
+    const response = await api.post(`/payments/bookings/${encodeURIComponent(id)}`);
+    return response.data;
+  },
+  getPaymentStatus: async (bookingId) => {
+    const id = String(bookingId).replace(/^booking_/, '');
+    const response = await api.get(`/payments/bookings/${encodeURIComponent(id)}/status`);
+    return response.data;
+  },
+};
+
 export default api;
 
 
