@@ -19,6 +19,7 @@ function PaymentForm({ amountCents, currency, bookingId, onSuccess, onError }) {
   const elements = useElements();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState(null);
+  const [isPaymentComplete, setIsPaymentComplete] = useState(false);
 
   const returnUrl = `${window.location.origin}/fan/bookings/payment-return?bookingId=${encodeURIComponent(bookingId || '')}`;
 
@@ -60,12 +61,15 @@ function PaymentForm({ amountCents, currency, bookingId, onSuccess, onError }) {
           radios: true,
           spacedAccordionItems: false,
         }}
+        onChange={(event) => {
+          setIsPaymentComplete(event.complete);
+        }}
       />
       {message && <div className="fan-booking-payment-error" role="alert">{message}</div>}
       <button
         type="submit"
         className="fan-booking-payment-submit"
-        disabled={!stripe || !elements || isSubmitting}
+        disabled={!stripe || !elements || isSubmitting || !isPaymentComplete}
         aria-busy={isSubmitting}
       >
         {isSubmitting ? 'Processing…' : `Pay ${formatPrice(amountCents, currency)}`}

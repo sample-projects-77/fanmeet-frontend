@@ -7,6 +7,7 @@ import {
   StreamTheme,
   CallControls,
   SpeakerLayout,
+  useCallStateHooks,
 } from '@stream-io/video-react-sdk';
 import '@stream-io/video-react-sdk/dist/css/styles.css';
 import { videoAPI, bookingAPI } from '../services/api';
@@ -23,13 +24,31 @@ function formatTimeLeft(totalSeconds) {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
-function VideoCallContent({ bookingId, booking, user, onLeave, backUrl, backLabel }) {
+/** Fires onBothPresent once when at least 2 participants are in the call. Must be inside StreamCall. */
+function BothPresentTrigger({ onBothPresent }) {
+  const { useParticipantCount } = useCallStateHooks();
+  const participantCount = useParticipantCount();
+  const hasFired = useRef(false);
+  useEffect(() => {
+    if (participantCount >= 2 && !hasFired.current) {
+      hasFired.current = true;
+      onBothPresent();
+    }
+  }, [participantCount, onBothPresent]);
+  return null;
+}
+
+function VideoCallContent({ bookingId, booking, user, onLeave, backUrl, backLabel, isFan }) {
   const [client, setClient] = useState(null);
   const [call, setCall] = useState(null);
   const [error, setError] = useState(null);
+  const [sessionError, setSessionError] = useState(null);
   const [joining, setJoining] = useState(true);
+  const [bothPresent, setBothPresent] = useState(false);
   const [remainingSeconds, setRemainingSeconds] = useState(null);
   const callRef = useRef(null);
+  const startSessionCalled = useRef(false);
+  const hasAutoEnded = useRef(false);
 
   const durationMinutes = booking?.offer?.durationMinutes ?? 60;
   const totalDurationSeconds = durationMinutes * 60;
@@ -76,8 +95,6 @@ function VideoCallContent({ bookingId, booking, user, onLeave, backUrl, backLabe
           return;
         }
         setCall(streamCall);
-        // Tell backend the meeting has started (paid → in_progress) so end session can run later
-        bookingAPI.startSession(bookingId).catch(() => {});
       } catch (err) {
         if (mounted) {
           setError(err.response?.data?.error || err.message || 'Failed to join call');
@@ -101,22 +118,30 @@ function VideoCallContent({ bookingId, booking, user, onLeave, backUrl, backLabe
     };
   }, [bookingId, user]);
 
-  const handleLeave = useCallback(() => {
-    if (callRef.current) {
-      callRef.current.leave().catch(() => {});
-      callRef.current = null;
-    }
-    if (client) {
-      client.disconnectUser().catch(() => {});
-    }
-    // End session on backend when user leaves (so payment can be captured)
-    bookingAPI.endSession(bookingId).catch(() => {});
-    onLeave();
-  }, [client, onLeave, bookingId]);
+  const onBothPresent = useCallback(() => {
+    setBothPresent(true);
+  }, []);
 
-  // Start countdown when call is joined
+  // When both are present: call start session once, then start timer
   useEffect(() => {
-    if (!call) return;
+    if (!bothPresent || !call || startSessionCalled.current) return;
+    startSessionCalled.current = true;
+    setSessionError(null);
+    bookingAPI
+      .startSession(bookingId)
+      .then((res) => {
+        if (res && res.StatusCode !== 200 && res.error) {
+          setSessionError(res.error || 'Failed to start session');
+        }
+      })
+      .catch((err) => {
+        setSessionError(err.response?.data?.error || err.message || 'Failed to start session');
+      });
+  }, [bothPresent, call, bookingId]);
+
+  // Timer: only run when both present
+  useEffect(() => {
+    if (!bothPresent || !call) return;
     setRemainingSeconds(totalDurationSeconds);
     const interval = setInterval(() => {
       setRemainingSeconds((prev) => {
@@ -128,16 +153,51 @@ function VideoCallContent({ bookingId, booking, user, onLeave, backUrl, backLabe
       });
     }, 1000);
     return () => clearInterval(interval);
-  }, [call, totalDurationSeconds]);
+  }, [bothPresent, call, totalDurationSeconds]);
 
-  // Auto-end meeting when timer reaches 0
-  const hasAutoEnded = useRef(false);
+  // Auto-end when timer reaches 0: end session then leave
   useEffect(() => {
-    if (remainingSeconds !== 0 || hasAutoEnded.current) return;
+    if (remainingSeconds !== 0 || hasAutoEnded.current || !bothPresent) return;
     hasAutoEnded.current = true;
-    bookingAPI.endSession(bookingId).catch(() => {});
-    handleLeave();
-  }, [remainingSeconds, handleLeave, bookingId]);
+    setSessionError(null);
+    bookingAPI
+      .endSession(bookingId)
+      .then((res) => {
+        if (res && res.StatusCode !== 200 && res.error) {
+          setSessionError(res.error || 'Failed to end session');
+        }
+      })
+      .catch((err) => {
+        setSessionError(err.response?.data?.error || err.message || 'Failed to end session');
+      })
+      .finally(() => {
+        onLeave();
+      });
+  }, [remainingSeconds, bothPresent, bookingId, onLeave]);
+
+  const handleLeave = useCallback(() => {
+    if (callRef.current) {
+      callRef.current.leave().catch(() => {});
+      callRef.current = null;
+    }
+    if (client) {
+      client.disconnectUser().catch(() => {});
+    }
+    if (isFan) {
+      setSessionError(null);
+      bookingAPI
+        .endSession(bookingId)
+        .then((res) => {
+          if (res && res.StatusCode !== 200 && res.error) {
+            setSessionError(res.error || 'Failed to end session');
+          }
+        })
+        .catch((err) => {
+          setSessionError(err.response?.data?.error || err.message || 'Failed to end session');
+        });
+    }
+    onLeave();
+  }, [client, onLeave, bookingId, isFan]);
 
   if (error) {
     return (
@@ -172,12 +232,16 @@ function VideoCallContent({ bookingId, booking, user, onLeave, backUrl, backLabe
     <div className="video-call-page video-call-in-call">
       <StreamVideo client={client}>
         <StreamCall call={call}>
+          <BothPresentTrigger onBothPresent={onBothPresent} />
           <StreamTheme>
             <div className="video-call-header video-call-header-in-call">
               <Link to={backUrl} className="video-call-back">← Back</Link>
               <div className="video-call-title-row">
                 <h1 className="video-call-title">Video call</h1>
-                {remainingSeconds != null && (
+                {!bothPresent && (
+                  <span className="video-call-waiting">Waiting for other participant…</span>
+                )}
+                {bothPresent && remainingSeconds != null && (
                   <span className="video-call-timer" aria-live="polite">
                     {formatTimeLeft(remainingSeconds)}
                   </span>
@@ -187,6 +251,11 @@ function VideoCallContent({ bookingId, booking, user, onLeave, backUrl, backLabe
                 Leave call
               </button>
             </div>
+            {sessionError && (
+              <div className="video-call-session-error" role="alert">
+                {sessionError}
+              </div>
+            )}
             <div className="video-call-layout">
               <SpeakerLayout participantBarPosition="bottom" />
               <CallControls onLeave={handleLeave} />
@@ -280,6 +349,7 @@ export function FanVideoCall() {
       onLeave={handleLeave}
       backUrl={`/fan/bookings/${bookingId}`}
       backLabel="← Session"
+      isFan={true}
     />
   );
 }
@@ -366,6 +436,7 @@ export function CreatorVideoCall() {
       onLeave={handleLeave}
       backUrl={`/creator/bookings/${bookingId}`}
       backLabel="← Session"
+      isFan={false}
     />
   );
 }

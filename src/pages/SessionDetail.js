@@ -86,7 +86,8 @@ export function FanSessionDetail() {
 
   const canJoin =
     booking &&
-    (booking.status === 'paid' || booking.status === 'confirmed' || booking.status === 'in_progress');
+    (booking.status === 'paid' || booking.status === 'confirmed' || booking.status === 'in_progress') &&
+    booking.status !== 'completed';
 
   const handleJoinMeeting = () => {
     navigate(`/fan/bookings/${booking.id}/call`);
@@ -217,7 +218,8 @@ export function CreatorSessionDetail() {
 
   const canJoin =
     booking &&
-    (booking.status === 'paid' || booking.status === 'confirmed' || booking.status === 'in_progress');
+    (booking.status === 'paid' || booking.status === 'confirmed' || booking.status === 'in_progress') &&
+    booking.status !== 'completed';
 
   const handleJoinMeeting = () => {
     navigate(`/creator/bookings/${booking.id}/call`);
