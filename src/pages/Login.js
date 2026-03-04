@@ -57,6 +57,9 @@ const Login = () => {
         <h2 className="auth-screen-title">Log in</h2>
       </header>
       <div className="auth-body">
+        <div className="auth-logo-wrap">
+          <img src={`${process.env.PUBLIC_URL || ''}/logo.png`} alt="FanMeet" className="auth-logo" />
+        </div>
         <h1 className="auth-heading">Welcome back</h1>
         <p className="auth-subtitle">Sign in to your Fan or Creator account.</p>
         {error && <div className="auth-error">{error}</div>}
