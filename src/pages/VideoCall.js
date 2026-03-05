@@ -11,6 +11,7 @@ import {
 } from '@stream-io/video-react-sdk';
 import '@stream-io/video-react-sdk/dist/css/styles.css';
 import { videoAPI, bookingAPI } from '../services/api';
+import { DEFAULT_AVATAR_URL } from '../constants';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorWidget from '../components/ErrorWidget';
 import './VideoCall.css';
@@ -74,7 +75,7 @@ function VideoCallContent({ bookingId, booking, user, onLeave, backUrl, backLabe
         const streamUser = {
           id: userId,
           name: user.userName || user.name || 'User',
-          image: user.avatarUrl || undefined,
+          image: user.avatarUrl || DEFAULT_AVATAR_URL,
         };
 
         streamClient = new StreamVideoClient({

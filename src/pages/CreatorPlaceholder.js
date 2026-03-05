@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { authAPI, userAPI } from '../services/api';
+import { DEFAULT_AVATAR_URL } from '../constants';
 import LoadingSpinner, { ButtonLoadingSpinner } from '../components/LoadingSpinner';
 import './FanPlaceholder.css';
 import './FanProfileEdit.css';
@@ -402,20 +403,11 @@ export function CreatorProfileBlocked() {
               {blocked.map((b) => (
                 <div key={b.id} className="fan-creator-card">
                   <div className="fan-creator-avatar-wrap">
-                    {b.avatarUrl ? (
-                      <img
-                        src={b.avatarUrl}
-                        alt=""
-                        className="fan-creator-avatar-img"
-                      />
-                    ) : (
-                      <div className="fan-creator-avatar-placeholder">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                          <circle cx="12" cy="7" r="4" />
-                        </svg>
-                      </div>
-                    )}
+                    <img
+                      src={b.avatarUrl || DEFAULT_AVATAR_URL}
+                      alt=""
+                      className="fan-creator-avatar-img"
+                    />
                   </div>
                   <div className="fan-creator-info">
                     <span className="fan-creator-name">

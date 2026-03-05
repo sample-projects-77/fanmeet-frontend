@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authAPI } from '../services/api';
+import { DEFAULT_AVATAR_URL } from '../constants';
 import FanNav from '../components/FanNav';
 import './FanProfile.css';
 
@@ -65,17 +66,11 @@ function FanProfile() {
           <section className="fan-profile-card">
             <div className="fan-profile-header">
               <div className="fan-profile-avatar-wrap">
-                {user.avatarUrl ? (
-                  <img
-                    src={user.avatarUrl}
-                    alt=""
-                    className="fan-profile-avatar-img"
-                  />
-                ) : (
-                  <div className="fan-profile-avatar-placeholder">
-                    <PersonIcon />
-                  </div>
-                )}
+                <img
+                  src={user.avatarUrl || DEFAULT_AVATAR_URL}
+                  alt=""
+                  className="fan-profile-avatar-img"
+                />
               </div>
               <div className="fan-profile-info">
                 <span className="fan-profile-username">{user.userName || 'Fan'}</span>

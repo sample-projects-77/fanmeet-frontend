@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { profileAPI } from '../services/api';
+import { DEFAULT_AVATAR_URL } from '../constants';
 import CreatorNav from '../components/CreatorNav';
 import LoadingSpinner from '../components/LoadingSpinner';
 import EmptyWidget from '../components/EmptyWidget';
@@ -63,14 +64,15 @@ function CreatorSearch() {
 
   useEffect(() => {
     if (user === null) return;
+    const trimmed = query.trim();
     const t = setTimeout(() => {
-      fetchCreators(query);
-    }, query ? SEARCH_DEBOUNCE_MS : 0);
+      fetchCreators(trimmed);
+    }, trimmed ? SEARCH_DEBOUNCE_MS : 0);
     return () => clearTimeout(t);
   }, [user, query, fetchCreators]);
 
   const handleSearchChange = (e) => {
-    setQuery(e.target.value.trim());
+    setQuery(e.target.value);
   };
 
   const handleLogout = () => {
@@ -115,7 +117,7 @@ function CreatorSearch() {
             {error ? (
               <ErrorWidget
                 errorText={error}
-                onRetry={() => fetchCreators(query)}
+                onRetry={() => fetchCreators(query.trim())}
               />
             ) : loading ? (
               <LoadingSpinner />
@@ -132,17 +134,11 @@ function CreatorSearch() {
                     className="creator-search-creator-card"
                   >
                     <div className="creator-search-avatar-wrap">
-                      {c.avatarUrl ? (
-                        <img
-                          src={c.avatarUrl}
-                          alt=""
-                          className="creator-search-avatar-img"
-                        />
-                      ) : (
-                        <div className="creator-search-avatar-placeholder">
-                          <PersonIcon />
-                        </div>
-                      )}
+                      <img
+                        src={c.avatarUrl || DEFAULT_AVATAR_URL}
+                        alt=""
+                        className="creator-search-avatar-img"
+                      />
                     </div>
                     <div className="creator-search-info">
                       <span className="creator-search-name">{c.displayName || c.id}</span>
@@ -163,7 +159,7 @@ function CreatorSearch() {
                 <button
                   type="button"
                   className="creator-search-load-more"
-                  onClick={() => fetchCreators(query, pagination.currentPage + 1, true)}
+                  onClick={() => fetchCreators(query.trim(), pagination.currentPage + 1, true)}
                 >
                   Load more
                 </button>

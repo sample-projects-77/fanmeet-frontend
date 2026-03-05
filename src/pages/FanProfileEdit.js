@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { profileAPI } from '../services/api';
+import { DEFAULT_AVATAR_URL } from '../constants';
 import { ButtonLoadingSpinner } from '../components/LoadingSpinner';
 import './FanProfileEdit.css';
 
@@ -105,17 +106,11 @@ function FanProfileEdit() {
         <form onSubmit={handleSubmit} className="fan-profile-edit-form">
           <div className="fan-profile-edit-avatar-wrap">
             <div className="fan-profile-edit-avatar-box">
-              {avatarPreview ? (
-                <img
-                  src={avatarPreview}
-                  alt=""
-                  className="fan-profile-edit-avatar-img"
-                />
-              ) : (
-                <div className="fan-profile-edit-avatar-placeholder">
-                  <PersonIcon />
-                </div>
-              )}
+              <img
+                src={avatarPreview || user?.avatarUrl || DEFAULT_AVATAR_URL}
+                alt=""
+                className="fan-profile-edit-avatar-img"
+              />
             </div>
             <label className="fan-profile-edit-camera-btn" aria-label="Change photo">
               <input

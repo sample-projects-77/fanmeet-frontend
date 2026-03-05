@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { chatAPI } from '../services/api';
+import { DEFAULT_AVATAR_URL } from '../constants';
 import { useChat } from '../context/ChatContext';
 import CreatorNav from '../components/CreatorNav';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -137,17 +138,11 @@ function CreatorChats() {
                 <li key={ch.id}>
                   <Link to={`/creator/chats/${ch.id}`} className="creator-chats-row">
                     <div className="creator-chats-avatar-wrap">
-                      {avatarUrl ? (
-                        <img
-                          src={avatarUrl}
-                          alt=""
-                          className="creator-chats-avatar-img"
-                        />
-                      ) : (
-                        <div className="creator-chats-avatar-placeholder">
-                          <PersonIcon />
-                        </div>
-                      )}
+                      <img
+                        src={avatarUrl || DEFAULT_AVATAR_URL}
+                        alt=""
+                        className="creator-chats-avatar-img"
+                      />
                     </div>
                     <div className="creator-chats-content">
                       <span className="creator-chats-name">

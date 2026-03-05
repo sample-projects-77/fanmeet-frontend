@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { chatAPI } from '../services/api';
+import { DEFAULT_AVATAR_URL } from '../constants';
 import { useChat } from '../context/ChatContext';
 import FanNav from '../components/FanNav';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -136,17 +137,11 @@ function FanChats() {
                 <li key={ch.id}>
                   <Link to={`/fan/chats/${ch.id}`} className="fan-chats-row">
                     <div className="fan-chats-avatar-wrap">
-                      {avatarUrl ? (
-                        <img
-                          src={avatarUrl}
-                          alt=""
-                          className="fan-chats-avatar-img"
-                        />
-                      ) : (
-                        <div className="fan-chats-avatar-placeholder">
-                          <PersonIcon />
-                        </div>
-                      )}
+                      <img
+                        src={avatarUrl || DEFAULT_AVATAR_URL}
+                        alt=""
+                        className="fan-chats-avatar-img"
+                      />
                     </div>
                     <div className="fan-chats-content">
                       <span className="fan-chats-name">

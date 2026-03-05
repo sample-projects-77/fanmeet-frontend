@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { StreamChat } from 'stream-chat';
 import { chatAPI } from '../services/api';
+import { DEFAULT_AVATAR_URL } from '../constants';
 
 const streamApiKey = process.env.REACT_APP_STREAM_API_KEY;
 
@@ -41,7 +42,7 @@ export function ChatProvider({ children }) {
         {
           id: userId,
           name: user.userName || user.name || 'User',
-          image: user.avatarUrl || undefined,
+          image: user.avatarUrl || DEFAULT_AVATAR_URL,
         },
         streamToken
       );

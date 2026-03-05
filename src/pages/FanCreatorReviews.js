@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { reviewAPI } from '../services/api';
+import { DEFAULT_AVATAR_URL } from '../constants';
 import FanNav from '../components/FanNav';
 import LoadingSpinner from '../components/LoadingSpinner';
 import EmptyWidget from '../components/EmptyWidget';
@@ -127,17 +128,11 @@ function FanCreatorReviews() {
                 <li key={review.id} className="fan-creator-review-card">
                   <div className="fan-creator-review-top">
                     <div className="fan-creator-review-user">
-                      {review.reviewer?.avatarUrl ? (
-                        <img
-                          src={review.reviewer.avatarUrl}
-                          alt=""
-                          className="fan-creator-review-avatar"
-                        />
-                      ) : (
-                        <div className="fan-creator-review-avatar-initial">
-                          {(review.reviewer?.name || 'U').charAt(0).toUpperCase()}
-                        </div>
-                      )}
+                      <img
+                        src={review.reviewer?.avatarUrl || DEFAULT_AVATAR_URL}
+                        alt=""
+                        className="fan-creator-review-avatar"
+                      />
                       <div className="fan-creator-review-meta">
                         <p className="fan-creator-review-name">{review.reviewer?.name || 'User'}</p>
                         <p className="fan-creator-review-date">{formatReviewDate(review.createdAt)}</p>

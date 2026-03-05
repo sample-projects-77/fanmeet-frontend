@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { profileAPI } from '../services/api';
+import { DEFAULT_AVATAR_URL } from '../constants';
 import FanNav from '../components/FanNav';
 import LoadingSpinner from '../components/LoadingSpinner';
 import EmptyWidget from '../components/EmptyWidget';
@@ -133,17 +134,11 @@ function FanSearch() {
                     className="fan-creator-card"
                   >
                     <div className="fan-creator-avatar-wrap">
-                      {c.avatarUrl ? (
-                        <img
-                          src={c.avatarUrl}
-                          alt=""
-                          className="fan-creator-avatar-img"
-                        />
-                      ) : (
-                        <div className="fan-creator-avatar-placeholder">
-                          <PersonIcon />
-                        </div>
-                      )}
+                      <img
+                        src={c.avatarUrl || DEFAULT_AVATAR_URL}
+                        alt=""
+                        className="fan-creator-avatar-img"
+                      />
                     </div>
                     <div className="fan-creator-info">
                       <span className="fan-creator-name">{c.displayName || c.id}</span>

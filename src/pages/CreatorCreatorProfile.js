@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { profileAPI } from '../services/api';
+import { DEFAULT_AVATAR_URL } from '../constants';
 import CreatorNav from '../components/CreatorNav';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorWidget from '../components/ErrorWidget';
@@ -90,13 +91,7 @@ function CreatorCreatorProfile() {
                 )}
               </div>
               <div className="fan-creator-details-avatar-wrap">
-                {creator.avatarUrl ? (
-                  <img src={creator.avatarUrl} alt="" className="fan-creator-details-avatar-img" />
-                ) : (
-                  <div className="fan-creator-details-avatar-placeholder">
-                    <PersonIcon />
-                  </div>
-                )}
+                <img src={creator.avatarUrl || DEFAULT_AVATAR_URL} alt="" className="fan-creator-details-avatar-img" />
               </div>
               <div className="fan-creator-details-meta">
                 <h1 className="fan-creator-details-name">{creator.displayName || 'Creator'}</h1>
