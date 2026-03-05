@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authAPI, userAPI } from '../services/api';
 import { DEFAULT_AVATAR_URL } from '../constants';
@@ -128,6 +128,11 @@ export function FanProfileChangePassword() {
   );
 }
 
+const LANGUAGE_OPTIONS = [
+  { value: 'en', label: 'English' },
+  { value: 'de', label: 'German' },
+];
+
 export function FanProfileLanguage() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -135,6 +140,8 @@ export function FanProfileLanguage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
+  const languageDropdownRef = useRef(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -153,6 +160,17 @@ export function FanProfileLanguage() {
       navigate('/login', { replace: true });
     }
   }, [navigate]);
+
+  useEffect(() => {
+    if (!languageDropdownOpen) return;
+    function handleClickOutside(e) {
+      if (languageDropdownRef.current && !languageDropdownRef.current.contains(e.target)) {
+        setLanguageDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [languageDropdownOpen]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -201,16 +219,44 @@ export function FanProfileLanguage() {
             <div className="fan-profile-edit-success">{success}</div>
           )}
 
-          <div className="fan-profile-edit-field">
-            <label htmlFor="language">Language</label>
-            <select
-              id="language"
-              value={locale}
-              onChange={(e) => setLocale(e.target.value)}
-            >
-              <option value="en">English</option>
-              <option value="de">German</option>
-            </select>
+          <div className="fan-profile-edit-field" ref={languageDropdownRef}>
+            <label htmlFor="language-trigger">Language</label>
+            <div className="fan-profile-edit-language-dropdown">
+              <button
+                id="language-trigger"
+                type="button"
+                className="fan-profile-edit-language-trigger"
+                onClick={() => setLanguageDropdownOpen((open) => !open)}
+                aria-expanded={languageDropdownOpen}
+                aria-haspopup="listbox"
+                aria-label="Select language"
+              >
+                <span>{LANGUAGE_OPTIONS.find((o) => o.value === locale)?.label ?? 'English'}</span>
+                <span className="fan-profile-edit-language-chevron" aria-hidden>▼</span>
+              </button>
+              {languageDropdownOpen && (
+                <ul
+                  className="fan-profile-edit-language-options"
+                  role="listbox"
+                  aria-label="Language options"
+                >
+                  {LANGUAGE_OPTIONS.map((opt) => (
+                    <li key={opt.value} role="option" aria-selected={locale === opt.value}>
+                      <button
+                        type="button"
+                        className={`fan-profile-edit-language-option ${locale === opt.value ? 'selected' : ''}`}
+                        onClick={() => {
+                          setLocale(opt.value);
+                          setLanguageDropdownOpen(false);
+                        }}
+                      >
+                        {opt.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
 
           <button

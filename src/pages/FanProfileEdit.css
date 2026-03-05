@@ -190,6 +190,100 @@
   box-shadow: 0 0 0 2px var(--focus-ring);
 }
 
+/* Custom language dropdown – yellow hover (app standard) instead of browser blue */
+.fan-profile-edit-language-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.fan-profile-edit-language-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid var(--outline-input-border);
+  background: var(--input-background);
+  color: var(--tertiary-color);
+  font-size: 16px;
+  font-weight: 400;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.fan-profile-edit-language-trigger:hover,
+.fan-profile-edit-language-trigger:focus {
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 2px var(--focus-ring);
+}
+
+.fan-profile-edit-language-chevron {
+  font-size: 10px;
+  opacity: 0.8;
+  transition: transform 0.2s;
+}
+
+.fan-profile-edit-language-trigger[aria-expanded="true"] .fan-profile-edit-language-chevron {
+  transform: rotate(180deg);
+}
+
+/* Options list in document flow so it pushes Save button down when open (no overlay) */
+.fan-profile-edit-language-options {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 4px 0;
+  position: relative;
+  left: 0;
+  right: 0;
+  width: 100%;
+  background: var(--input-background);
+  border: 1px solid var(--outline-input-border);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.fan-profile-edit-language-options li {
+  margin: 0;
+  padding: 0;
+}
+
+.fan-profile-edit-language-option {
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  background: none;
+  color: var(--tertiary-color);
+  font-size: 16px;
+  font-weight: 400;
+  font-family: var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.fan-profile-edit-language-option:hover {
+  background: rgba(250, 188, 42, 0.2);
+  color: var(--accent-yellow);
+}
+
+.fan-profile-edit-language-option.selected {
+  background: rgba(250, 188, 42, 0.12);
+  color: var(--accent-yellow);
+}
+
+.fan-profile-edit-language-option.selected:hover {
+  background: rgba(250, 188, 42, 0.2);
+  color: var(--accent-yellow);
+}
+
 .fan-profile-edit-field input::placeholder {
   color: var(--dark-grey-text);
 }
