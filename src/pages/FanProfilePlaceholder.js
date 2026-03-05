@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { authAPI, userAPI } from '../services/api';
 import { DEFAULT_AVATAR_URL } from '../constants';
 import LoadingSpinner, { ButtonLoadingSpinner } from '../components/LoadingSpinner';
+import EmptyWidget from '../components/EmptyWidget';
 import './FanPlaceholder.css';
 import './FanProfileEdit.css';
 
@@ -371,7 +372,7 @@ export function FanProfileBlocked() {
               <LoadingSpinner />
             </div>
           ) : blocked.length === 0 ? (
-            <div className="fan-search-empty">You have not blocked any users.</div>
+            <EmptyWidget text="You have not blocked any users." />
           ) : (
             <div className="fan-search-grid">
               {blocked.map((b) => (
