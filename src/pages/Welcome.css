@@ -49,6 +49,8 @@
   font-size: 10px;
   opacity: 0.8;
   transition: transform 0.2s;
+  padding-left: 6px;
+  padding-right: 6px;
 }
 
 .welcome-language-trigger[aria-expanded="true"] .welcome-language-trigger-chevron {

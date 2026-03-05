@@ -4,11 +4,7 @@ import './Welcome.css';
 
 const LANGUAGE_OPTIONS = [
   { value: 'en', label: 'English' },
-  { value: 'de', label: 'Deutsch (German)' },
-  { value: 'es', label: 'Español (Spanish)' },
-  { value: 'fr', label: 'Français (French)' },
-  { value: 'ru', label: 'Русский (Russian)' },
-  { value: 'tr', label: 'Türkçe (Turkish)' },
+  { value: 'de', label: 'German' },
 ];
 
 const LOCALE_STORAGE_KEY = 'locale';

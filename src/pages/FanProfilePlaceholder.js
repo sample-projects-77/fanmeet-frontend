@@ -146,7 +146,7 @@ export function FanProfileLanguage() {
     try {
       const u = JSON.parse(userJson);
       setUser(u);
-      if (u.language) {
+      if (u.language && (u.language === 'en' || u.language === 'de')) {
         setLocale(u.language);
       }
     } catch {
@@ -209,11 +209,7 @@ export function FanProfileLanguage() {
               onChange={(e) => setLocale(e.target.value)}
             >
               <option value="en">English</option>
-              <option value="de">Deutsch (German)</option>
-              <option value="es">Español (Spanish)</option>
-              <option value="fr">Français (French)</option>
-              <option value="ru">Русский (Russian)</option>
-              <option value="tr">Türkçe (Turkish)</option>
+              <option value="de">German</option>
             </select>
           </div>
 
