@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { profileAPI } from '../services/api';
+import { ButtonLoadingSpinner } from '../components/LoadingSpinner';
 import './FanProfileEdit.css';
 
 function FanProfileEdit() {
@@ -161,8 +162,9 @@ function FanProfileEdit() {
             type="submit"
             className="fan-profile-edit-submit"
             disabled={saving}
+            aria-busy={saving}
           >
-            {saving ? 'Saving…' : 'Save Changes'}
+            {saving ? <ButtonLoadingSpinner /> : 'Save Changes'}
           </button>
         </form>
       </main>

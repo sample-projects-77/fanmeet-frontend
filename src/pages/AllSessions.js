@@ -135,7 +135,9 @@ export function FanAllSessions() {
           )}
           {!error && loading && <LoadingSpinner />}
           {!error && !loading && list.length === 0 && (
-            <EmptyWidget text={emptyMessage} />
+            <div className="all-sessions-empty-state">
+              <EmptyWidget text={emptyMessage} />
+            </div>
           )}
           {!error && !loading && list.length > 0 && (
             <ul className="all-sessions-list" aria-label="Sessions">
@@ -272,7 +274,9 @@ export function CreatorAllSessions() {
           )}
           {!error && loading && <LoadingSpinner />}
           {!error && !loading && list.length === 0 && (
-            <EmptyWidget text={emptyMessage} />
+            <div className="all-sessions-empty-state">
+              <EmptyWidget text={emptyMessage} />
+            </div>
           )}
           {!error && !loading && list.length > 0 && (
             <ul className="all-sessions-list" aria-label="Sessions">

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { authAPI, userAPI } from '../services/api';
-import LoadingSpinner from '../components/LoadingSpinner';
+import LoadingSpinner, { ButtonLoadingSpinner } from '../components/LoadingSpinner';
 import './FanPlaceholder.css';
 import './FanProfileEdit.css';
 
@@ -185,8 +185,9 @@ export function CreatorProfileChangePassword() {
             type="submit"
             className="fan-profile-edit-submit"
             disabled={saving}
+            aria-busy={saving}
           >
-            {saving ? 'Saving…' : 'Save Password'}
+            {saving ? <ButtonLoadingSpinner /> : 'Save Password'}
           </button>
         </form>
       </main>
@@ -287,8 +288,9 @@ export function CreatorProfileLanguage() {
             type="submit"
             className="fan-profile-edit-submit"
             disabled={saving}
+            aria-busy={saving}
           >
-            {saving ? 'Saving…' : 'Save Language'}
+            {saving ? <ButtonLoadingSpinner /> : 'Save Language'}
           </button>
         </form>
       </main>

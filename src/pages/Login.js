@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authAPI } from '../services/api';
+import { ButtonLoadingSpinner } from '../components/LoadingSpinner';
 import './AuthForm.css';
 
 let isSubmitting = false;
@@ -123,8 +124,8 @@ const Login = () => {
               </button>
             </div>
           </div>
-          <button type="submit" className="auth-submit" disabled={loading}>
-            {loading ? 'Logging in...' : 'Log in'}
+          <button type="submit" className="auth-submit" disabled={loading} aria-busy={loading}>
+            {loading ? <ButtonLoadingSpinner /> : 'Log in'}
           </button>
         </form>
         <p className="auth-footer-text">

@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authAPI } from '../services/api';
+import { ButtonLoadingSpinner } from '../components/LoadingSpinner';
 import './AuthForm.css';
 
 let isSubmitting = false;
@@ -174,8 +175,8 @@ function CreatorSignup() {
               </button>
             </div>
           </div>
-          <button type="submit" className="auth-submit" disabled={loading}>
-            {loading ? 'Creating account...' : 'Create account'}
+          <button type="submit" className="auth-submit" disabled={loading} aria-busy={loading}>
+            {loading ? <ButtonLoadingSpinner /> : 'Create account'}
           </button>
         </form>
       </div>

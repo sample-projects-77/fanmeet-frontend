@@ -8,3 +8,12 @@ export default function LoadingSpinner() {
     </div>
   );
 }
+
+/** Inline spinner for buttons; use when loading to replace button label. */
+export function ButtonLoadingSpinner() {
+  return (
+    <span className="shared-button-loading-wrap" role="status" aria-label="Loading">
+      <span className="shared-loading-spinner-inline" />
+    </span>
+  );
+}

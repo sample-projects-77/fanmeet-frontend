@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { offerAPI } from '../services/api';
 import CreatorNav from '../components/CreatorNav';
-import LoadingSpinner from '../components/LoadingSpinner';
+import LoadingSpinner, { ButtonLoadingSpinner } from '../components/LoadingSpinner';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './CreatorAddTimeSlot.css';
@@ -222,8 +222,9 @@ function CreatorAddTimeSlot() {
                 type="submit"
                 className="creator-add-slot-submit"
                 disabled={submitting}
+                aria-busy={submitting}
               >
-                {submitting ? 'Adding…' : 'Add Time Slot'}
+                {submitting ? <ButtonLoadingSpinner /> : 'Add Time Slot'}
               </button>
             </div>
           </form>

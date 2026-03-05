@@ -5,7 +5,7 @@ import { Elements } from '@stripe/react-stripe-js';
 import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { paymentAPI } from '../services/api';
 import FanNav from '../components/FanNav';
-import LoadingSpinner from '../components/LoadingSpinner';
+import LoadingSpinner, { ButtonLoadingSpinner } from '../components/LoadingSpinner';
 import './FanBookingPayment.css';
 
 function formatPrice(priceCents, currency = 'EUR') {
@@ -72,7 +72,7 @@ function PaymentForm({ amountCents, currency, bookingId, onSuccess, onError }) {
         disabled={!stripe || !elements || isSubmitting || !isPaymentComplete}
         aria-busy={isSubmitting}
       >
-        {isSubmitting ? 'Processing…' : `Pay ${formatPrice(amountCents, currency)}`}
+        {isSubmitting ? <ButtonLoadingSpinner /> : `Pay ${formatPrice(amountCents, currency)}`}
       </button>
     </form>
   );

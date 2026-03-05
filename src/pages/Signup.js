@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authAPI } from '../services/api';
+import { ButtonLoadingSpinner } from '../components/LoadingSpinner';
 import './Signup.css';
 
 // Module-level flag to prevent double submissions (persists across StrictMode remounts)
@@ -209,8 +210,8 @@ const Signup = () => {
             )}
           </div>
 
-          <button type="submit" className="submit-button" disabled={loading}>
-            {loading ? 'Creating account...' : 'Sign Up'}
+          <button type="submit" className="submit-button" disabled={loading} aria-busy={loading}>
+            {loading ? <ButtonLoadingSpinner /> : 'Sign Up'}
           </button>
         </form>
 
