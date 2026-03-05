@@ -158,12 +158,16 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 6px;
+  align-self: flex-start;
+  gap: 4px;
+  margin-top: 2px;
 }
 
 .fan-chats-time {
   font-size: 0.8125rem;
   color: rgba(255, 255, 255, 0.5);
+  white-space: nowrap;
+  line-height: 1.25;
 }
 
 .fan-chats-unread {

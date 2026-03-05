@@ -82,15 +82,15 @@
   /* Incoming bubble: light grey, dark text (picture) */
   --str-chat__message-bubble-background-color: #E0E0E0;
   --str-chat__message-bubble-color: #1a1a1a;
-  /* Sent message: blue accent, white text (not yellow) */
-  --str-chat__secondary-surface-color: #5B9FFF;
-  --str-chat__own-message-bubble-background-color: #5B9FFF;
-  --str-chat__own-message-bubble-color: #fff;
+  /* Sent message: Flutter-style white bubble, dark text */
+  --str-chat__secondary-surface-color: #fff;
+  --str-chat__own-message-bubble-background-color: #fff;
+  --str-chat__own-message-bubble-color: #1a1a1a;
   --str-chat__primary-surface-color: #5B9FFF;
-  --str-chat__primary-color: #fff;
-  /* Date separator: no background, text on chat background only */
+  --str-chat__primary-color: #1a1a1a;
+  /* Date separator: no gray bar – transparent background */
   --str-chat__date-separator-background-color: transparent;
-  --str-chat__date-separator-color: var(--text-secondary);
+  --str-chat__date-separator-color: rgba(255, 255, 255, 0.6);
   --str-chat__date-separator-border-radius: 0;
   --str-chat__date-separator-line-color: transparent;
   /* Message input: same as web surfaces */
@@ -109,37 +109,38 @@
   --str-chat__message-input-tools-color: var(--text-primary);
 }
 
-/* Date separator: centered pill (Monday, Yesterday) - match Flutter */
-/* Date separator: text centered in the middle */
+/* Date separator: no gray bar – transparent, date text only */
 .chat-conversation-stream .str-chat__date-separator {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  display: flex !important;
+  justify-content: center;
   align-items: center;
-  gap: 12px;
   width: 100%;
-  padding: 10px 0 14px;
-}
-.chat-conversation-stream .str-chat__date-separator-line:nth-child(1) {
-  grid-column: 1;
-}
-.chat-conversation-stream .str-chat__date-separator-date {
-  grid-column: 2;
-  justify-self: center;
-  text-align: center;
-  padding: 8px 0;
-  border-radius: 0;
+  padding: 10px 0 14px !important;
   background: transparent !important;
-  color: var(--text-secondary) !important;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  white-space: nowrap;
-}
-.chat-conversation-stream .str-chat__date-separator-line:nth-child(3) {
-  grid-column: 3;
+  border-radius: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 .chat-conversation-stream .str-chat__date-separator-line {
-  max-width: 60px;
-  opacity: 0.25;
+  display: none !important;
+}
+.chat-conversation-stream .str-chat__date-separator-date {
+  padding: 8px 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  font-size: 0.8125rem !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;
+}
+/* Remove gray from any wrapper containing the date separator (e.g. Virtuoso item) */
+.chat-conversation-stream [class*="date-separator"],
+.chat-conversation-stream [data-testid="date-separator"] {
+  background: transparent !important;
+}
+.chat-conversation-stream [class*="date-separator"] *,
+.chat-conversation-stream [data-testid="date-separator"] * {
+  background: transparent !important;
 }
 
 /* Message list: full width, zero right padding/margin so no gap between messages and scroll edge */
@@ -201,19 +202,50 @@
   justify-content: flex-end !important;
 }
 
-/* Message inner: never stretch to 600px – shrink to content; sent messages align content right */
-.chat-conversation-stream .str-chat__message-inner {
+/* Message inner: column layout so bubble is on top, timestamp BELOW (Flutter) – never row */
+.chat-conversation-stream .str-chat__message-inner,
+.chat-conversation-stream .str-chat__message-simple .str-chat__message-inner {
   margin: 0 !important;
   min-width: 0 !important;
   max-width: 360px !important;
   width: fit-content !important;
   display: flex !important;
   flex-direction: column !important;
+  flex-wrap: nowrap !important;
   align-items: flex-start !important;
   flex: 0 0 auto !important;
+  position: relative !important;
 }
-.chat-conversation-stream .str-chat__message.str-chat__message--me .str-chat__message-inner {
+/* Message actions (ellipsis, reply, emoji): take out of flow so they never shrink the bubble; keep visible on hover */
+.chat-conversation-stream .str-chat__message-actions-container,
+.chat-conversation-stream .str-chat__message-simple__actions {
+  position: absolute !important;
+  top: -2px !important;
+  right: 0 !important;
+  left: auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+  overflow: visible !important;
+  flex-shrink: 0 !important;
+}
+/* Show message options (reply, emoji, more) when hovering the message row or the message content */
+.chat-conversation-stream .str-chat__li:hover .str-chat__message-options,
+.chat-conversation-stream .str-chat__message-inner:hover .str-chat__message-options {
+  display: flex !important;
+}
+.chat-conversation-stream .str-chat__message-options {
+  opacity: 1 !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+.chat-conversation-stream .str-chat__message-options button {
+  color: inherit !important;
+  opacity: 1 !important;
+}
+.chat-conversation-stream .str-chat__message.str-chat__message--me .str-chat__message-inner,
+.chat-conversation-stream .str-chat__message.str-chat__message--me.str-chat__message-simple .str-chat__message-inner {
   align-items: flex-end !important;
+  gap: 0 !important;
+  row-gap: 4px !important;
 }
 
 /* Incoming message: light grey bubble, dark text, left-aligned with avatar */
@@ -230,8 +262,8 @@
   border: none !important;
   max-width: min(80%, 320px) !important;
   width: max-content;
-  min-width: 0 !important;
-  padding: 0 !important;
+  min-width: 8em !important;
+  padding: 12px 16px !important;
   box-sizing: border-box !important;
   overflow: hidden !important;
 }
@@ -240,27 +272,32 @@
   color: #1a1a1a !important;
 }
 
-/* Message text: force wrap; long unbroken strings must not stretch the bubble */
+/* Message text: wrap only when needed; keep short words like "Hi" on one line */
 .chat-conversation-stream .str-chat__message-bubble .str-chat__message-text,
 .chat-conversation-stream .str-chat__message-bubble .str-chat__message-text-inner,
 .chat-conversation-stream .str-chat__message-bubble p {
   word-break: break-word !important;
-  overflow-wrap: anywhere !important;
+  overflow-wrap: break-word !important;
   hyphens: none !important;
   white-space: pre-wrap !important;
   min-width: 0 !important;
   max-width: 100% !important;
+  line-height: 1.4 !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
-/* Bubble: strict max-width so it never creates a wide gap; text wraps inside */
+/* Bubble: wider min-width so short phrases (e.g. "Hi", "aaaaa adf") stay on one line */
 .chat-conversation-stream .str-chat__message-inner .str-chat__message-bubble {
-  min-width: 0 !important;
+  min-width: 8em !important;
+  min-height: 2.6em !important;
   max-width: min(80%, 320px) !important;
   width: max-content !important;
-  padding: 0 !important;
+  padding: 12px 16px !important;
   border: none !important;
   box-shadow: none !important;
   box-sizing: border-box !important;
   overflow: hidden !important;
+  flex-shrink: 0 !important;
 }
 /* Left tail on incoming bubble */
 .chat-conversation-stream .str-chat__message.str-chat__message--other .str-chat__message-bubble::before {
@@ -274,20 +311,26 @@
   border-width: 6px 8px 6px 0;
   border-color: transparent #E0E0E0 transparent transparent;
 }
-/* Sent message: blue bubble, white text, right-aligned; strict max-width, no wide gap */
+/* Sent message: Flutter-style white bubble, dark border, tail bottom-right; dark text */
 .chat-conversation-stream .str-chat__message.str-chat__message--me .str-chat__message-bubble {
   border-radius: 18px 18px 6px 18px;
-  background: #5B9FFF !important;
-  color: #fff !important;
+  background: #fff !important;
+  color: #1a1a1a !important;
   position: relative;
   box-shadow: none !important;
-  border: none !important;
+  border: 2px solid rgba(255, 255, 255, 0.5) !important;
   max-width: min(80%, 320px) !important;
   width: max-content;
-  min-width: 0 !important;
-  padding: 0 !important;
+  min-width: 8em !important;
+  min-height: 2.6em !important;
+  padding: 12px 16px !important;
   box-sizing: border-box !important;
   overflow: hidden !important;
+  flex-shrink: 0 !important;
+}
+.chat-conversation-stream .str-chat__message.str-chat__message--me .str-chat__message-bubble p,
+.chat-conversation-stream .str-chat__message.str-chat__message--me .str-chat__message-bubble .str-chat__message-text {
+  color: #1a1a1a !important;
 }
 .chat-conversation-stream .str-chat__message.str-chat__message--me .str-chat__message-bubble::after {
   content: '';
@@ -298,7 +341,8 @@
   height: 0;
   border-style: solid;
   border-width: 6px 0 6px 8px;
-  border-color: transparent transparent transparent #5B9FFF;
+  border-color: transparent transparent transparent #fff;
+  filter: drop-shadow(1px 0 0 rgba(255, 255, 255, 0.5));
 }
 
 /* Avatar next to messages: dark blue circle with white border (Flutter) */
@@ -314,14 +358,16 @@
   background: #1e3a5f;
 }
 
-/* Timestamp below message: no extra gap above it */
+/* Timestamp BELOW bubble (Flutter): own row, right-aligned, consistent spacing */
 .chat-conversation-stream .str-chat__message-metadata,
 .chat-conversation-stream .str-chat__message-timestamp,
 .chat-conversation-stream .str-chat__message-simple-timestamp {
   font-size: 0.75rem !important;
-  color: var(--text-secondary) !important;
-  margin-top: 2px !important;
+  color: rgba(255, 255, 255, 0.55) !important;
+  margin-top: 4px !important;
   margin-bottom: 0 !important;
+  margin-inline-start: 0 !important;
+  margin-left: 0 !important;
   background: transparent !important;
   padding: 0 !important;
   border-radius: 0 !important;
@@ -330,11 +376,44 @@
   overflow: visible !important;
   white-space: nowrap !important;
   min-width: max-content !important;
+  /* Force metadata to sit on its own row below bubble, not beside it */
+  flex-shrink: 0 !important;
+  align-self: flex-end !important;
 }
-/* Message row: no extra vertical gap between message and timestamp */
-.chat-conversation-stream .str-chat__message-inner {
-  gap: 0 !important;
+
+/* Sent messages: metadata row = checkmark + timestamp, right-aligned, below bubble */
+.chat-conversation-stream .str-chat__message.str-chat__message--me .str-chat__message-metadata {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 6px !important;
+  margin-inline-start: 0 !important;
+  margin-left: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
 }
+.chat-conversation-stream .str-chat__message.str-chat__message--me .str-chat__message-timestamp,
+.chat-conversation-stream .str-chat__message.str-chat__message--me .str-chat__message-simple-timestamp {
+  margin-inline-start: 0 !important;
+  margin-left: 0 !important;
+}
+/* Blue checkmark / status icon left of timestamp (Flutter) */
+.chat-conversation-stream .str-chat__message.str-chat__message--me .str-chat__message-metadata svg,
+.chat-conversation-stream .str-chat__message.str-chat__message--me [class*="message-status"] svg,
+.chat-conversation-stream .str-chat__message.str-chat__message--me [class*="status"] svg {
+  color: #5B9FFF !important;
+  fill: #5B9FFF !important;
+}
+
+.chat-conversation-stream .str-chat__message.str-chat__message--me [class*="message-content"],
+.chat-conversation-stream .str-chat__message.str-chat__message--me [class*="content-inner"] {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+}
+/* Bubble has no bottom margin; gap between bubble and timestamp comes from metadata margin-top */
 .chat-conversation-stream .str-chat__message .str-chat__message-bubble {
   margin-bottom: 0 !important;
 }
