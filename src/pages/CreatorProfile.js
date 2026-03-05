@@ -4,13 +4,14 @@ import { authAPI, profileAPI } from '../services/api';
 import { DEFAULT_AVATAR_URL } from '../constants';
 import CreatorNav from '../components/CreatorNav';
 import { SettingsIcon, KeyIcon, OutlinedUserIcon, OutgoingIcon, DeleteAccountIcon, BlockedIcon } from '../components/ProfileIcons';
+import DeleteAccountDialog from '../components/DeleteAccountDialog';
 import './FanProfile.css';
 
 function CreatorProfile() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
-  const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
@@ -48,26 +49,28 @@ function CreatorProfile() {
     navigate('/', { replace: true });
   };
 
-  const handleDeleteAccount = async () => {
-    if (!deleteConfirm) {
-      setDeleteConfirm(true);
-      return;
-    }
+  const handleDeleteAccountClick = () => {
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteAccountConfirm = async () => {
     setDeleting(true);
     try {
       const res = await authAPI.deleteAccount();
       if (res.StatusCode === 200) {
+        setDeleteDialogOpen(false);
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         navigate('/', { replace: true });
       } else {
+        setDeleteDialogOpen(false);
         alert(res.error || 'Could not delete account.');
       }
     } catch (err) {
+      setDeleteDialogOpen(false);
       alert(err.response?.data?.error || err.message || 'Something went wrong.');
     } finally {
       setDeleting(false);
-      setDeleteConfirm(false);
     }
   };
 
@@ -139,20 +142,24 @@ function CreatorProfile() {
             <button
               type="button"
               className="fan-profile-setting-row fan-profile-setting-row--button fan-profile-setting-row--danger"
-              onClick={handleDeleteAccount}
+              onClick={handleDeleteAccountClick}
               disabled={deleting}
             >
               <span className="fan-profile-setting-icon fan-profile-setting-icon--red">
                 <DeleteAccountIcon />
               </span>
-              <span className="fan-profile-setting-label">
-                {deleteConfirm ? 'Click again to confirm' : 'Delete Account'}
-              </span>
+              <span className="fan-profile-setting-label">Delete Account</span>
               <span className="fan-profile-setting-arrow">›</span>
             </button>
           </section>
         </div>
       </main>
+      <DeleteAccountDialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        onConfirm={handleDeleteAccountConfirm}
+        deleting={deleting}
+      />
     </div>
   );
 }
