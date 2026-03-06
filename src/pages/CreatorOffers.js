@@ -100,7 +100,7 @@ function CreatorOffers() {
 
   return (
     <div className="creator-offers-page">
-      <CreatorNav active="creator" userName={user.userName} onLogout={handleLogout} />
+      <CreatorNav active="creator" user={user} onLogout={handleLogout} />
       <main className="creator-offers-main">
         <div className="creator-offers-container">
           <header className="creator-offers-header">

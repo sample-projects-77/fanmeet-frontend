@@ -90,7 +90,7 @@ function CreatorSearch() {
 
   return (
     <div className="creator-search-page">
-      <CreatorNav active="search" userName={user.userName} onLogout={handleLogout} />
+      <CreatorNav active="search" user={user} onLogout={handleLogout} />
       <main className="creator-search-main">
         <div className="creator-search-container">
           <h1 className="creator-search-title">Search</h1>

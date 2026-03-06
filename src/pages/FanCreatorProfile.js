@@ -90,7 +90,7 @@ function FanCreatorProfile() {
 
   return (
     <div className="fan-creator-details-page">
-      <FanNav active="search" userName={user.userName} onLogout={handleLogout} />
+      <FanNav active="search" user={user} onLogout={handleLogout} />
       <main className="fan-creator-details-main">
         {loading && !creator ? (
           <LoadingSpinner />

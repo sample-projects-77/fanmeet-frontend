@@ -100,7 +100,7 @@ export function FanAllSessions() {
 
   return (
     <div className="all-sessions-page">
-      <FanNav active="home" userName={user.userName} onLogout={handleLogout} />
+      <FanNav active="home" user={user} onLogout={handleLogout} />
       <main className="all-sessions-main">
         <header className="all-sessions-header">
           <Link to="/fan/home" className="all-sessions-back" aria-label="Back">
@@ -239,7 +239,7 @@ export function CreatorAllSessions() {
 
   return (
     <div className="all-sessions-page">
-      <CreatorNav active="home" userName={user.userName} onLogout={handleLogout} />
+      <CreatorNav active="home" user={user} onLogout={handleLogout} />
       <main className="all-sessions-main">
         <header className="all-sessions-header">
           <Link to="/creator/dashboard" className="all-sessions-back" aria-label="Back">

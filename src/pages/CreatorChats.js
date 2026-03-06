@@ -118,7 +118,7 @@ function CreatorChats() {
 
   return (
     <div className="creator-chats-page">
-      <CreatorNav active="chats" userName={user.userName} onLogout={handleLogout} />
+      <CreatorNav active="chats" user={user} onLogout={handleLogout} />
       <main className="creator-chats-main">
         <div className="creator-chats-container">
           <h1 className="creator-chats-title">Chats</h1>

@@ -66,7 +66,7 @@ function CreatorCreatorProfile() {
 
   return (
     <div className="fan-creator-details-page">
-      <CreatorNav active="search" userName={user.userName} onLogout={handleLogout} />
+      <CreatorNav active="search" user={user} onLogout={handleLogout} />
       <main className="fan-creator-details-main">
         {loading && !creator ? (
           <LoadingSpinner />

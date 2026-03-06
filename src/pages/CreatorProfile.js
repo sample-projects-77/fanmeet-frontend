@@ -81,7 +81,7 @@ function CreatorProfile() {
 
   return (
     <div className="fan-profile-page">
-      <CreatorNav active="profile" userName={user.userName} onLogout={handleLogout} />
+      <CreatorNav active="profile" user={user} onLogout={handleLogout} />
       <main className="fan-profile-main">
         <div className="fan-profile-container">
           <h1 className="fan-profile-title">Profile</h1>

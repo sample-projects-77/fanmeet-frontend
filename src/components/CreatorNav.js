@@ -1,8 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { DEFAULT_AVATAR_URL } from '../constants';
 import './CreatorNav.css';
 
-export default function CreatorNav({ active, userName, onLogout }) {
+export default function CreatorNav({ active, userName, user, avatarUrl, onLogout }) {
+  const displayName = user?.userName ?? userName ?? 'Creator';
+  const displayAvatar = user?.avatarUrl ?? avatarUrl ?? DEFAULT_AVATAR_URL;
+
   return (
     <header className="creator-nav">
       <div className="creator-nav-inner">
@@ -17,7 +21,8 @@ export default function CreatorNav({ active, userName, onLogout }) {
           <Link to="/creator/profile" className={active === 'profile' ? 'active' : ''}>Profile</Link>
         </nav>
         <div className="creator-nav-user">
-          <span className="creator-nav-username">{userName ?? 'Creator'}</span>
+          <img src={displayAvatar} alt="" className="creator-nav-avatar" />
+          <span className="creator-nav-username">{displayName}</span>
           <button type="button" className="creator-nav-logout" onClick={onLogout} aria-label="Log out">
             Log out
           </button>

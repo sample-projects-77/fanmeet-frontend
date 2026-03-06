@@ -59,12 +59,22 @@
 .creator-nav-user {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+}
+
+.creator-nav-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--border-light);
+  flex-shrink: 0;
 }
 
 .creator-nav-username {
   font-size: 0.875rem;
   color: var(--text-secondary);
+  font-weight: 500;
 }
 
 .creator-nav-logout {

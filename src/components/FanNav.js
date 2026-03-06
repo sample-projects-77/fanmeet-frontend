@@ -1,8 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { DEFAULT_AVATAR_URL } from '../constants';
 import './FanNav.css';
 
-export default function FanNav({ active, userName, onLogout }) {
+export default function FanNav({ active, userName, user, avatarUrl, onLogout }) {
+  const displayName = user?.userName ?? userName ?? 'Fan';
+  const displayAvatar = user?.avatarUrl ?? avatarUrl ?? DEFAULT_AVATAR_URL;
+
   return (
     <header className="fan-nav">
       <div className="fan-nav-inner">
@@ -17,7 +21,8 @@ export default function FanNav({ active, userName, onLogout }) {
           <Link to="/fan/profile" className={active === 'profile' ? 'active' : ''}>Profile</Link>
         </nav>
         <div className="fan-nav-user">
-          <span className="fan-nav-username">{userName ?? 'Fan'}</span>
+          <img src={displayAvatar} alt="" className="fan-nav-avatar" />
+          <span className="fan-nav-username">{displayName}</span>
           <button type="button" className="fan-nav-logout" onClick={onLogout} aria-label="Log out">
             Log out
           </button>

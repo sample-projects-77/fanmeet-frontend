@@ -62,7 +62,7 @@ function FanProfile() {
 
   return (
     <div className="fan-profile-page">
-      <FanNav active="profile" userName={user.userName} onLogout={handleLogout} />
+      <FanNav active="profile" user={user} onLogout={handleLogout} />
       <main className="fan-profile-main">
         <div className="fan-profile-container">
           <h1 className="fan-profile-title">Profile</h1>

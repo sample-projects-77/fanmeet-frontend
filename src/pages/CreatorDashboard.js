@@ -90,7 +90,7 @@ function CreatorDashboard() {
   if (loading && !data && !error) {
     return (
       <div className="creator-dashboard">
-        <CreatorNav active="home" userName={user?.userName} onLogout={handleLogout} />
+        <CreatorNav active="home" user={user} onLogout={handleLogout} />
         <main className="creator-dashboard-main">
           <LoadingSpinner />
         </main>
@@ -101,7 +101,7 @@ function CreatorDashboard() {
   if (error && !data) {
     return (
       <div className="creator-dashboard">
-        <CreatorNav active="home" userName={user?.userName} onLogout={handleLogout} />
+        <CreatorNav active="home" user={user} onLogout={handleLogout} />
         <main className="creator-dashboard-main">
           <ErrorWidget errorText={error} onRetry={refetch} />
         </main>
@@ -116,7 +116,7 @@ function CreatorDashboard() {
 
   return (
     <div className="creator-dashboard">
-      <CreatorNav active="home" userName={user?.userName} onLogout={handleLogout} />
+      <CreatorNav active="home" user={user} onLogout={handleLogout} />
       <main className="creator-dashboard-main">
         <div className="creator-dashboard-container">
           <header className="creator-dashboard-welcome">

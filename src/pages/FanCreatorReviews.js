@@ -106,7 +106,7 @@ function FanCreatorReviews() {
 
   return (
     <div className="fan-creator-reviews-page">
-      <FanNav active="search" userName={user.userName} onLogout={handleLogout} />
+      <FanNav active="search" user={user} onLogout={handleLogout} />
       <main className="fan-creator-reviews-main">
         <div className="fan-creator-reviews-container">
           <header className="fan-creator-reviews-header">

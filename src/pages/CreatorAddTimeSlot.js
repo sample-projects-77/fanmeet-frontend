@@ -122,7 +122,7 @@ function CreatorAddTimeSlot() {
   if (!user) {
     return (
       <div className="creator-add-slot-page">
-        <CreatorNav active="creator" userName="" onLogout={handleLogout} />
+        <CreatorNav active="creator" onLogout={handleLogout} />
         <main className="creator-add-slot-main">
           <LoadingSpinner />
         </main>
@@ -132,7 +132,7 @@ function CreatorAddTimeSlot() {
 
   return (
     <div className="creator-add-slot-page">
-      <CreatorNav active="creator" userName={user.userName} onLogout={handleLogout} />
+      <CreatorNav active="creator" user={user} onLogout={handleLogout} />
       <main className="creator-add-slot-main">
         <div className="creator-add-slot-container">
           <header className="creator-add-slot-header">

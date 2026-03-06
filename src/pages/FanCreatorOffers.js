@@ -124,7 +124,7 @@ function FanCreatorOffers() {
 
   return (
     <div className="creator-offers-page">
-      <FanNav active="search" userName={user.userName} onLogout={handleLogout} />
+      <FanNav active="search" user={user} onLogout={handleLogout} />
       <main className="creator-offers-main">
         <div className="creator-offers-container">
           <header className="creator-offers-header">

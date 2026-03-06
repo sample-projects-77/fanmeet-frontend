@@ -90,7 +90,7 @@ function FanSearch() {
 
   return (
     <div className="fan-search-page">
-      <FanNav active="search" userName={user.userName} onLogout={handleLogout} />
+      <FanNav active="search" user={user} onLogout={handleLogout} />
       <main className="fan-search-main">
         <div className="fan-search-container">
           <h1 className="fan-search-title">Search</h1>

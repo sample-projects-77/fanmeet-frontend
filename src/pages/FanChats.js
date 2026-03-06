@@ -117,7 +117,7 @@ function FanChats() {
 
   return (
     <div className="fan-chats-page">
-      <FanNav active="chats" userName={user.userName} onLogout={handleLogout} />
+      <FanNav active="chats" user={user} onLogout={handleLogout} />
       <main className="fan-chats-main">
         <div className="fan-chats-container">
           <h1 className="fan-chats-title">Chats</h1>
