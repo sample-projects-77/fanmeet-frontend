@@ -145,13 +145,13 @@ function CreatorDashboard() {
               <span className="creator-metric-value">€{Number(earnings).toFixed(0).replace('.', ',')}</span>
               <span className="creator-metric-label">Earnings</span>
             </div>
-            <div className="creator-metric-card creator-metric-card--sessions">
+            <Link to="/creator/bookings" className="creator-metric-card creator-metric-card--sessions" aria-label="View all sessions">
               <div className="creator-metric-icon-wrap creator-metric-icon-wrap--sessions" aria-hidden>
                 <CalendarIcon />
               </div>
               <span className="creator-metric-value">{sessions}</span>
               <span className="creator-metric-label">Sessions</span>
-            </div>
+            </Link>
             <div className="creator-metric-card creator-metric-card--rating">
               <div className="creator-metric-icon-wrap creator-metric-icon-wrap--rating" aria-hidden>
                 <StarIcon />
@@ -163,15 +163,6 @@ function CreatorDashboard() {
           </section>
 
           <section className="creator-actions">
-            <Link to="/creator/bookings" className="creator-action-card creator-action-card--sessions">
-              <span className="creator-action-icon-wrap creator-action-icon-wrap--sessions">
-                <CalendarIcon />
-              </span>
-              <span className="creator-action-label">All Sessions</span>
-              <span className="creator-action-arrow-wrap" aria-hidden>
-                <ArrowIcon />
-              </span>
-            </Link>
             <Link to="/creator/offers" className="creator-action-card creator-action-card--offers">
               <span className="creator-action-icon-wrap creator-action-icon-wrap--offers">
                 <PeopleIcon />

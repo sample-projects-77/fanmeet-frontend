@@ -149,6 +149,13 @@
   );
   background-color: var(--dark-blue-shade-3);
   box-shadow: 0 4px 20px rgba(91, 159, 255, 0.1);  /* iconColor blueAccent 0.1 */
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+a.creator-metric-card--sessions:hover {
+  box-shadow: 0 4px 20px rgba(91, 159, 255, 0.2);
 }
 
 .creator-metric-card--rating {
