@@ -186,19 +186,31 @@
   padding-right: 0 !important;
 }
 
-/* Message row: flex so avatar + message-inner only take their width (no 600px stretch) */
+/* Message row: for incoming (--other) use grid so metadata sits BELOW bubble, not beside it */
 .chat-conversation-stream .str-chat__message {
   width: 100%;
   max-width: 100%;
+  column-gap: 8px !important;
+  row-gap: 0 !important;
+}
+.chat-conversation-stream .str-chat__message.str-chat__message--other {
+  display: grid !important;
+  grid-template-areas:
+    '. message-reminder'
+    'avatar message'
+    '. replies'
+    '. translation-notice'
+    '. custom-metadata'
+    '. metadata';
+  grid-template-columns: auto 1fr !important;
+  justify-items: start !important;
+  align-items: start !important;
+}
+.chat-conversation-stream .str-chat__message.str-chat__message--me {
   display: flex !important;
   flex-direction: row !important;
   flex-wrap: wrap !important;
   align-items: flex-start !important;
-  justify-content: flex-start !important;
-  column-gap: 8px !important;
-  row-gap: 0 !important;
-}
-.chat-conversation-stream .str-chat__message.str-chat__message--me {
   justify-content: flex-end !important;
 }
 
@@ -216,30 +228,12 @@
   flex: 0 0 auto !important;
   position: relative !important;
 }
-/* Message actions (ellipsis, reply, emoji): take out of flow so they never shrink the bubble; keep visible on hover */
-.chat-conversation-stream .str-chat__message-actions-container,
-.chat-conversation-stream .str-chat__message-simple__actions {
-  position: absolute !important;
-  top: -2px !important;
-  right: 0 !important;
-  left: auto !important;
-  width: auto !important;
-  min-width: 0 !important;
-  overflow: visible !important;
-  flex-shrink: 0 !important;
-}
-/* Show message options (reply, emoji, more) when hovering the message row or the message content */
+/* Hide message options (three-dots, emoji) to avoid bouncy UI on hover */
+.chat-conversation-stream .str-chat__message-options,
 .chat-conversation-stream .str-chat__li:hover .str-chat__message-options,
-.chat-conversation-stream .str-chat__message-inner:hover .str-chat__message-options {
-  display: flex !important;
-}
-.chat-conversation-stream .str-chat__message-options {
-  opacity: 1 !important;
-  color: rgba(255, 255, 255, 0.85) !important;
-}
-.chat-conversation-stream .str-chat__message-options button {
-  color: inherit !important;
-  opacity: 1 !important;
+.chat-conversation-stream .str-chat__message-inner:hover .str-chat__message-options,
+.chat-conversation-stream .str-chat__message:hover .str-chat__message-options {
+  display: none !important;
 }
 .chat-conversation-stream .str-chat__message.str-chat__message--me .str-chat__message-inner,
 .chat-conversation-stream .str-chat__message.str-chat__message--me.str-chat__message-simple .str-chat__message-inner {
@@ -262,8 +256,8 @@
   border: none !important;
   max-width: min(80%, 320px) !important;
   width: max-content;
-  min-width: 8em !important;
-  padding: 12px 16px !important;
+  min-width: 5em !important;
+  padding: 0.5rem !important;
   box-sizing: border-box !important;
   overflow: hidden !important;
 }
@@ -288,11 +282,11 @@
 }
 /* Bubble: wider min-width so short phrases (e.g. "Hi", "aaaaa adf") stay on one line */
 .chat-conversation-stream .str-chat__message-inner .str-chat__message-bubble {
-  min-width: 8em !important;
+  min-width: 5em !important;
   min-height: 2.6em !important;
   max-width: min(80%, 320px) !important;
   width: max-content !important;
-  padding: 12px 16px !important;
+  padding: 0.5rem !important;
   border: none !important;
   box-shadow: none !important;
   box-sizing: border-box !important;
@@ -321,9 +315,9 @@
   border: 2px solid rgba(255, 255, 255, 0.5) !important;
   max-width: min(80%, 320px) !important;
   width: max-content;
-  min-width: 8em !important;
+  min-width: 5em !important;
   min-height: 2.6em !important;
-  padding: 12px 16px !important;
+  padding: 0.5rem !important;
   box-sizing: border-box !important;
   overflow: hidden !important;
   flex-shrink: 0 !important;
@@ -358,7 +352,7 @@
   background: #1e3a5f;
 }
 
-/* Timestamp BELOW bubble (Flutter): own row, right-aligned, consistent spacing */
+/* Timestamp BELOW bubble (Flutter): own row, consistent spacing */
 .chat-conversation-stream .str-chat__message-metadata,
 .chat-conversation-stream .str-chat__message-timestamp,
 .chat-conversation-stream .str-chat__message-simple-timestamp {
@@ -376,8 +370,15 @@
   overflow: visible !important;
   white-space: nowrap !important;
   min-width: max-content !important;
-  /* Force metadata to sit on its own row below bubble, not beside it */
   flex-shrink: 0 !important;
+}
+/* Incoming: metadata left-aligned under the bubble (grid puts it in own row) */
+.chat-conversation-stream .str-chat__message.str-chat__message--other .str-chat__message-metadata {
+  align-self: start !important;
+  justify-self: start !important;
+}
+/* Sent: metadata right-aligned under the bubble */
+.chat-conversation-stream .str-chat__message.str-chat__message--me .str-chat__message-metadata {
   align-self: flex-end !important;
 }
 

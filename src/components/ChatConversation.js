@@ -7,6 +7,7 @@ import {
   ChannelHeader,
   MessageList,
   MessageInput,
+  MessageOptions as DefaultMessageOptions,
   useChatContext,
 } from 'stream-chat-react';
 import 'stream-chat-react/dist/css/v2/index.css';
@@ -43,7 +44,10 @@ function ChatContent({ channelId, backTo, backLabel, NavComponent }) {
   }
 
   return (
-    <Channel channel={channel}>
+    <Channel
+      channel={channel}
+      MessageOptions={(props) => <DefaultMessageOptions {...props} displayReplies={false} />}
+    >
       <Window>
         <ChannelHeader />
         <MessageList />
