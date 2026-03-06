@@ -65,14 +65,15 @@ function FanSearch() {
   // Initial load and when query changes (debounced)
   useEffect(() => {
     if (user === null) return;
+    const trimmed = query.trim();
     const t = setTimeout(() => {
-      fetchCreators(query);
-    }, query ? SEARCH_DEBOUNCE_MS : 0);
+      fetchCreators(trimmed);
+    }, trimmed ? SEARCH_DEBOUNCE_MS : 0);
     return () => clearTimeout(t);
   }, [user, query, fetchCreators]);
 
   const handleSearchChange = (e) => {
-    setQuery(e.target.value.trim());
+    setQuery(e.target.value);
   };
 
   const handleLogout = () => {
@@ -117,7 +118,7 @@ function FanSearch() {
             {error ? (
               <ErrorWidget
                 errorText={error}
-                onRetry={() => fetchCreators(query)}
+                onRetry={() => fetchCreators(query.trim())}
               />
             ) : loading ? (
               <LoadingSpinner />
@@ -159,7 +160,7 @@ function FanSearch() {
                 <button
                   type="button"
                   className="fan-search-load-more"
-                  onClick={() => fetchCreators(query, pagination.currentPage + 1, true)}
+                  onClick={() => fetchCreators(query.trim(), pagination.currentPage + 1, true)}
                 >
                   Load more
                 </button>
