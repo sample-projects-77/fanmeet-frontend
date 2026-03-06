@@ -429,15 +429,20 @@
   font-weight: 600;
   font-size: 1rem;
 }
-.chat-conversation-stream .str-chat__channel-header .str-chat__channel-header-subtitle {
-  color: var(--text-secondary) !important;
-  font-size: 0.8125rem;
+/* Hide "2 members, 2 online" – 1:1 chat, not needed */
+.chat-conversation-stream .str-chat__channel-header .str-chat__channel-header-subtitle,
+.chat-conversation-stream .str-chat__channel-header .str-chat__channel-header-info {
+  display: none !important;
 }
-/* Header avatar: dark blue + white ring like Flutter */
+/* Header avatar: transparent background, white ring */
 .chat-conversation-stream .str-chat__channel-header .str-chat__avatar {
   border: 2px solid rgba(255, 255, 255, 0.9) !important;
-  background: #1e3a5f !important;
+  background: transparent !important;
   border-radius: 50%;
+  overflow: hidden;
+}
+.chat-conversation-stream .str-chat__channel-header .str-chat__avatar img {
+  background: transparent !important;
 }
 
 /* Message input: same background as web, thin border */
