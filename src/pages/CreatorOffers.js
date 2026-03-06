@@ -70,7 +70,7 @@ function CreatorOffers() {
     setError(null);
     try {
       const creatorId = user.id?.toString?.().replace(/^creator_/, '') || user.id;
-      const res = await offerAPI.getCreatorScheduledOffers(creatorId, { page: 1, itemsPerPage: 100 });
+      const res = await offerAPI.getCreatorScheduledOffers(creatorId, { page: 1, itemsPerPage: 100, status: 'available' });
       if (res.StatusCode === 200 && res.data) {
         setOffers(res.data.offers || []);
         setPagination(res.data.pagination || null);
