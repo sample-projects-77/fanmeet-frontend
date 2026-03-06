@@ -122,6 +122,8 @@ function FanCreatorOffers() {
 
   if (!user) return null;
 
+  const bookableOffers = (offers || []).filter((offer) => offer.status === 'available');
+
   return (
     <div className="creator-offers-page">
       <FanNav active="search" user={user} onLogout={handleLogout} />
@@ -140,7 +142,7 @@ function FanCreatorOffers() {
             <ErrorWidget errorText={error} onRetry={fetchOffers} />
           ) : loading ? (
             <LoadingSpinner />
-          ) : offers.length === 0 ? (
+          ) : bookableOffers.length === 0 ? (
             <EmptyWidget text="No offers available." />
           ) : (
             <div className="creator-offers-table-wrap">
@@ -155,7 +157,7 @@ function FanCreatorOffers() {
                   </tr>
                 </thead>
                 <tbody>
-                  {offers.map((offer) => (
+                  {bookableOffers.map((offer) => (
                     <tr key={offer.id}>
                       <td>{formatDay(offer.date)}</td>
                       <td>{formatTimeRange(offer.startTime, offer.endTime)}</td>
