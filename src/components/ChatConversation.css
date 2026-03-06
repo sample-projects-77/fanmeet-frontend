@@ -79,12 +79,12 @@
   --str-chat__text-color: var(--text-primary);
   --str-chat__text-low-emphasis-color: var(--text-secondary);
   --str-chat__surface-color: rgba(255, 255, 255, 0.08);
-  /* Incoming bubble: light grey, dark text (picture) */
-  --str-chat__message-bubble-background-color: #E0E0E0;
-  --str-chat__message-bubble-color: #1a1a1a;
-  /* Sent message: Flutter-style white bubble, dark text */
-  --str-chat__secondary-surface-color: #fff;
-  --str-chat__own-message-bubble-background-color: #fff;
+  /* Incoming bubble: dark grey with light text */
+  --str-chat__message-bubble-background-color: #252525;
+  --str-chat__message-bubble-color: #f5f5f5;
+  /* Sent message: brand yellow bubble, dark text */
+  --str-chat__secondary-surface-color: #f9d65c;
+  --str-chat__own-message-bubble-background-color: #f9d65c;
   --str-chat__own-message-bubble-color: #1a1a1a;
   --str-chat__primary-surface-color: #5B9FFF;
   --str-chat__primary-color: #1a1a1a;
@@ -242,15 +242,15 @@
   row-gap: 4px !important;
 }
 
-/* Incoming message: light grey bubble, dark text, left-aligned with avatar */
+/* Incoming message: dark grey bubble, light text, left-aligned with avatar */
 .chat-conversation-stream .str-chat__message.str-chat__message--other .str-chat__message-inner {
   position: relative;
   align-items: flex-start;
 }
 .chat-conversation-stream .str-chat__message.str-chat__message--other .str-chat__message-bubble {
   border-radius: 18px 18px 18px 6px;
-  background: #E0E0E0 !important;
-  color: #1a1a1a !important;
+  background: #252525 !important;
+  color: #f5f5f5 !important;
   position: relative;
   box-shadow: none !important;
   border: none !important;
@@ -263,7 +263,7 @@
 }
 .chat-conversation-stream .str-chat__message.str-chat__message--other .str-chat__message-text,
 .chat-conversation-stream .str-chat__message.str-chat__message--other .str-chat__message-bubble p {
-  color: #1a1a1a !important;
+  color: #f5f5f5 !important;
 }
 
 /* Message text: wrap only when needed; keep short words like "Hi" on one line */
@@ -303,16 +303,16 @@
   height: 0;
   border-style: solid;
   border-width: 6px 8px 6px 0;
-  border-color: transparent #E0E0E0 transparent transparent;
+  border-color: transparent #252525 transparent transparent;
 }
-/* Sent message: Flutter-style white bubble, dark border, tail bottom-right; dark text */
+/* Sent message: brand yellow bubble, subtle border, tail bottom-right; dark text */
 .chat-conversation-stream .str-chat__message.str-chat__message--me .str-chat__message-bubble {
   border-radius: 18px 18px 6px 18px;
-  background: #fff !important;
+  background: #f9d65c !important;
   color: #1a1a1a !important;
   position: relative;
   box-shadow: none !important;
-  border: 2px solid rgba(255, 255, 255, 0.5) !important;
+  border: 2px solid rgba(0, 0, 0, 0.18) !important;
   max-width: min(80%, 320px) !important;
   width: max-content;
   min-width: 5em !important;
@@ -335,8 +335,8 @@
   height: 0;
   border-style: solid;
   border-width: 6px 0 6px 8px;
-  border-color: transparent transparent transparent #fff;
-  filter: drop-shadow(1px 0 0 rgba(255, 255, 255, 0.5));
+  border-color: transparent transparent transparent #f9d65c;
+  filter: drop-shadow(1px 0 0 rgba(0, 0, 0, 0.18));
 }
 
 /* Avatar next to messages: dark blue circle with white border (Flutter) */
