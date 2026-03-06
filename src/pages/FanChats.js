@@ -30,6 +30,7 @@ function FanChats() {
   const [channels, setChannels] = useState([]);
   const [memberInfoMap, setMemberInfoMap] = useState({});
   const [loading, setLoading] = useState(true);
+  const [namesLoading, setNamesLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -73,9 +74,16 @@ function FanChats() {
 
   // Enrich channel list with usernames and avatars from Stream (same source as conversation header)
   useEffect(() => {
-    if (!client || channels.length === 0) return;
+    if (!client || channels.length === 0) {
+      setNamesLoading(false);
+      return;
+    }
     const otherIds = [...new Set(channels.map((ch) => ch.otherMemberId).filter(Boolean))];
-    if (otherIds.length === 0) return;
+    if (otherIds.length === 0) {
+      setNamesLoading(false);
+      return;
+    }
+    setNamesLoading(true);
     client
       .queryUsers({ id: { $in: otherIds } })
       .then((res) => {
@@ -85,7 +93,10 @@ function FanChats() {
         });
         setMemberInfoMap(map);
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => {
+        setNamesLoading(false);
+      });
   }, [client, channels]);
 
   const refetch = useCallback(async () => {
@@ -115,6 +126,8 @@ function FanChats() {
 
   if (!user) return null;
 
+  const showLoading = loading || namesLoading;
+
   return (
     <div className="fan-chats-page">
       <FanNav active="chats" user={user} onLogout={handleLogout} />
@@ -124,7 +137,7 @@ function FanChats() {
 
           {error ? (
             <ErrorWidget errorText={error} onRetry={refetch} />
-          ) : loading ? (
+          ) : showLoading ? (
             <LoadingSpinner />
           ) : channels.length === 0 ? (
             <EmptyWidget text="You have no chats" />
