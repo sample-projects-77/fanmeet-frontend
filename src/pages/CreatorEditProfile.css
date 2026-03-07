@@ -1,0 +1,193 @@
+/* Creator Edit Profile – Flutter CreatorEditProfileScreen + ProfileDetailsCard */
+
+.creator-edit-profile-page {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+
+.creator-edit-profile-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--light-grey-shade-3);
+}
+
+.creator-edit-profile-back {
+  position: absolute;
+  left: 20px;
+  color: var(--white);
+  font-size: 24px;
+  text-decoration: none;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.creator-edit-profile-back:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--white);
+}
+
+.creator-edit-profile-title {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--white);
+  margin: 0;
+}
+
+.creator-edit-profile-main {
+  padding: 20px;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.creator-edit-profile-loading {
+  text-align: center;
+  padding: 24px;
+  color: var(--dark-grey-text);
+}
+
+.creator-edit-profile-error {
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  background: rgba(255, 92, 92, 0.12);
+  color: var(--red);
+  border-radius: var(--radius);
+  font-size: 14px;
+}
+
+/* ProfileDetailsCard – darkBlueShade3, border lightGreyShade3 0.5, padding 16 */
+.creator-edit-profile-card {
+  width: 100%;
+  padding: 16px;
+  background: var(--dark-blue-shade-3);
+  border-radius: 16px;
+  border: 1px solid rgba(42, 46, 54, 0.5);
+}
+
+.creator-edit-profile-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.creator-edit-profile-row--head {
+  flex-wrap: wrap;
+}
+
+.creator-edit-profile-meta-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dark-grey-text);
+}
+
+.creator-edit-profile-meta-label {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--dark-grey-text);
+}
+
+.creator-edit-profile-pill-btn {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: rgba(244, 192, 70, 0.12);
+  border: 1px solid rgba(244, 192, 70, 0.3);
+  border-radius: 20px;
+  color: var(--secondary-color);
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.creator-edit-profile-pill-btn:hover {
+  background: rgba(244, 192, 70, 0.18);
+  border-color: rgba(244, 192, 70, 0.4);
+}
+
+.creator-edit-profile-gap {
+  height: 16px;
+}
+
+.creator-edit-profile-gap--small {
+  height: 12px;
+}
+
+/* Category pill (display mode) */
+.creator-edit-profile-pill {
+  display: inline-block;
+  padding: 5px 12px;
+  background: rgba(244, 192, 70, 0.12);
+  border: 1px solid rgba(244, 192, 70, 0.3);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--secondary-color);
+}
+
+.creator-edit-profile-placeholder {
+  font-size: 12px;
+  color: var(--dark-grey-text);
+}
+
+/* Bio text (display mode) */
+.creator-edit-profile-bio-text {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--tertiary-color);
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* Edit mode */
+.creator-edit-profile-field-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dark-grey-text);
+  margin-bottom: 6px;
+}
+
+/* Custom arrow so we can position it with space from the right border */
+.creator-edit-profile-select {
+  width: 100%;
+  margin-bottom: 0;
+  padding-right: 48px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23E2E5EA' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 16px;
+}
+
+.creator-edit-profile-textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.creator-edit-profile-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.creator-edit-profile-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}

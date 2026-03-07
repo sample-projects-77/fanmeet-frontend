@@ -164,6 +164,12 @@ export const profileAPI = {
     });
     return response.data;
   },
+
+  // Update creator bio and category (JSON)
+  updateCreatorBioCategory: async ({ bio, category }) => {
+    const response = await api.patch('/creators/me/bio-category', { bio, category });
+    return response.data;
+  },
 };
 
 // Video (Stream Video token for in-app calls)

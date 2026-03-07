@@ -31,6 +31,7 @@ import { CreatorChatConversationWithProvider } from './components/ChatConversati
 import CreatorSearch from './pages/CreatorSearch';
 import CreatorChats from './pages/CreatorChats';
 import CreatorProfile from './pages/CreatorProfile';
+import CreatorEditProfile from './pages/CreatorEditProfile';
 import CreatorCreatorProfile from './pages/CreatorCreatorProfile';
 import './App.css';
 
@@ -75,6 +76,7 @@ function App() {
           <Route path="/creator/chats/:channelId" element={<CreatorChatConversationWithProvider />} />
           <Route path="/creator/profile" element={<CreatorProfile />} />
           <Route path="/creator/profile/edit" element={<FanProfileEdit />} />
+          <Route path="/creator/profile/edit-bio" element={<CreatorEditProfile />} />
           <Route path="/creator/profile/change-password" element={<CreatorProfileChangePassword />} />
           <Route path="/creator/profile/language" element={<CreatorProfileLanguage />} />
           <Route path="/creator/profile/blocked" element={<CreatorProfileBlocked />} />
