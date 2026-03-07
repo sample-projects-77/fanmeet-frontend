@@ -6,6 +6,7 @@ import CreatorNav from '../components/CreatorNav';
 import LoadingSpinner from '../components/LoadingSpinner';
 import EmptyWidget from '../components/EmptyWidget';
 import ErrorWidget from '../components/ErrorWidget';
+import { GiveReviewDialog } from '../components/GiveReviewDialog';
 import './AllSessions.css';
 
 function formatSessionDate(iso) {
@@ -34,6 +35,7 @@ export function FanAllSessions() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('upcoming');
+  const [reviewDialogBookingId, setReviewDialogBookingId] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -143,24 +145,45 @@ export function FanAllSessions() {
             <ul className="all-sessions-list" aria-label="Sessions">
               {list.map((session) => (
                 <li key={session.id}>
-                  <Link
-                    to={`/fan/bookings/${session.id}`}
-                    className="all-sessions-card"
-                  >
-                    <span className="all-sessions-card-name">{session.creatorName}</span>
-                    <span className="all-sessions-card-meta">
-                      {formatSessionDate(session.startTime)} · {session.durationMinutes} min
-                    </span>
-                    <span className={`all-sessions-card-status all-sessions-card-status--${session.status}`}>
-                      {session.status.replace(/_/g, ' ')}
-                    </span>
-                  </Link>
+                  <div className="all-sessions-card">
+                    <Link
+                      to={`/fan/bookings/${session.id}`}
+                      className="all-sessions-card-content"
+                    >
+                      <span className="all-sessions-card-name">{session.creatorName}</span>
+                      <span className="all-sessions-card-meta">
+                        {formatSessionDate(session.startTime)} · {session.durationMinutes} min
+                      </span>
+                      <span className={`all-sessions-card-status all-sessions-card-status--${session.status}`}>
+                        {session.status.replace(/_/g, ' ')}
+                      </span>
+                    </Link>
+                    {activeTab === 'completed' && !session.reviewed && (
+                      <button
+                        type="button"
+                        className="all-sessions-give-review-btn"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setReviewDialogBookingId(session.id);
+                        }}
+                      >
+                        Give Review
+                      </button>
+                    )}
+                  </div>
                 </li>
               ))}
             </ul>
           )}
         </div>
       </main>
+      {reviewDialogBookingId && (
+        <GiveReviewDialog
+          bookingId={reviewDialogBookingId}
+          onClose={() => setReviewDialogBookingId(null)}
+          onSuccess={() => fetchBookings()}
+        />
+      )}
     </div>
   );
 }
@@ -173,6 +196,7 @@ export function CreatorAllSessions() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('upcoming');
+  const [reviewDialogBookingId, setReviewDialogBookingId] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -282,24 +306,45 @@ export function CreatorAllSessions() {
             <ul className="all-sessions-list" aria-label="Sessions">
               {list.map((session) => (
                 <li key={session.id}>
-                  <Link
-                    to={`/creator/bookings/${session.id}`}
-                    className="all-sessions-card"
-                  >
-                    <span className="all-sessions-card-name">{session.fanName}</span>
-                    <span className="all-sessions-card-meta">
-                      {formatSessionDate(session.startTime)} · {session.durationMinutes} min
-                    </span>
-                    <span className={`all-sessions-card-status all-sessions-card-status--${session.status}`}>
-                      {session.status.replace(/_/g, ' ')}
-                    </span>
-                  </Link>
+                  <div className="all-sessions-card">
+                    <Link
+                      to={`/creator/bookings/${session.id}`}
+                      className="all-sessions-card-content"
+                    >
+                      <span className="all-sessions-card-name">{session.fanName}</span>
+                      <span className="all-sessions-card-meta">
+                        {formatSessionDate(session.startTime)} · {session.durationMinutes} min
+                      </span>
+                      <span className={`all-sessions-card-status all-sessions-card-status--${session.status}`}>
+                        {session.status.replace(/_/g, ' ')}
+                      </span>
+                    </Link>
+                    {activeTab === 'completed' && !session.reviewed && (
+                      <button
+                        type="button"
+                        className="all-sessions-give-review-btn"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setReviewDialogBookingId(session.id);
+                        }}
+                      >
+                        Give Review
+                      </button>
+                    )}
+                  </div>
                 </li>
               ))}
             </ul>
           )}
         </div>
       </main>
+      {reviewDialogBookingId && (
+        <GiveReviewDialog
+          bookingId={reviewDialogBookingId}
+          onClose={() => setReviewDialogBookingId(null)}
+          onSuccess={() => fetchBookings()}
+        />
+      )}
     </div>
   );
 }

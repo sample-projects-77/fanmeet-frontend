@@ -1,0 +1,127 @@
+/* Give Review dialog – dark theme to match Flutter CreatorReviewDialog (AppColors.darkBlueShade3) */
+
+.give-review-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 24px;
+}
+
+.give-review-dialog {
+  background: var(--dark-blue-shade-3);
+  border-radius: 16px;
+  padding: 24px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.give-review-dialog-title {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--white);
+  margin: 0 0 24px 0;
+}
+
+.give-review-form {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.give-review-label {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--white);
+  margin-bottom: 12px;
+}
+
+.give-review-stars-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.give-review-stars {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.give-review-star-btn {
+  padding: 4px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: 4px;
+  color: var(--secondary-color);
+  transition: transform 0.15s, opacity 0.15s;
+}
+
+.give-review-star-btn:hover {
+  opacity: 0.9;
+  transform: scale(1.05);
+}
+
+.give-review-star-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--focus-ring);
+}
+
+.give-review-star--filled {
+  color: var(--secondary-color);
+}
+
+.give-review-star--outline {
+  color: var(--secondary-color);
+  opacity: 0.6;
+}
+
+.give-review-textarea {
+  min-height: 100px;
+  resize: vertical;
+  margin-bottom: 24px;
+}
+
+.give-review-error {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--red);
+  margin: -8px 0 16px 0;
+}
+
+.give-review-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.give-review-btn {
+  flex: 1;
+}
+
+.give-review-btn--cancel {
+  background: var(--input-background);
+  color: var(--tertiary-color);
+  border-color: var(--outline-input-border);
+}
+
+.give-review-btn--submit {
+  background: var(--secondary-color);
+  color: var(--black);
+  border-color: var(--secondary-color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.give-review-btn--submit .shared-loading-spinner-inline {
+  border-color: var(--black);
+  border-top-color: transparent;
+}

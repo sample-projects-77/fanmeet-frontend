@@ -219,7 +219,7 @@ export const offerAPI = {
   },
 };
 
-// Reviews (get reviews for a user, e.g. creator)
+// Reviews (get reviews for a user; create review for completed booking)
 export const reviewAPI = {
   getUserReviews: async (userId, { page = 1, itemsPerPage = 20, role } = {}) => {
     const params = new URLSearchParams();
@@ -228,6 +228,10 @@ export const reviewAPI = {
     if (role) params.set('role', role);
     const id = String(userId).replace(/^creator_/, '').replace(/^fan_/, '');
     const response = await api.get(`/users/${encodeURIComponent(id)}/reviews?${params.toString()}`);
+    return response.data;
+  },
+  createReview: async (bookingId, { rating, comment } = {}) => {
+    const response = await api.post('/reviews', { bookingId, rating, comment });
     return response.data;
   },
 };
