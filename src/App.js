@@ -18,6 +18,7 @@ import { FanVideoCall, CreatorVideoCall } from './pages/VideoCall';
 import { FanChatConversationWithProvider } from './components/ChatConversation';
 import FanCreatorProfile from './pages/FanCreatorProfile';
 import FanCreatorReviews from './pages/FanCreatorReviews';
+import FanMyReviews from './pages/FanMyReviews';
 import FanCreatorOffers from './pages/FanCreatorOffers';
 import FanBookingPayment from './pages/FanBookingPayment';
 import FanBookingPaymentReturn from './pages/FanBookingPaymentReturn';
@@ -26,7 +27,8 @@ import CreatorHome from './pages/CreatorHome';
 import CreatorDashboard from './pages/CreatorDashboard';
 import CreatorOffers from './pages/CreatorOffers';
 import CreatorAddTimeSlot from './pages/CreatorAddTimeSlot';
-import { CreatorReviews, CreatorCreatorOffers, CreatorCreatorReviews, CreatorProfileChangePassword, CreatorProfileLanguage, CreatorProfileBlocked } from './pages/CreatorPlaceholder';
+import CreatorMyReviews from './pages/CreatorMyReviews';
+import { CreatorCreatorOffers, CreatorCreatorReviews, CreatorProfileChangePassword, CreatorProfileLanguage, CreatorProfileBlocked } from './pages/CreatorPlaceholder';
 import { CreatorChatConversationWithProvider } from './components/ChatConversation';
 import CreatorSearch from './pages/CreatorSearch';
 import CreatorChats from './pages/CreatorChats';
@@ -47,6 +49,7 @@ function App() {
           <Route path="/signup/creator" element={<CreatorSignup />} />
           <Route path="/fan/home" element={<FanHome />} />
           <Route path="/fan/dashboard" element={<FanDashboard />} />
+          <Route path="/fan/reviews" element={<FanMyReviews />} />
           <Route path="/fan/search" element={<FanSearch />} />
           <Route path="/fan/creators" element={<FanCreators />} />
           <Route path="/fan/creators/:creatorId" element={<FanCreatorProfile />} />
@@ -80,7 +83,7 @@ function App() {
           <Route path="/creator/profile/change-password" element={<CreatorProfileChangePassword />} />
           <Route path="/creator/profile/language" element={<CreatorProfileLanguage />} />
           <Route path="/creator/profile/blocked" element={<CreatorProfileBlocked />} />
-          <Route path="/creator/reviews" element={<CreatorReviews />} />
+          <Route path="/creator/reviews" element={<CreatorMyReviews />} />
           <Route path="/creator/bookings" element={<CreatorAllSessions />} />
           <Route path="/creator/bookings/:bookingId" element={<CreatorSessionDetail />} />
           <Route path="/creator/bookings/:bookingId/call" element={<CreatorVideoCall />} />

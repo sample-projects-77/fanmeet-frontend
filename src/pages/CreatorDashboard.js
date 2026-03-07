@@ -136,13 +136,13 @@ function CreatorDashboard() {
               <span className="creator-metric-value">{sessions}</span>
               <span className="creator-metric-label">Sessions</span>
             </Link>
-            <div className="creator-metric-card creator-metric-card--rating">
+            <Link to="/creator/reviews" className="creator-metric-card creator-metric-card--rating" aria-label={`Rating: ${rating.toFixed(1)}. View reviews`}>
               <div className="creator-metric-icon-wrap creator-metric-icon-wrap--rating" aria-hidden>
                 <StarIcon />
               </div>
               <span className="creator-metric-value">{rating.toFixed(1).replace('.', ',')}</span>
               <span className="creator-metric-label">Rating</span>
-            </div>
+            </Link>
             </div>
           </section>
 

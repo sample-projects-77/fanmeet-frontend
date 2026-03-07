@@ -135,6 +135,15 @@
   text-align: left;
 }
 
+a.fan-stat-card {
+  text-decoration: none;
+  color: inherit;
+}
+
+a.fan-stat-card:hover {
+  box-shadow: 0 4px 24px rgba(244, 192, 70, 0.15);
+}
+
 /* Match CreatorDashboard stat card gradients/shadows */
 .fan-stat-card--gold {
   background: linear-gradient(

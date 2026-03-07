@@ -139,6 +139,7 @@ function FanDashboard() {
                 value={stats.rating.toFixed(1)}
                 label="Rating"
                 variant="gold"
+                to="/fan/reviews"
               />
             </div>
           </section>
@@ -161,9 +162,19 @@ function FanDashboard() {
   );
 }
 
-function StatCard({ icon, value, label, variant }) {
+function StatCard({ icon, value, label, variant, to }) {
+  const className = `fan-stat-card fan-stat-card--${variant}`;
+  if (to) {
+    return (
+      <Link to={to} className={className} aria-label={`${label}: ${value}. View reviews`}>
+        <span className="fan-stat-icon" aria-hidden>{icon}</span>
+        <span className="fan-stat-value">{value}</span>
+        <span className="fan-stat-label">{label}</span>
+      </Link>
+    );
+  }
   return (
-    <div className={`fan-stat-card fan-stat-card--${variant}`}>
+    <div className={className}>
       <span className="fan-stat-icon" aria-hidden>{icon}</span>
       <span className="fan-stat-value">{value}</span>
       <span className="fan-stat-label">{label}</span>

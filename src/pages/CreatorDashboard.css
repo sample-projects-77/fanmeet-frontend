@@ -158,6 +158,15 @@ a.creator-metric-card--sessions:hover {
   box-shadow: 0 4px 20px rgba(91, 159, 255, 0.2);
 }
 
+a.creator-metric-card {
+  text-decoration: none;
+  color: inherit;
+}
+
+a.creator-metric-card--rating:hover {
+  box-shadow: 0 4px 20px rgba(244, 192, 70, 0.2);
+}
+
 .creator-metric-card--rating {
   background: linear-gradient(
     to bottom right,
