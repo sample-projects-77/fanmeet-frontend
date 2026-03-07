@@ -2,15 +2,15 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { profileAPI } from '../services/api';
 import { DEFAULT_AVATAR_URL } from '../constants';
-import FanNav from '../components/FanNav';
+import CreatorNav from '../components/CreatorNav';
 import LoadingSpinner from '../components/LoadingSpinner';
 import EmptyWidget from '../components/EmptyWidget';
 import ErrorWidget from '../components/ErrorWidget';
-import './FanHome.css';
+import './CreatorHome.css';
 
 const ITEMS_PER_PAGE = 20;
 
-function FanHome() {
+function CreatorHome() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [creators, setCreators] = useState([]);
@@ -98,24 +98,24 @@ function FanHome() {
 
   if (!user) return null;
 
-  const displayName = user?.userName ?? 'Fan';
+  const displayName = user?.userName ?? 'Creator';
   const priceStr = (cents) => (cents != null ? `${(cents / 100).toFixed(0)} €` : '');
   const durationStr = (durations) =>
     durations?.length ? ` / ${Math.min(...durations)} Min` : '';
 
   return (
-    <div className="fan-home-page">
-      <FanNav active="home" user={user} onLogout={handleLogout} />
-      <main className="fan-home-main">
-        <div className="fan-home-container">
-          <section className="fan-home-hero">
-            <h1 className="fan-home-title">Fan Session</h1>
-            <p className="fan-home-welcome">Welcome back, {displayName}!</p>
-            <p className="fan-home-greeting">Nice to see you again 👋</p>
+    <div className="creator-home-page">
+      <CreatorNav active="home" user={user} onLogout={handleLogout} />
+      <main className="creator-home-main">
+        <div className="creator-home-container">
+          <section className="creator-home-hero">
+            <h1 className="creator-home-title">Fan Session</h1>
+            <p className="creator-home-welcome">Welcome back, {displayName}!</p>
+            <p className="creator-home-greeting">Nice to see you again 👋</p>
           </section>
 
-          <section className="fan-home-section">
-            <h2 className="fan-home-section-title">Popular Creators</h2>
+          <section className="creator-home-section">
+            <h2 className="creator-home-section-title">Popular Creators</h2>
             {error && (
               <ErrorWidget errorText={error} onRetry={fetchCreators} />
             )}
@@ -125,28 +125,28 @@ function FanHome() {
             )}
             {!error && !loading && creators.length > 0 && (
               <>
-                <ul className="fan-home-creator-list" aria-label="Popular creators">
+                <ul className="creator-home-creator-list" aria-label="Popular creators">
                   {creators.map((c) => (
                     <li key={c.id}>
-                      <Link to={`/fan/creators/${c.id}`} className="fan-home-creator-card">
-                        <div className="fan-home-creator-avatar-wrap">
+                      <Link to={`/creator/creators/${c.id}`} className="creator-home-creator-card">
+                        <div className="creator-home-creator-avatar-wrap">
                           <img
                             src={c.avatarUrl || DEFAULT_AVATAR_URL}
                             alt=""
-                            className="fan-home-creator-avatar"
+                            className="creator-home-creator-avatar"
                           />
                         </div>
-                        <div className="fan-home-creator-info">
-                          <span className="fan-home-creator-name">
+                        <div className="creator-home-creator-info">
+                          <span className="creator-home-creator-name">
                             {c.displayName || c.userName || c.id}
                           </span>
                           {c.category && (
-                            <span className="fan-home-creator-category">{c.category}</span>
+                            <span className="creator-home-creator-category">{c.category}</span>
                           )}
                         </div>
                         {(c.startingPriceCents != null || (c.sessionDurations?.length > 0)) && (
-                          <div className="fan-home-creator-meta">
-                            <span className="fan-home-creator-price">
+                          <div className="creator-home-creator-meta">
+                            <span className="creator-home-creator-price">
                               {priceStr(c.startingPriceCents)}
                               {durationStr(c.sessionDurations)}
                             </span>
@@ -157,7 +157,7 @@ function FanHome() {
                   ))}
                 </ul>
                 {hasNextPage && (
-                  <div ref={loadMoreRef} className="fan-home-load-more-sentinel" aria-hidden>
+                  <div ref={loadMoreRef} className="creator-home-load-more-sentinel" aria-hidden>
                     {loadingMore && <LoadingSpinner />}
                   </div>
                 )}
@@ -170,4 +170,4 @@ function FanHome() {
   );
 }
 
-export default FanHome;
+export default CreatorHome;

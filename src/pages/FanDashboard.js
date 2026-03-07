@@ -75,7 +75,7 @@ function FanDashboard() {
   if (loading && !data && !error) {
     return (
       <div className="fan-dashboard">
-        <FanNav active="home" user={user} onLogout={handleLogout} />
+        <FanNav active="fan" user={user} onLogout={handleLogout} />
         <main className="fan-dashboard-main">
           <LoadingSpinner />
         </main>
@@ -86,7 +86,7 @@ function FanDashboard() {
   if (error && !data) {
     return (
       <div className="fan-dashboard">
-        <FanNav active="home" user={user} onLogout={handleLogout} />
+        <FanNav active="fan" user={user} onLogout={handleLogout} />
         <main className="fan-dashboard-main">
           <ErrorWidget errorText={error} onRetry={refetch} />
         </main>
@@ -103,7 +103,7 @@ function FanDashboard() {
 
   return (
     <div className="fan-dashboard">
-      <FanNav active="home" user={user} onLogout={handleLogout} />
+      <FanNav active="fan" user={user} onLogout={handleLogout} />
       <main className="fan-dashboard-main">
         <div className="fan-dashboard-container">
           {error && (

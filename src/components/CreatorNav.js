@@ -10,11 +10,11 @@ export default function CreatorNav({ active, userName, user, avatarUrl, onLogout
   return (
     <header className="creator-nav">
       <div className="creator-nav-inner">
-        <Link to="/creator/dashboard" className="creator-nav-logo">
+        <Link to="/creator/home" className="creator-nav-logo">
           Fan Session
         </Link>
         <nav className="creator-nav-links">
-          <Link to="/creator/dashboard" className={active === 'home' ? 'active' : ''}>Home</Link>
+          <Link to="/creator/home" className={active === 'home' ? 'active' : ''}>Home</Link>
           <Link to="/creator/search" className={active === 'search' ? 'active' : ''}>Search</Link>
           <Link to="/creator/dashboard" className={active === 'creator' ? 'active' : ''}>Creator</Link>
           <Link to="/creator/chats" className={active === 'chats' ? 'active' : ''}>Chats</Link>

@@ -16,7 +16,7 @@ export default function FanNav({ active, userName, user, avatarUrl, onLogout }) 
         <nav className="fan-nav-links">
           <Link to="/fan/home" className={active === 'home' ? 'active' : ''}>Home</Link>
           <Link to="/fan/search" className={active === 'search' ? 'active' : ''}>Search</Link>
-          <Link to="/fan/home" className={active === 'fan' ? 'active' : ''}>Fan</Link>
+          <Link to="/fan/dashboard" className={active === 'fan' ? 'active' : ''}>Fan</Link>
           <Link to="/fan/chats" className={active === 'chats' ? 'active' : ''}>Chats</Link>
           <Link to="/fan/profile" className={active === 'profile' ? 'active' : ''}>Profile</Link>
         </nav>

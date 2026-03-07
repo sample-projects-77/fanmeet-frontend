@@ -55,7 +55,7 @@ function CreatorSignup() {
       if (response.StatusCode === 200 && response.data && !response.error) {
         if (response.data.token) localStorage.setItem('token', response.data.token);
         if (response.data.user) localStorage.setItem('user', JSON.stringify(response.data.user));
-        navigate('/creator/dashboard', { replace: true });
+        navigate('/creator/home', { replace: true });
       } else {
         setError(response.error || response.message || 'Signup failed. Please try again.');
       }

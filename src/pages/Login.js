@@ -34,7 +34,7 @@ const Login = () => {
         if (response.data.token) localStorage.setItem('token', response.data.token);
         if (response.data.user) localStorage.setItem('user', JSON.stringify(response.data.user));
         const role = response.data.user?.role || formData.role;
-        navigate(role === 'creator' ? '/creator/dashboard' : '/fan/home', { replace: true });
+        navigate(role === 'creator' ? '/creator/home' : '/fan/home', { replace: true });
       } else {
         setError(response.error || response.message || 'Login failed. Please try again.');
       }

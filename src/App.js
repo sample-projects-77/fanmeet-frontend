@@ -5,6 +5,7 @@ import Welcome from './pages/Welcome';
 import Login from './pages/Login';
 import FanSignup from './pages/FanSignup';
 import CreatorSignup from './pages/CreatorSignup';
+import FanHome from './pages/FanHome';
 import FanDashboard from './pages/FanDashboard';
 import FanSearch from './pages/FanSearch';
 import FanProfile from './pages/FanProfile';
@@ -21,6 +22,7 @@ import FanCreatorOffers from './pages/FanCreatorOffers';
 import FanBookingPayment from './pages/FanBookingPayment';
 import FanBookingPaymentReturn from './pages/FanBookingPaymentReturn';
 import { FanProfileChangePassword, FanProfileLanguage, FanProfileBlocked } from './pages/FanProfilePlaceholder';
+import CreatorHome from './pages/CreatorHome';
 import CreatorDashboard from './pages/CreatorDashboard';
 import CreatorOffers from './pages/CreatorOffers';
 import CreatorAddTimeSlot from './pages/CreatorAddTimeSlot';
@@ -42,7 +44,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup/fan" element={<FanSignup />} />
           <Route path="/signup/creator" element={<CreatorSignup />} />
-          <Route path="/fan/home" element={<FanDashboard />} />
+          <Route path="/fan/home" element={<FanHome />} />
+          <Route path="/fan/dashboard" element={<FanDashboard />} />
           <Route path="/fan/search" element={<FanSearch />} />
           <Route path="/fan/creators" element={<FanCreators />} />
           <Route path="/fan/creators/:creatorId" element={<FanCreatorProfile />} />
@@ -60,6 +63,7 @@ function App() {
           <Route path="/fan/profile/change-password" element={<FanProfileChangePassword />} />
           <Route path="/fan/profile/language" element={<FanProfileLanguage />} />
           <Route path="/fan/profile/blocked" element={<FanProfileBlocked />} />
+          <Route path="/creator/home" element={<CreatorHome />} />
           <Route path="/creator/dashboard" element={<CreatorDashboard />} />
           <Route path="/creator/offers" element={<CreatorOffers />} />
           <Route path="/creator/offers/add-time-slot" element={<CreatorAddTimeSlot />} />

@@ -87,7 +87,7 @@ const Signup = () => {
         
         const role = response.data.user?.role || userType;
         if (role === 'creator') {
-          navigate('/creator/dashboard', { replace: true });
+          navigate('/creator/home', { replace: true });
         } else {
           navigate('/fan/home', { replace: true });
         }

@@ -74,7 +74,7 @@ export function FanBookings() {
       <main className="fan-placeholder-main">
         <h1>My bookings</h1>
         <p>Your upcoming and past sessions will appear here. Coming soon.</p>
-        <Link to="/fan/home" className="fan-placeholder-back">Back to dashboard</Link>
+        <Link to="/fan/dashboard" className="fan-placeholder-back">Back to dashboard</Link>
       </main>
     </div>
   );
