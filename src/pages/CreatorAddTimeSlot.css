@@ -100,63 +100,27 @@
   box-sizing: border-box;
 }
 
-.creator-add-slot-input-wrap.creator-add-slot-datepicker-wrap {
-  padding: 0 0 0 0;
-}
-
-.creator-add-slot-datepicker-wrapper {
-  width: 100%;
-}
-
-.creator-add-slot-datepicker-wrapper input {
-  width: 100%;
+.creator-add-slot-trigger {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 14px 16px;
-  border: none;
-  background: transparent;
-  color: var(--tertiary-color);
+  min-height: 52px;
 }
 
-.creator-add-slot-datepicker-wrapper input::placeholder {
+.creator-add-slot-trigger .creator-add-slot-placeholder {
   color: var(--dark-grey-text);
 }
 
-.creator-add-slot-datepicker {
-  background: #181a20;
-  border: 1px solid var(--outline-input-border);
-  color: var(--tertiary-color);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+.creator-add-slot-time-wrap {
+  padding-right: 12px;
 }
 
-.creator-add-slot-datepicker .react-datepicker__header {
-  background-color: #181a20;
-  border-bottom: 1px solid var(--outline-input-border);
-}
-
-.creator-add-slot-datepicker .react-datepicker__current-month,
-.creator-add-slot-datepicker .react-datepicker-time__header,
-.creator-add-slot-datepicker .react-datepicker-year-header {
-  color: var(--tertiary-color);
-}
-
-.creator-add-slot-datepicker .react-datepicker__day-name,
-.creator-add-slot-datepicker .react-datepicker__day,
-.creator-add-slot-datepicker .react-datepicker__time-name {
-  color: var(--tertiary-color);
-}
-
-.creator-add-slot-datepicker .react-datepicker__day--disabled {
-  color: var(--text-muted);
-}
-
-.creator-add-slot-datepicker .react-datepicker__day--selected,
-.creator-add-slot-datepicker .react-datepicker__day--keyboard-selected {
-  background-color: var(--accent-yellow);
-  color: var(--black);
-}
-
-.creator-add-slot-datepicker .react-datepicker__day--today {
-  border-radius: 999px;
-  border: 1px solid var(--accent-yellow);
+.creator-add-slot-time-icon {
+  color: var(--dark-grey-text);
+  display: flex;
+  align-items: center;
 }
 
 .creator-add-slot-input-wrap input::placeholder {

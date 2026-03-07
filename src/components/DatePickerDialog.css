@@ -1,0 +1,174 @@
+/* Flutter-style date picker – dark dialog, yellow selected date, Cancel/OK */
+
+.date-picker-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.date-picker-dialog {
+  background: #2C2C2E;
+  border-radius: 16px;
+  padding: 20px;
+  max-width: 360px;
+  width: 100%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.date-picker-dialog-label {
+  font-size: 14px;
+  color: var(--white);
+  margin: 0 0 8px 0;
+  font-weight: 500;
+}
+
+.date-picker-dialog-selected {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.date-picker-dialog-edit-icon {
+  font-size: 14px;
+  color: var(--dark-grey-text);
+  opacity: 0.8;
+}
+
+.date-picker-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.date-picker-dialog-month-year {
+  font-size: 16px;
+  color: var(--dark-grey-text);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.date-picker-dialog-dropdown {
+  font-size: 10px;
+  opacity: 0.8;
+}
+
+.date-picker-dialog-nav {
+  display: flex;
+  gap: 4px;
+}
+
+.date-picker-dialog-chevron {
+  background: transparent;
+  border: none;
+  color: var(--white);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px 8px;
+  line-height: 1;
+  border-radius: 6px;
+}
+
+.date-picker-dialog-chevron:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.date-picker-dialog-days-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.date-picker-dialog-day-name {
+  font-size: 12px;
+  color: var(--dark-grey-text);
+  font-weight: 500;
+}
+
+.date-picker-dialog-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.date-picker-dialog-cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--dark-grey-text);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: default;
+  border-radius: 50%;
+  font-family: var(--font-sans);
+}
+
+.date-picker-dialog-cell--day {
+  cursor: pointer;
+  color: var(--tertiary-color);
+}
+
+.date-picker-dialog-cell--day:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.date-picker-dialog-cell--selected {
+  background: var(--accent-yellow);
+  color: var(--black);
+}
+
+.date-picker-dialog-cell--selected:hover {
+  background: var(--accent-yellow);
+}
+
+.date-picker-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.date-picker-dialog-cancel {
+  background: transparent;
+  border: none;
+  color: var(--dark-grey-text);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 16px;
+  font-family: var(--font-sans);
+}
+
+.date-picker-dialog-cancel:hover {
+  color: var(--tertiary-color);
+}
+
+.date-picker-dialog-ok {
+  background: transparent;
+  border: none;
+  color: var(--accent-yellow);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 16px;
+  font-family: var(--font-sans);
+}
+
+.date-picker-dialog-ok:hover {
+  opacity: 0.9;
+}

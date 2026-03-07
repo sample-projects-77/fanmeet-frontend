@@ -3,8 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { offerAPI } from '../services/api';
 import CreatorNav from '../components/CreatorNav';
 import LoadingSpinner, { ButtonLoadingSpinner } from '../components/LoadingSpinner';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import { DatePickerDialog } from '../components/DatePickerDialog';
+import { TimePickerDialog } from '../components/TimePickerDialog';
 import './CreatorAddTimeSlot.css';
 
 function CreatorAddTimeSlot() {
@@ -17,6 +17,8 @@ function CreatorAddTimeSlot() {
   const [startTime, setStartTime] = useState('');
   const [duration, setDuration] = useState(30);
   const [price, setPrice] = useState('');
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -63,16 +65,23 @@ function CreatorAddTimeSlot() {
     // Convert to cents
     const priceCents = Math.round(parsedPrice * 100);
 
-    // Build ISO date with local timezone offset, similar to backend docs
+    // Build ISO date with local timezone offset. Backend stores the UTC calendar date of the
+    // start moment; for timezones ahead of UTC, "March 8 04:57 local" becomes March 7 23:57 UTC,
+    // so the backend stores March 7. Send the calendar date as the next day so the stored UTC
+    // date matches the intended local date (March 8).
     const localDate = date;
     const tzOffsetMinutes = localDate.getTimezoneOffset();
     const offsetSign = tzOffsetMinutes <= 0 ? '+' : '-';
     const absMinutes = Math.abs(tzOffsetMinutes);
     const offsetHours = String(Math.floor(absMinutes / 60)).padStart(2, '0');
     const offsetMins = String(absMinutes % 60).padStart(2, '0');
-    const year = localDate.getFullYear();
-    const month = String(localDate.getMonth() + 1).padStart(2, '0');
-    const day = String(localDate.getDate()).padStart(2, '0');
+    const sendDate = new Date(localDate);
+    if (tzOffsetMinutes < 0) {
+      sendDate.setDate(sendDate.getDate() + 1);
+    }
+    const year = sendDate.getFullYear();
+    const month = String(sendDate.getMonth() + 1).padStart(2, '0');
+    const day = String(sendDate.getDate()).padStart(2, '0');
     const dateIso = `${year}-${month}-${day}T00:00:00${offsetSign}${offsetHours}:${offsetMins}`;
 
     // Compute end time from start time and duration in minutes
@@ -155,32 +164,63 @@ function CreatorAddTimeSlot() {
 
             <div className="creator-add-slot-field">
               <label htmlFor="date">Date</label>
-              <div className="creator-add-slot-input-wrap creator-add-slot-datepicker-wrap">
-                <DatePicker
-                  id="date"
-                  selected={date}
-                  onChange={(d) => setDate(d)}
-                  dateFormat="MM/dd/yyyy"
-                  placeholderText="mm/dd/yyyy"
-                  required
-                  calendarClassName="creator-add-slot-datepicker"
-                  popperClassName="creator-add-slot-datepicker-popper"
-                  wrapperClassName="creator-add-slot-datepicker-wrapper"
-                />
+              <div
+                className="creator-add-slot-input-wrap creator-add-slot-trigger"
+                onClick={() => setShowDatePicker(true)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => e.key === 'Enter' && setShowDatePicker(true)}
+                id="date"
+                aria-label="Select date"
+              >
+                <span className={date ? '' : 'creator-add-slot-placeholder'}>
+                  {date
+                    ? date.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })
+                    : 'mm/dd/yyyy'}
+                </span>
               </div>
+              {showDatePicker && (
+                <DatePickerDialog
+                  value={date}
+                  onConfirm={(d) => {
+                    setDate(d);
+                    setShowDatePicker(false);
+                  }}
+                  onCancel={() => setShowDatePicker(false)}
+                />
+              )}
             </div>
 
             <div className="creator-add-slot-field">
               <label htmlFor="startTime">Start Time</label>
-              <div className="creator-add-slot-input-wrap">
-                <input
-                  id="startTime"
-                  type="time"
-                  value={startTime}
-                  onChange={(e) => setStartTime(e.target.value)}
-                  required
-                />
+              <div
+                className="creator-add-slot-input-wrap creator-add-slot-trigger creator-add-slot-time-wrap"
+                onClick={() => setShowTimePicker(true)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => e.key === 'Enter' && setShowTimePicker(true)}
+                id="startTime"
+                aria-label="Select start time"
+              >
+                <span className={startTime ? '' : 'creator-add-slot-placeholder'}>
+                  {startTime || '--:--'}
+                </span>
+                <span className="creator-add-slot-time-icon" aria-hidden>
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                    <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
+                  </svg>
+                </span>
               </div>
+              {showTimePicker && (
+                <TimePickerDialog
+                  value={startTime}
+                  onConfirm={(t) => {
+                    setStartTime(t);
+                    setShowTimePicker(false);
+                  }}
+                  onCancel={() => setShowTimePicker(false)}
+                />
+              )}
             </div>
 
             <div className="creator-add-slot-field">

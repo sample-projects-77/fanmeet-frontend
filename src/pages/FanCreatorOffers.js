@@ -34,12 +34,35 @@ function formatTimeRange(startTime, endTime) {
   return `${startTime} - ${endTime}`;
 }
 
+/**
+ * Build startTime ISO string for createBooking. The backend expects ISO 8601 and checks
+ * that the time is in the future. We must include the creator's timezone offset so the
+ * instant is unambiguous (e.g. "2026-03-08T04:57:00+05:00").
+ */
 function buildStartTimeISO(offer) {
   const dateRaw = (offer.date || '').toString();
   const datePart = dateRaw.includes('T') ? dateRaw.split('T')[0] : dateRaw.split(' ')[0];
   const timeStr = (offer.startTime || '00:00').trim();
   const timePart = timeStr.length === 5 ? `${timeStr}:00` : timeStr;
+  const tz = (offer.creatorTimezone || offer.timezone || '').toString().trim();
+  const offset = parseTimezoneOffset(tz);
+  if (offset !== null) {
+    const sign = offset >= 0 ? '+' : '-';
+    const h = String(Math.floor(Math.abs(offset) / 60)).padStart(2, '0');
+    const m = String(Math.abs(offset) % 60).padStart(2, '0');
+    return `${datePart}T${timePart}${sign}${h}:${m}`;
+  }
   return `${datePart}T${timePart}`;
+}
+
+function parseTimezoneOffset(tz) {
+  if (!tz) return null;
+  const m = tz.trim().match(/^UTC([+-])(\d{1,2}):(\d{2})$/);
+  if (!m) return null;
+  const sign = m[1] === '+' ? 1 : -1;
+  const hours = parseInt(m[2], 10);
+  const mins = parseInt(m[3], 10);
+  return sign * (hours * 60 + mins);
 }
 
 function FanCreatorOffers() {

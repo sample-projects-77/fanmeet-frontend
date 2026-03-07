@@ -1,0 +1,187 @@
+/* Flutter-style time picker – dark dialog, yellow-orange accent, teal AM/PM */
+
+.time-picker-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.time-picker-dialog {
+  background: #2C2C2E;
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 320px;
+  width: 100%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.time-picker-dialog-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 20px;
+}
+
+/* Shared base for hour and minute – same size, padding, radius */
+.time-picker-dialog-hour,
+.time-picker-dialog-minute {
+  background: transparent;
+  color: var(--white);
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 28px;
+  font-weight: 700;
+  min-width: 48px;
+  text-align: center;
+  font-family: var(--font-sans);
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  border: 2px solid transparent;
+  box-sizing: border-box;
+}
+
+/* Same selected UI for both hour and minute: yellow background, dark text, rounded border */
+.time-picker-dialog-display--mode-hour .time-picker-dialog-hour,
+.time-picker-dialog-display--mode-minute .time-picker-dialog-minute {
+  background: #FFC107;
+  color: var(--black);
+  border: 2px solid #FFC107;
+}
+
+.time-picker-dialog-colon {
+  color: var(--white);
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.time-picker-dialog-ampm {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-left: 12px;
+}
+
+.time-picker-dialog-ampm-btn {
+  background: transparent;
+  border: none;
+  color: var(--white);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: var(--font-sans);
+}
+
+.time-picker-dialog-ampm-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.time-picker-dialog-ampm-btn--active {
+  background: #20C997;
+  color: var(--black);
+}
+
+.time-picker-dialog-clock {
+  width: 240px;
+  height: 240px;
+  margin: 0 auto 20px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.time-picker-dialog-clock-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.time-picker-dialog-hour-dot {
+  cursor: pointer;
+}
+
+.time-picker-dialog-mode-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.time-picker-dialog-keyboard-icon {
+  background: transparent;
+  border: none;
+  color: var(--dark-grey-text);
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.time-picker-dialog-keyboard-icon:hover {
+  color: var(--tertiary-color);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.time-picker-dialog-mode-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.time-picker-dialog-mode-tab {
+  background: transparent;
+  border: none;
+  color: var(--dark-grey-text);
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: var(--font-sans);
+}
+
+.time-picker-dialog-mode-tab:hover {
+  color: var(--tertiary-color);
+}
+
+.time-picker-dialog-mode-tab--active {
+  color: var(--accent-yellow);
+  font-weight: 600;
+}
+
+.time-picker-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.time-picker-dialog-cancel {
+  background: transparent;
+  border: none;
+  color: var(--white);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 16px;
+  font-family: var(--font-sans);
+}
+
+.time-picker-dialog-cancel:hover {
+  color: var(--dark-grey-text);
+}
+
+.time-picker-dialog-ok {
+  background: transparent;
+  border: none;
+  color: var(--white);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 16px;
+  font-family: var(--font-sans);
+}
+
+.time-picker-dialog-ok:hover {
+  opacity: 0.9;
+}
