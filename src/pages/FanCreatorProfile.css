@@ -132,27 +132,15 @@
   font-weight: 400;
 }
 
-/* ----- About (dark card, b2 style) ----- */
-.fan-creator-details-about {
-  margin: 24px 24px 20px;
-  padding: 18px 20px;
-  background: var(--dark-blue-shade-3);
-  border-radius: 16px;
-  border: 1px solid var(--light-grey-shade-3);
-}
-
-.fan-creator-details-about-title {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--tertiary-color);
-  margin: 0 0 8px 0;
-}
-
-.fan-creator-details-about-text {
+.fan-creator-details-bio-line {
   font-size: 14px;
-  color: var(--dark-grey-text);
-  line-height: 1.5;
-  margin: 0;
+  color: var(--tertiary-color);
+  margin: 4px 0 0 0;
+  font-weight: 400;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ----- CreatorDetailsRating: star + value (h3) + (count) b2Muted tertiary ----- */
@@ -161,7 +149,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin: 0 24px 24px;
+  margin: 20px 24px 24px;
 }
 
 .fan-creator-details-rating svg {

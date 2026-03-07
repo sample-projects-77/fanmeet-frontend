@@ -121,14 +121,9 @@ function FanCreatorProfile() {
               <div className="fan-creator-details-meta">
                 <h1 className="fan-creator-details-name">{creator.displayName || 'Creator'}</h1>
                 <p className="fan-creator-details-category">{creator.category || ''}</p>
+                <p className="fan-creator-details-bio-line">{creator.bio?.trim() || 'No description yet.'}</p>
               </div>
             </header>
-
-            {/* About */}
-            <section className="fan-creator-details-about">
-              <h2 className="fan-creator-details-about-title">About</h2>
-              <p className="fan-creator-details-about-text">{creator.bio || 'No description yet.'}</p>
-            </section>
 
             {/* CreatorDetailsRating */}
             <div className="fan-creator-details-rating">
