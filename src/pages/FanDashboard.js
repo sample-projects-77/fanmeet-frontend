@@ -133,6 +133,8 @@ function FanDashboard() {
                 value={stats.sessions}
                 label="Sessions"
                 variant="blue"
+                to="/fan/bookings"
+                linkAria="View all sessions"
               />
               <StatCard
                 icon={<StarIcon />}
@@ -140,6 +142,7 @@ function FanDashboard() {
                 label="Rating"
                 variant="gold"
                 to="/fan/reviews"
+                linkAria="View reviews"
               />
             </div>
           </section>
@@ -150,11 +153,6 @@ function FanDashboard() {
               <span className="fan-action-label">Browse creators</span>
               <span className="fan-action-arrow">→</span>
             </Link>
-            <Link to="/fan/bookings" className="fan-action-card">
-              <span className="fan-action-icon"><CalendarIcon /></span>
-              <span className="fan-action-label">My bookings</span>
-              <span className="fan-action-arrow">→</span>
-            </Link>
           </section>
         </div>
       </main>
@@ -162,11 +160,11 @@ function FanDashboard() {
   );
 }
 
-function StatCard({ icon, value, label, variant, to }) {
+function StatCard({ icon, value, label, variant, to, linkAria }) {
   const className = `fan-stat-card fan-stat-card--${variant}`;
   if (to) {
     return (
-      <Link to={to} className={className} aria-label={`${label}: ${value}. View reviews`}>
+      <Link to={to} className={className} aria-label={linkAria ? `${label}: ${value}. ${linkAria}` : `${label}: ${value}`}>
         <span className="fan-stat-icon" aria-hidden>{icon}</span>
         <span className="fan-stat-value">{value}</span>
         <span className="fan-stat-label">{label}</span>

@@ -140,8 +140,12 @@ a.fan-stat-card {
   color: inherit;
 }
 
-a.fan-stat-card:hover {
+a.fan-stat-card--gold:hover {
   box-shadow: 0 4px 24px rgba(244, 192, 70, 0.15);
+}
+
+a.fan-stat-card--blue:hover {
+  box-shadow: 0 4px 24px rgba(91, 159, 255, 0.2);
 }
 
 /* Match CreatorDashboard stat card gradients/shadows */
@@ -237,17 +241,14 @@ a.fan-stat-card:hover {
   gap: 12px;
 }
 
-@media (min-width: 480px) {
-  .fan-actions {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
 .fan-action-card {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
+  width: 100%;
   padding: 18px 20px;
+  min-height: 72px;
+  box-sizing: border-box;
   background: var(--card-bg);
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: var(--radius);
@@ -264,8 +265,8 @@ a.fan-stat-card:hover {
 }
 
 .fan-action-icon {
-  width: 40px;
-  height: 40px;
+  width: 52px;
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -274,18 +275,18 @@ a.fan-stat-card:hover {
 }
 
 .fan-action-icon svg {
-  width: 22px;
-  height: 22px;
+  width: 28px;
+  height: 28px;
 }
 
 .fan-action-label {
   flex: 1;
-  font-size: 1rem;
+  font-size: 1.125rem;
 }
 
 .fan-action-arrow {
   color: var(--text-muted);
-  font-size: 1.25rem;
+  font-size: 1.5rem;
 }
 
 .fan-action-card:hover .fan-action-arrow {

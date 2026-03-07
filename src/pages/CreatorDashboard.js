@@ -140,7 +140,7 @@ function CreatorDashboard() {
               <div className="creator-metric-icon-wrap creator-metric-icon-wrap--rating" aria-hidden>
                 <StarIcon />
               </div>
-              <span className="creator-metric-value">{rating.toFixed(1).replace('.', ',')}</span>
+              <span className="creator-metric-value">{rating.toFixed(1)}</span>
               <span className="creator-metric-label">Rating</span>
             </Link>
             </div>
