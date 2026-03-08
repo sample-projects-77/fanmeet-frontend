@@ -9,22 +9,94 @@ import ErrorWidget from '../components/ErrorWidget';
 import { GiveReviewDialog } from '../components/GiveReviewDialog';
 import './AllSessions.css';
 
-function formatSessionDate(iso) {
+const JOIN_ENABLE_MINUTES = 5;
+
+const CalendarIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+    <line x1="16" y1="2" x2="16" y2="6" />
+    <line x1="8" y1="2" x2="8" y2="6" />
+    <line x1="3" y1="10" x2="21" y2="10" />
+  </svg>
+);
+const ClockIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <circle cx="12" cy="12" r="10" />
+    <polyline points="12 6 12 12 16 14" />
+  </svg>
+);
+const StopwatchIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <circle cx="12" cy="12" r="10" />
+    <polyline points="12 6 12 12 16 14" />
+    <line x1="12" y1="2" x2="12" y2="4" />
+    <line x1="12" y1="20" x2="12" y2="22" />
+    <line x1="4" y1="12" x2="2" y2="12" />
+    <line x1="22" y1="12" x2="20" y2="12" />
+  </svg>
+);
+const VideoIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+    <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z" />
+  </svg>
+);
+
+/**
+ * Format date for display. Use UTC when showing bookings so the calendar date
+ * matches the offer (avoids "booking 9th / offer 8th" timezone shift).
+ */
+function formatCardDate(iso, useUTCDate = false) {
   if (!iso) return '—';
   try {
     const d = new Date(iso);
     if (Number.isNaN(d.getTime())) return iso;
-    return d.toLocaleDateString(undefined, {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    if (useUTCDate) {
+      const y = d.getUTCFullYear();
+      const m = d.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' });
+      const day = d.getUTCDate();
+      return `${day} ${m} ${y}`;
+    }
+    return d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
   } catch {
     return iso;
   }
+}
+
+/**
+ * Format time range. Use UTC when showing bookings so the time aligns with the
+ * session date (avoids timezone shift).
+ */
+function formatTimeRange(startIso, durationMinutes) {
+  if (!startIso) return '—';
+  try {
+    const start = new Date(startIso);
+    if (Number.isNaN(start.getTime())) return '—';
+    const end = new Date(start.getTime() + (durationMinutes || 0) * 60 * 1000);
+    const pad = (n) => String(n).padStart(2, '0');
+    const startStr = `${pad(start.getHours())}:${pad(start.getMinutes())}`;
+    const endStr = `${pad(end.getHours())}:${pad(end.getMinutes())}`;
+    return `${startStr} - ${endStr}`;
+  } catch {
+    return '—';
+  }
+}
+
+function getJoinCountdown(startIso) {
+  if (!startIso) return { text: '—', canJoin: false };
+  const start = new Date(startIso);
+  const now = new Date();
+  const ms = start.getTime() - now.getTime();
+  if (ms <= 0) return { text: 'Session started', canJoin: true };
+  const totalMinutes = Math.floor(ms / (60 * 1000));
+  const canJoin = totalMinutes <= JOIN_ENABLE_MINUTES;
+  if (totalMinutes < 1) return { text: 'Join now', canJoin: true };
+  if (totalMinutes < 60) return { text: `Join in ${totalMinutes} min`, canJoin };
+  const hours = Math.floor(totalMinutes / 60);
+  const mins = totalMinutes % 60;
+  if (hours < 24) return { text: `Join in ${hours}h ${mins > 0 ? mins + 'm' : ''}`.trim(), canJoin };
+  const days = Math.floor(hours / 24);
+  const h = hours % 24;
+  return { text: `Join in ${days}d ${h}h`, canJoin };
 }
 
 export function FanAllSessions() {
@@ -36,6 +108,11 @@ export function FanAllSessions() {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('upcoming');
   const [reviewDialogBookingId, setReviewDialogBookingId] = useState(null);
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setTick((t) => t + 1), 60000);
+    return () => clearInterval(id);
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -67,7 +144,7 @@ export function FanAllSessions() {
       const upcomingList = allBookings.filter((b) => {
         const status = (b.status || '').toLowerCase();
         const start = new Date(b.startTime);
-        return ['paid', 'confirmed', 'in_progress'].includes(status) && start > now;
+        return status === 'paid' && start > now;
       });
       const completedList = allBookings.filter((b) => {
         const status = (b.status || '').toLowerCase();
@@ -92,6 +169,11 @@ export function FanAllSessions() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     navigate('/', { replace: true });
+  };
+
+  const handleJoin = (session) => {
+    const countdown = getJoinCountdown(session.startTime);
+    if (countdown.canJoin) navigate(`/fan/bookings/${session.id}/call`);
   };
 
   if (!user) return null;
@@ -143,36 +225,55 @@ export function FanAllSessions() {
           )}
           {!error && !loading && list.length > 0 && (
             <ul className="all-sessions-list" aria-label="Sessions">
-              {list.map((session) => (
-                <li key={session.id}>
-                  <div className="all-sessions-card">
-                    <Link
-                      to={`/fan/bookings/${session.id}`}
-                      className="all-sessions-card-content"
-                    >
-                      <span className="all-sessions-card-name">{session.creatorName}</span>
-                      <span className="all-sessions-card-meta">
-                        {formatSessionDate(session.startTime)} · {session.durationMinutes} min
-                      </span>
-                      <span className={`all-sessions-card-status all-sessions-card-status--${session.status}`}>
-                        {session.status.replace(/_/g, ' ')}
-                      </span>
-                    </Link>
-                    {activeTab === 'completed' && !session.reviewed && (
-                      <button
-                        type="button"
-                        className="all-sessions-give-review-btn"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setReviewDialogBookingId(session.id);
-                        }}
-                      >
-                        Give Review
-                      </button>
-                    )}
-                  </div>
-                </li>
-              ))}
+              {list.map((session) => {
+                const countdown = activeTab === 'upcoming' ? getJoinCountdown(session.startTime) : null;
+                return (
+                  <li key={session.id}>
+                    <div className="all-sessions-card">
+                      <div className="all-sessions-card-inner">
+                        <div className="all-sessions-card-top">
+                          <span className="all-sessions-card-name">{session.creatorName}</span>
+                          <span className={`all-sessions-card-status all-sessions-card-status--${activeTab === 'upcoming' ? 'paid' : (session.status || 'completed')}`}>
+                            {activeTab === 'upcoming' ? 'Paid' : (session.status || 'completed').replace(/_/g, ' ')}
+                          </span>
+                        </div>
+                        <div className="all-sessions-card-row">
+                          <span className="all-sessions-card-icon"><CalendarIcon /></span>
+                          <span className="all-sessions-card-meta">{formatCardDate(session.startTime)}</span>
+                        </div>
+                        <div className="all-sessions-card-row">
+                          <span className="all-sessions-card-icon"><ClockIcon /></span>
+                          <span className="all-sessions-card-meta">{formatTimeRange(session.startTime, session.durationMinutes)}</span>
+                        </div>
+                        <div className="all-sessions-card-row">
+                          <span className="all-sessions-card-icon"><StopwatchIcon /></span>
+                          <span className="all-sessions-card-meta">{session.durationMinutes || 0} Min</span>
+                        </div>
+                        {activeTab === 'upcoming' && countdown && (
+                          <button
+                            type="button"
+                            className={`all-sessions-join-btn ${countdown.canJoin ? 'all-sessions-join-btn--enabled' : ''}`}
+                            disabled={!countdown.canJoin}
+                            onClick={() => handleJoin(session)}
+                          >
+                            <span className="all-sessions-join-icon"><VideoIcon /></span>
+                            <span>{countdown.text}</span>
+                          </button>
+                        )}
+                        {activeTab === 'completed' && !session.reviewed && (
+                          <button
+                            type="button"
+                            className="all-sessions-give-review-btn"
+                            onClick={() => setReviewDialogBookingId(session.id)}
+                          >
+                            Give Review
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </div>
@@ -197,6 +298,11 @@ export function CreatorAllSessions() {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('upcoming');
   const [reviewDialogBookingId, setReviewDialogBookingId] = useState(null);
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setTick((t) => t + 1), 60000);
+    return () => clearInterval(id);
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -228,7 +334,7 @@ export function CreatorAllSessions() {
       const upcomingList = allBookings.filter((b) => {
         const status = (b.status || '').toLowerCase();
         const start = new Date(b.startTime);
-        return ['paid', 'confirmed', 'in_progress'].includes(status) && start > now;
+        return status === 'paid' && start > now;
       });
       const completedList = allBookings.filter((b) => {
         const status = (b.status || '').toLowerCase();
@@ -253,6 +359,11 @@ export function CreatorAllSessions() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     navigate('/', { replace: true });
+  };
+
+  const handleJoin = (session) => {
+    const countdown = getJoinCountdown(session.startTime);
+    if (countdown.canJoin) navigate(`/creator/bookings/${session.id}/call`);
   };
 
   if (!user) return null;
@@ -304,36 +415,55 @@ export function CreatorAllSessions() {
           )}
           {!error && !loading && list.length > 0 && (
             <ul className="all-sessions-list" aria-label="Sessions">
-              {list.map((session) => (
-                <li key={session.id}>
-                  <div className="all-sessions-card">
-                    <Link
-                      to={`/creator/bookings/${session.id}`}
-                      className="all-sessions-card-content"
-                    >
-                      <span className="all-sessions-card-name">{session.fanName}</span>
-                      <span className="all-sessions-card-meta">
-                        {formatSessionDate(session.startTime)} · {session.durationMinutes} min
-                      </span>
-                      <span className={`all-sessions-card-status all-sessions-card-status--${session.status}`}>
-                        {session.status.replace(/_/g, ' ')}
-                      </span>
-                    </Link>
-                    {activeTab === 'completed' && !session.reviewed && (
-                      <button
-                        type="button"
-                        className="all-sessions-give-review-btn"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setReviewDialogBookingId(session.id);
-                        }}
-                      >
-                        Give Review
-                      </button>
-                    )}
-                  </div>
-                </li>
-              ))}
+              {list.map((session) => {
+                const countdown = activeTab === 'upcoming' ? getJoinCountdown(session.startTime) : null;
+                return (
+                  <li key={session.id}>
+                    <div className="all-sessions-card">
+                      <div className="all-sessions-card-inner">
+                        <div className="all-sessions-card-top">
+                          <span className="all-sessions-card-name">{session.fanName}</span>
+                          <span className={`all-sessions-card-status all-sessions-card-status--${activeTab === 'upcoming' ? 'paid' : (session.status || 'completed')}`}>
+                            {activeTab === 'upcoming' ? 'Paid' : (session.status || 'completed').replace(/_/g, ' ')}
+                          </span>
+                        </div>
+                        <div className="all-sessions-card-row">
+                          <span className="all-sessions-card-icon"><CalendarIcon /></span>
+                          <span className="all-sessions-card-meta">{formatCardDate(session.startTime)}</span>
+                        </div>
+                        <div className="all-sessions-card-row">
+                          <span className="all-sessions-card-icon"><ClockIcon /></span>
+                          <span className="all-sessions-card-meta">{formatTimeRange(session.startTime, session.durationMinutes)}</span>
+                        </div>
+                        <div className="all-sessions-card-row">
+                          <span className="all-sessions-card-icon"><StopwatchIcon /></span>
+                          <span className="all-sessions-card-meta">{session.durationMinutes || 0} Min</span>
+                        </div>
+                        {activeTab === 'upcoming' && countdown && (
+                          <button
+                            type="button"
+                            className={`all-sessions-join-btn ${countdown.canJoin ? 'all-sessions-join-btn--enabled' : ''}`}
+                            disabled={!countdown.canJoin}
+                            onClick={() => handleJoin(session)}
+                          >
+                            <span className="all-sessions-join-icon"><VideoIcon /></span>
+                            <span>{countdown.text}</span>
+                          </button>
+                        )}
+                        {activeTab === 'completed' && !session.reviewed && (
+                          <button
+                            type="button"
+                            className="all-sessions-give-review-btn"
+                            onClick={() => setReviewDialogBookingId(session.id)}
+                          >
+                            Give Review
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </div>

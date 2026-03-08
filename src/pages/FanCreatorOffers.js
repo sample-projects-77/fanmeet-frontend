@@ -37,11 +37,22 @@ function formatTimeRange(startTime, endTime) {
 /**
  * Build startTime ISO string for createBooking. The backend expects ISO 8601 and checks
  * that the time is in the future. We must include the creator's timezone offset so the
- * instant is unambiguous (e.g. "2026-03-08T04:57:00+05:00").
+ * instant is unambiguous (e.g. "2026-03-08T04:57:00+05:00"). Use the offer's title date
+ * when available ("Meeting on YYYY-MM-DD at HH:MM") so the booking is created for the
+ * same calendar date as the offer.
  */
 function buildStartTimeISO(offer) {
-  const dateRaw = (offer.date || '').toString();
-  const datePart = dateRaw.includes('T') ? dateRaw.split('T')[0] : dateRaw.split(' ')[0];
+  let datePart = '';
+  const title = (offer.title || '').toString();
+  const titleMatch = title.match(/Meeting on (\d{4}-\d{2}-\d{2}) at/);
+  if (titleMatch) {
+    datePart = titleMatch[1];
+  }
+  if (!datePart) {
+    const dateRaw = (offer.date || '').toString();
+    datePart = dateRaw.includes('T') ? dateRaw.split('T')[0] : dateRaw.split(' ')[0];
+    datePart = (datePart || '').substring(0, 10);
+  }
   const timeStr = (offer.startTime || '00:00').trim();
   const timePart = timeStr.length === 5 ? `${timeStr}:00` : timeStr;
   const tz = (offer.creatorTimezone || offer.timezone || '').toString().trim();

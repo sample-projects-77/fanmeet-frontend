@@ -13,7 +13,6 @@ import FanProfileEdit from './pages/FanProfileEdit';
 import FanChats from './pages/FanChats';
 import { FanCreators } from './pages/FanPlaceholder';
 import { FanAllSessions, CreatorAllSessions } from './pages/AllSessions';
-import { FanSessionDetail, CreatorSessionDetail } from './pages/SessionDetail';
 import { FanVideoCall, CreatorVideoCall } from './pages/VideoCall';
 import { FanChatConversationWithProvider } from './components/ChatConversation';
 import FanCreatorProfile from './pages/FanCreatorProfile';
@@ -58,7 +57,7 @@ function App() {
           <Route path="/fan/bookings" element={<FanAllSessions />} />
           <Route path="/fan/bookings/payment-return" element={<FanBookingPaymentReturn />} />
           <Route path="/fan/bookings/:bookingId/pay" element={<FanBookingPayment />} />
-          <Route path="/fan/bookings/:bookingId" element={<FanSessionDetail />} />
+          <Route path="/fan/bookings/:bookingId" element={<Navigate to="/fan/bookings" replace />} />
           <Route path="/fan/bookings/:bookingId/call" element={<FanVideoCall />} />
           <Route path="/fan/chats" element={<FanChats />} />
           <Route path="/fan/chats/:channelId" element={<FanChatConversationWithProvider />} />
@@ -85,7 +84,7 @@ function App() {
           <Route path="/creator/profile/blocked" element={<CreatorProfileBlocked />} />
           <Route path="/creator/reviews" element={<CreatorMyReviews />} />
           <Route path="/creator/bookings" element={<CreatorAllSessions />} />
-          <Route path="/creator/bookings/:bookingId" element={<CreatorSessionDetail />} />
+          <Route path="/creator/bookings/:bookingId" element={<Navigate to="/creator/bookings" replace />} />
           <Route path="/creator/bookings/:bookingId/call" element={<CreatorVideoCall />} />
           <Route path="/signup" element={<Navigate to="/" replace />} />
           </Routes>
