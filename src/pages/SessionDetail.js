@@ -7,6 +7,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorWidget from '../components/ErrorWidget';
 import './SessionDetail.css';
 
+/** Format UTC ISO from API in the user's local timezone. */
 function formatDateTime(iso) {
   if (!iso) return '—';
   try {

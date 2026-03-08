@@ -5,6 +5,7 @@ import CreatorNav from '../components/CreatorNav';
 import LoadingSpinner, { ButtonLoadingSpinner } from '../components/LoadingSpinner';
 import { DatePickerDialog } from '../components/DatePickerDialog';
 import { TimePickerDialog } from '../components/TimePickerDialog';
+import { localDateToOfferDateIso } from '../utils/dateTimeUtils';
 import './CreatorAddTimeSlot.css';
 
 function CreatorAddTimeSlot() {
@@ -65,24 +66,12 @@ function CreatorAddTimeSlot() {
     // Convert to cents
     const priceCents = Math.round(parsedPrice * 100);
 
-    // Build ISO date with local timezone offset. Backend stores the UTC calendar date of the
-    // start moment; for timezones ahead of UTC, "March 8 04:57 local" becomes March 7 23:57 UTC,
-    // so the backend stores March 7. Send the calendar date as the next day so the stored UTC
-    // date matches the intended local date (March 8).
-    const localDate = date;
-    const tzOffsetMinutes = localDate.getTimezoneOffset();
-    const offsetSign = tzOffsetMinutes <= 0 ? '+' : '-';
-    const absMinutes = Math.abs(tzOffsetMinutes);
-    const offsetHours = String(Math.floor(absMinutes / 60)).padStart(2, '0');
-    const offsetMins = String(absMinutes % 60).padStart(2, '0');
-    const sendDate = new Date(localDate);
-    if (tzOffsetMinutes < 0) {
-      sendDate.setDate(sendDate.getDate() + 1);
+    // Send date as local midnight with user's timezone offset so backend stores UTC correctly.
+    const dateIso = localDateToOfferDateIso(date);
+    if (!dateIso) {
+      setError('Please select a valid date.');
+      return;
     }
-    const year = sendDate.getFullYear();
-    const month = String(sendDate.getMonth() + 1).padStart(2, '0');
-    const day = String(sendDate.getDate()).padStart(2, '0');
-    const dateIso = `${year}-${month}-${day}T00:00:00${offsetSign}${offsetHours}:${offsetMins}`;
 
     // Compute end time from start time and duration in minutes
     const [startH, startM] = startTime.split(':').map((v) => parseInt(v, 10));

@@ -5,6 +5,11 @@ import CreatorNav from '../components/CreatorNav';
 import LoadingSpinner from '../components/LoadingSpinner';
 import EmptyWidget from '../components/EmptyWidget';
 import ErrorWidget from '../components/ErrorWidget';
+import {
+  parseOfferSlotToUTC,
+  formatUTCDateToLocalDay,
+  formatUTCDateToLocalTime,
+} from '../utils/dateTimeUtils';
 import './CreatorOffers.css';
 
 function formatPrice(priceCents, currency = 'EUR') {
@@ -13,27 +18,25 @@ function formatPrice(priceCents, currency = 'EUR') {
   return `${value} ${currency}`;
 }
 
-/** Format date string (e.g. "2026-12-25" or ISO) to "Thursday, Dec 25" */
-function formatDay(dateStr) {
-  if (!dateStr) return '—';
-  try {
-    const iso = typeof dateStr === 'string' && dateStr.includes('T') ? dateStr : `${dateStr}T12:00:00`;
-    const d = new Date(iso);
-    if (Number.isNaN(d.getTime())) return dateStr;
-    const dayName = d.toLocaleDateString('en-US', { weekday: 'long' });
-    const monthShort = d.toLocaleDateString('en-US', { month: 'short' });
-    const day = d.getDate();
-    return `${dayName}, ${monthShort} ${day}`;
-  } catch {
-    return dateStr;
-  }
+/** Format offer date for display in user's local timezone (API returns creator TZ). */
+function formatOfferDay(offer) {
+  if (!offer?.date || !offer?.startTime) return '—';
+  const tz = (offer.creatorTimezone || offer.timezone || 'UTC').toString().trim();
+  const utcDate = parseOfferSlotToUTC(offer.date, offer.startTime, tz);
+  if (Number.isNaN(utcDate.getTime())) return (offer.date || '').toString();
+  return formatUTCDateToLocalDay(utcDate);
 }
 
-/** Format time range from startTime and endTime (e.g. "14:30", "15:00") */
-function formatTimeRange(startTime, endTime) {
-  if (!startTime && !endTime) return '—';
-  if (!startTime || !endTime) return startTime || endTime || '—';
-  return `${startTime} - ${endTime}`;
+/** Format offer time range in user's local timezone. */
+function formatOfferTimeRange(offer) {
+  if (!offer?.startTime && !offer?.endTime) return '—';
+  const tz = (offer.creatorTimezone || offer.timezone || 'UTC').toString().trim();
+  const dateStr = (offer.date || '').toString().split('T')[0].split(' ')[0].substring(0, 10);
+  const startUtc = parseOfferSlotToUTC(dateStr, offer.startTime || '00:00', tz);
+  const endUtc = parseOfferSlotToUTC(dateStr, offer.endTime || '00:00', tz);
+  if (Number.isNaN(startUtc.getTime()) || Number.isNaN(endUtc.getTime()))
+    return [offer.startTime, offer.endTime].filter(Boolean).join(' - ') || '—';
+  return `${formatUTCDateToLocalTime(startUtc)} - ${formatUTCDateToLocalTime(endUtc)}`;
 }
 
 function CreatorOffers() {
@@ -132,8 +135,8 @@ function CreatorOffers() {
                 <tbody>
                   {offers.map((offer) => (
                     <tr key={offer.id}>
-                      <td>{formatDay(offer.date)}</td>
-                      <td>{formatTimeRange(offer.startTime, offer.endTime)}</td>
+                      <td>{formatOfferDay(offer)}</td>
+                      <td>{formatOfferTimeRange(offer)}</td>
                       <td>{(offer.duration ?? offer.durationMinutes) != null ? `${offer.duration ?? offer.durationMinutes} Min.` : '—'}</td>
                       <td className="creator-offers-price">
                         {formatPrice(offer.priceCents, offer.currency)}

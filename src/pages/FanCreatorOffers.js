@@ -5,6 +5,12 @@ import FanNav from '../components/FanNav';
 import LoadingSpinner from '../components/LoadingSpinner';
 import EmptyWidget from '../components/EmptyWidget';
 import ErrorWidget from '../components/ErrorWidget';
+import {
+  parseOfferSlotToUTC,
+  formatUTCDateToLocalDay,
+  formatUTCDateToLocalTime,
+  offerSlotStartToUTCISO,
+} from '../utils/dateTimeUtils';
 import './CreatorOffers.css';
 
 function formatPrice(priceCents, currency = 'EUR') {
@@ -13,67 +19,25 @@ function formatPrice(priceCents, currency = 'EUR') {
   return `${value} ${currency}`;
 }
 
-function formatDay(dateStr) {
-  if (!dateStr) return '—';
-  try {
-    const iso = typeof dateStr === 'string' && dateStr.includes('T') ? dateStr : `${dateStr}T12:00:00`;
-    const d = new Date(iso);
-    if (Number.isNaN(d.getTime())) return dateStr;
-    const dayName = d.toLocaleDateString('en-US', { weekday: 'long' });
-    const monthShort = d.toLocaleDateString('en-US', { month: 'short' });
-    const day = d.getDate();
-    return `${dayName}, ${monthShort} ${day}`;
-  } catch {
-    return dateStr;
-  }
+/** Format offer date for display in user's local timezone. */
+function formatOfferDay(offer) {
+  if (!offer?.date || !offer?.startTime) return '—';
+  const tz = (offer.creatorTimezone || offer.timezone || 'UTC').toString().trim();
+  const utcDate = parseOfferSlotToUTC(offer.date, offer.startTime, tz);
+  if (Number.isNaN(utcDate.getTime())) return (offer.date || '').toString();
+  return formatUTCDateToLocalDay(utcDate);
 }
 
-function formatTimeRange(startTime, endTime) {
-  if (!startTime && !endTime) return '—';
-  if (!startTime || !endTime) return startTime || endTime || '—';
-  return `${startTime} - ${endTime}`;
-}
-
-/**
- * Build startTime ISO string for createBooking. The backend expects ISO 8601 and checks
- * that the time is in the future. We must include the creator's timezone offset so the
- * instant is unambiguous (e.g. "2026-03-08T04:57:00+05:00"). Use the offer's title date
- * when available ("Meeting on YYYY-MM-DD at HH:MM") so the booking is created for the
- * same calendar date as the offer.
- */
-function buildStartTimeISO(offer) {
-  let datePart = '';
-  const title = (offer.title || '').toString();
-  const titleMatch = title.match(/Meeting on (\d{4}-\d{2}-\d{2}) at/);
-  if (titleMatch) {
-    datePart = titleMatch[1];
-  }
-  if (!datePart) {
-    const dateRaw = (offer.date || '').toString();
-    datePart = dateRaw.includes('T') ? dateRaw.split('T')[0] : dateRaw.split(' ')[0];
-    datePart = (datePart || '').substring(0, 10);
-  }
-  const timeStr = (offer.startTime || '00:00').trim();
-  const timePart = timeStr.length === 5 ? `${timeStr}:00` : timeStr;
-  const tz = (offer.creatorTimezone || offer.timezone || '').toString().trim();
-  const offset = parseTimezoneOffset(tz);
-  if (offset !== null) {
-    const sign = offset >= 0 ? '+' : '-';
-    const h = String(Math.floor(Math.abs(offset) / 60)).padStart(2, '0');
-    const m = String(Math.abs(offset) % 60).padStart(2, '0');
-    return `${datePart}T${timePart}${sign}${h}:${m}`;
-  }
-  return `${datePart}T${timePart}`;
-}
-
-function parseTimezoneOffset(tz) {
-  if (!tz) return null;
-  const m = tz.trim().match(/^UTC([+-])(\d{1,2}):(\d{2})$/);
-  if (!m) return null;
-  const sign = m[1] === '+' ? 1 : -1;
-  const hours = parseInt(m[2], 10);
-  const mins = parseInt(m[3], 10);
-  return sign * (hours * 60 + mins);
+/** Format offer time range in user's local timezone. */
+function formatOfferTimeRange(offer) {
+  if (!offer?.startTime && !offer?.endTime) return '—';
+  const tz = (offer.creatorTimezone || offer.timezone || 'UTC').toString().trim();
+  const dateStr = (offer.date || '').toString().split('T')[0].split(' ')[0].substring(0, 10);
+  const startUtc = parseOfferSlotToUTC(dateStr, offer.startTime || '00:00', tz);
+  const endUtc = parseOfferSlotToUTC(dateStr, offer.endTime || '00:00', tz);
+  if (Number.isNaN(startUtc.getTime()) || Number.isNaN(endUtc.getTime()))
+    return [offer.startTime, offer.endTime].filter(Boolean).join(' - ') || '—';
+  return `${formatUTCDateToLocalTime(startUtc)} - ${formatUTCDateToLocalTime(endUtc)}`;
 }
 
 function FanCreatorOffers() {
@@ -133,7 +97,7 @@ function FanCreatorOffers() {
   const handleBookNow = async (offer) => {
     const rawCreatorId = creatorId.toString().replace(/^creator_/, '');
     const rawOfferId = (offer.id || '').replace(/^offer_/, '');
-    const startTimeISO = buildStartTimeISO(offer);
+    const startTimeISO = offerSlotStartToUTCISO(offer);
     setBookingInProgress(offer.id);
     setError(null);
     try {
@@ -193,8 +157,8 @@ function FanCreatorOffers() {
                 <tbody>
                   {bookableOffers.map((offer) => (
                     <tr key={offer.id}>
-                      <td>{formatDay(offer.date)}</td>
-                      <td>{formatTimeRange(offer.startTime, offer.endTime)}</td>
+                      <td>{formatOfferDay(offer)}</td>
+                      <td>{formatOfferTimeRange(offer)}</td>
                       <td>{(offer.duration ?? offer.durationMinutes) != null ? `${offer.duration ?? offer.durationMinutes} Min.` : '—'}</td>
                       <td className="creator-offers-price">
                         {formatPrice(offer.priceCents, offer.currency)}

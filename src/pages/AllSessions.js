@@ -42,20 +42,14 @@ const VideoIcon = () => (
 );
 
 /**
- * Format date for display. Use UTC when showing bookings so the calendar date
- * matches the offer (avoids "booking 9th / offer 8th" timezone shift).
+ * Format date for display in the user's local timezone.
+ * API returns startTime as UTC ISO; we show it in the viewer's machine timezone.
  */
-function formatCardDate(iso, useUTCDate = false) {
+function formatCardDate(iso) {
   if (!iso) return '—';
   try {
     const d = new Date(iso);
     if (Number.isNaN(d.getTime())) return iso;
-    if (useUTCDate) {
-      const y = d.getUTCFullYear();
-      const m = d.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' });
-      const day = d.getUTCDate();
-      return `${day} ${m} ${y}`;
-    }
     return d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
   } catch {
     return iso;
@@ -63,8 +57,8 @@ function formatCardDate(iso, useUTCDate = false) {
 }
 
 /**
- * Format time range. Use UTC when showing bookings so the time aligns with the
- * session date (avoids timezone shift).
+ * Format time range in the user's local timezone.
+ * startIso is UTC from API; we display in the viewer's machine timezone.
  */
 function formatTimeRange(startIso, durationMinutes) {
   if (!startIso) return '—';
