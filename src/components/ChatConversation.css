@@ -98,7 +98,7 @@
   --str-chat__message-textarea-background-color: var(--bg-secondary);
   --str-chat__message-textarea-border-inline-start: 1px solid rgba(255, 255, 255, 0.25);
   --str-chat__message-textarea-border-inline-end: 1px solid rgba(255, 255, 255, 0.25);
-  --str-chat__message-textarea-border-block-start: 1px solid rgba(255, 255, 255, 0.25);
+  --str-chat__message-textarea-border-block-start: none;
   --str-chat__message-textarea-border-block-end: 1px solid rgba(255, 255, 255, 0.25);
   --str-chat__message-textarea-border-radius: var(--radius);
   --str-chat__message-textarea-color: var(--text-primary);
@@ -107,6 +107,8 @@
   --str-chat__message-send-color: #1a1a1a;
   --str-chat__message-send-border-radius: var(--radius);
   --str-chat__message-input-tools-color: var(--text-primary);
+  /* Image/attachment: no yellow or extra background when sent */
+  --str-chat__image-attachment-background-color: transparent;
 }
 
 /* Date separator: no gray bar – transparent, date text only */
@@ -339,6 +341,22 @@
   filter: drop-shadow(1px 0 0 rgba(0, 0, 0, 0.18));
 }
 
+/* Sent image/attachment: no yellow bubble – transparent so image stands alone */
+.chat-conversation-stream .str-chat__message.str-chat__message--me .str-chat__message-bubble:has([class*="attachment"]) {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  min-height: 0 !important;
+  min-width: 0 !important;
+}
+.chat-conversation-stream .str-chat__message.str-chat__message--me .str-chat__message-bubble:has([class*="attachment"])::after {
+  display: none !important;
+}
+.chat-conversation-stream .str-chat__message.str-chat__message--me [class*="attachment"] {
+  background: transparent !important;
+  border: none !important;
+}
+
 /* Avatar next to messages: dark blue circle with white border (Flutter) */
 .chat-conversation-stream .str-chat__message-sender-avatar,
 .chat-conversation-stream .str-chat__message.str-chat__message--other .str-chat__avatar {
@@ -459,6 +477,14 @@
   border: 1px solid rgba(255, 255, 255, 0.25);
   background: var(--bg-secondary);
 }
+/* When attachment preview is shown: remove the inner line below the preview (above "Type a message") */
+.chat-conversation-stream .str-chat__message-input:has([class*="preview"]) .str-chat__message-textarea-container,
+.chat-conversation-stream .str-chat__message-input:has([class*="preview"]) .str-chat__message-textarea-with-emoji-picker {
+  border-top: none !important;
+}
+.chat-conversation-stream .str-chat__message-input [class*="preview"] {
+  border-bottom: none !important;
+}
 /* Send button only: yellow (brand), dark icon */
 .chat-conversation-stream .str-chat__message-input .str-chat__send-button {
   background: var(--secondary-color) !important;
@@ -472,6 +498,7 @@
   align-items: center;
   justify-content: center;
   border: none;
+  margin-inline-start: 10px;
 }
 .chat-conversation-stream .str-chat__send-button svg {
   fill: #1a1a1a !important;
