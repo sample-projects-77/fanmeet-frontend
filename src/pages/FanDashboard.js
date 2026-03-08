@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { dashboardAPI } from '../services/api';
 import FanNav from '../components/FanNav';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -7,6 +8,7 @@ import ErrorWidget from '../components/ErrorWidget';
 import './FanDashboard.css';
 
 function FanDashboard() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [data, setData] = useState(null);
@@ -35,10 +37,10 @@ function FanDashboard() {
         if (res.StatusCode === 200 && res.data) {
           setData(res.data);
         } else {
-          setError(res.error || 'Failed to load dashboard');
+          setError(res.error || t('dashboard.failedToLoad'));
         }
       } catch (err) {
-        setError(err.response?.data?.error || err.message || 'Something went wrong');
+        setError(err.response?.data?.error || err.message || t('common.errorGeneric'));
       } finally {
         setLoading(false);
       }
@@ -57,10 +59,10 @@ function FanDashboard() {
       if (res.StatusCode === 200 && res.data) {
         setData(res.data);
       } else {
-        setError(res.error || 'Failed to load dashboard');
+        setError(res.error || t('dashboard.failedToLoad'));
       }
     } catch (err) {
-      setError(err.response?.data?.error || err.message || 'Something went wrong');
+      setError(err.response?.data?.error || err.message || t('common.errorGeneric'));
     } finally {
       setLoading(false);
     }
@@ -115,9 +117,9 @@ function FanDashboard() {
               <SparklesIcon />
             </div>
             <div className="fan-hero-text">
-              <h1 className="fan-hero-title">Fan Dashboard</h1>
+              <h1 className="fan-hero-title">{t('dashboard.fanTitle')}</h1>
               <p className="fan-hero-welcome">
-                Welcome back, {user?.userName ?? 'Fan'}
+                {t('home.welcomeBack', { name: user?.userName ?? t('home.fan') })}
               </p>
             </div>
           </section>
@@ -125,24 +127,24 @@ function FanDashboard() {
           <section className="fan-overview">
             <h2 className="fan-overview-title">
               <span className="fan-overview-accent" aria-hidden />
-              Fan Overview
+              {t('dashboard.fanOverview')}
             </h2>
             <div className="fan-stats-grid">
               <StatCard
                 icon={<CalendarIcon />}
                 value={stats.sessions}
-                label="Sessions"
+                label={t('dashboard.sessions')}
                 variant="blue"
                 to="/fan/bookings"
-                linkAria="View all sessions"
+                linkAria={t('dashboard.viewAllSessions')}
               />
               <StatCard
                 icon={<StarIcon />}
                 value={stats.rating.toFixed(1)}
-                label="Rating"
+                label={t('dashboard.rating')}
                 variant="gold"
                 to="/fan/reviews"
-                linkAria="View reviews"
+                linkAria={t('dashboard.viewReviews')}
               />
             </div>
           </section>
@@ -150,7 +152,7 @@ function FanDashboard() {
           <section className="fan-actions">
             <Link to="/fan/search" className="fan-action-card">
               <span className="fan-action-icon"><PeopleIcon /></span>
-              <span className="fan-action-label">Browse creators</span>
+              <span className="fan-action-label">{t('dashboard.browseCreators')}</span>
               <span className="fan-action-arrow">→</span>
             </Link>
           </section>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { dashboardAPI } from '../services/api';
 import CreatorNav from '../components/CreatorNav';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -7,6 +8,7 @@ import ErrorWidget from '../components/ErrorWidget';
 import './CreatorDashboard.css';
 
 function CreatorDashboard() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [data, setData] = useState(null);
@@ -35,10 +37,10 @@ function CreatorDashboard() {
         if (res.StatusCode === 200 && res.data) {
           setData(res.data);
         } else {
-          setError(res.error || 'Failed to load dashboard');
+          setError(res.error || t('dashboard.failedToLoad'));
         }
       } catch (err) {
-        setError(err.response?.data?.error || err.message || 'Something went wrong');
+        setError(err.response?.data?.error || err.message || t('common.errorGeneric'));
       } finally {
         setLoading(false);
       }
@@ -57,10 +59,10 @@ function CreatorDashboard() {
       if (res.StatusCode === 200 && res.data) {
         setData(res.data);
       } else {
-        setError(res.error || 'Failed to load dashboard');
+        setError(res.error || t('dashboard.failedToLoad'));
       }
     } catch (err) {
-      setError(err.response?.data?.error || err.message || 'Something went wrong');
+      setError(err.response?.data?.error || err.message || t('common.errorGeneric'));
     } finally {
       setLoading(false);
     }
@@ -108,9 +110,9 @@ function CreatorDashboard() {
               ✨
             </div>
             <div className="creator-dashboard-welcome-text">
-              <h1 className="creator-dashboard-welcome-title">Creator Dashboard</h1>
+              <h1 className="creator-dashboard-welcome-title">{t('dashboard.creatorTitle')}</h1>
               <p className="creator-dashboard-welcome-subtitle">
-                Welcome back, {user?.userName ?? 'Creator'}
+                {t('home.welcomeBack', { name: user?.userName ?? t('home.creator') })}
               </p>
             </div>
           </header>
@@ -120,28 +122,28 @@ function CreatorDashboard() {
           )}
 
           <section className="creator-overview">
-            <h2 className="creator-overview-title">Creator Overview</h2>
+            <h2 className="creator-overview-title">{t('dashboard.creatorOverview')}</h2>
             <div className="creator-metrics">
             <div className="creator-metric-card creator-metric-card--earnings">
               <div className="creator-metric-icon-wrap creator-metric-icon-wrap--earnings" aria-hidden>
                 <CoinIcon />
               </div>
               <span className="creator-metric-value">€{Number(earnings).toFixed(0).replace('.', ',')}</span>
-              <span className="creator-metric-label">Earnings</span>
+              <span className="creator-metric-label">{t('dashboard.earnings')}</span>
             </div>
-            <Link to="/creator/bookings" className="creator-metric-card creator-metric-card--sessions" aria-label="View all sessions">
+            <Link to="/creator/bookings" className="creator-metric-card creator-metric-card--sessions" aria-label={t('dashboard.viewAllSessions')}>
               <div className="creator-metric-icon-wrap creator-metric-icon-wrap--sessions" aria-hidden>
                 <CalendarIcon />
               </div>
               <span className="creator-metric-value">{sessions}</span>
-              <span className="creator-metric-label">Sessions</span>
+              <span className="creator-metric-label">{t('dashboard.sessions')}</span>
             </Link>
-            <Link to="/creator/reviews" className="creator-metric-card creator-metric-card--rating" aria-label={`Rating: ${rating.toFixed(1)}. View reviews`}>
+            <Link to="/creator/reviews" className="creator-metric-card creator-metric-card--rating" aria-label={`${t('dashboard.rating')}: ${rating.toFixed(1)}. ${t('dashboard.viewReviews')}`}>
               <div className="creator-metric-icon-wrap creator-metric-icon-wrap--rating" aria-hidden>
                 <StarIcon />
               </div>
               <span className="creator-metric-value">{rating.toFixed(1)}</span>
-              <span className="creator-metric-label">Rating</span>
+              <span className="creator-metric-label">{t('dashboard.rating')}</span>
             </Link>
             </div>
           </section>
@@ -151,7 +153,7 @@ function CreatorDashboard() {
               <span className="creator-action-icon-wrap creator-action-icon-wrap--offers">
                 <PeopleIcon />
               </span>
-              <span className="creator-action-label">My Offers</span>
+              <span className="creator-action-label">{t('dashboard.myOffers')}</span>
               <span className="creator-action-arrow-wrap" aria-hidden>
                 <ArrowIcon />
               </span>
@@ -160,7 +162,7 @@ function CreatorDashboard() {
               <span className="creator-action-icon-wrap creator-action-icon-wrap--edit">
                 <EditIcon />
               </span>
-              <span className="creator-action-label">Edit Profile</span>
+              <span className="creator-action-label">{t('profile.editProfile')}</span>
               <span className="creator-action-arrow-wrap" aria-hidden>
                 <ArrowIcon />
               </span>

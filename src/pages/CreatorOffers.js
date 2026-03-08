@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { offerAPI } from '../services/api';
 import CreatorNav from '../components/CreatorNav';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -18,13 +19,13 @@ function formatPrice(priceCents, currency = 'EUR') {
   return `${value} ${currency}`;
 }
 
-/** Format offer date for display in user's local timezone (API returns creator TZ). */
-function formatOfferDay(offer) {
+/** Format offer date for display in user's local timezone (API returns creator TZ). locale for day/month language. */
+function formatOfferDay(offer, locale) {
   if (!offer?.date || !offer?.startTime) return '—';
   const tz = (offer.creatorTimezone || offer.timezone || 'UTC').toString().trim();
   const utcDate = parseOfferSlotToUTC(offer.date, offer.startTime, tz);
   if (Number.isNaN(utcDate.getTime())) return (offer.date || '').toString();
-  return formatUTCDateToLocalDay(utcDate);
+  return formatUTCDateToLocalDay(utcDate, locale);
 }
 
 /** Format offer time range in user's local timezone. */
@@ -40,8 +41,10 @@ function formatOfferTimeRange(offer) {
 }
 
 function CreatorOffers() {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const locale = i18n.language === 'de' ? 'de-DE' : 'en-US';
   const [offers, setOffers] = useState([]);
   const [pagination, setPagination] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -78,16 +81,16 @@ function CreatorOffers() {
         setOffers(res.data.offers || []);
         setPagination(res.data.pagination || null);
       } else {
-        setError(res.error || 'Failed to load offers');
+        setError(res.error || t('offers.failedToLoad'));
         setOffers([]);
       }
     } catch (err) {
-      setError(err.response?.data?.error || err.message || 'Something went wrong');
+      setError(err.response?.data?.error || err.message || t('common.errorGeneric'));
       setOffers([]);
     } finally {
       setLoading(false);
     }
-  }, [user?.id]);
+  }, [user?.id, t]);
 
   useEffect(() => {
     fetchOffers();
@@ -107,10 +110,10 @@ function CreatorOffers() {
       <main className="creator-offers-main">
         <div className="creator-offers-container">
           <header className="creator-offers-header">
-            <Link to="/creator/dashboard" className="creator-offers-back" aria-label="Back">
+            <Link to="/creator/dashboard" className="creator-offers-back" aria-label={t('common.back')}>
               ←
             </Link>
-            <h1 className="creator-offers-title">Set Your Availability</h1>
+            <h1 className="creator-offers-title">{t('availability.setTitle')}</h1>
           </header>
 
           <div className="creator-offers-divider" aria-hidden />
@@ -120,24 +123,24 @@ function CreatorOffers() {
           ) : loading ? (
             <LoadingSpinner />
           ) : offers.length === 0 ? (
-            <EmptyWidget text="You have no time slots yet." />
+            <EmptyWidget text={t('availability.noSlots')} />
           ) : (
             <div className="creator-offers-table-wrap">
               <table className="creator-offers-table">
                 <thead>
                   <tr>
-                    <th className="creator-offers-th-day">Day</th>
-                    <th>Time</th>
-                    <th>Duration</th>
-                    <th className="creator-offers-th-price">Price</th>
+                    <th className="creator-offers-th-day">{t('availability.day')}</th>
+                    <th>{t('offers.time')}</th>
+                    <th>{t('offers.duration')}</th>
+                    <th className="creator-offers-th-price">{t('offers.price')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {offers.map((offer) => (
                     <tr key={offer.id}>
-                      <td>{formatOfferDay(offer)}</td>
+                      <td>{formatOfferDay(offer, locale)}</td>
                       <td>{formatOfferTimeRange(offer)}</td>
-                      <td>{(offer.duration ?? offer.durationMinutes) != null ? `${offer.duration ?? offer.durationMinutes} Min.` : '—'}</td>
+                      <td>{(offer.duration ?? offer.durationMinutes) != null ? `${offer.duration ?? offer.durationMinutes} ${t('availability.minAbbr')}` : '—'}</td>
                       <td className="creator-offers-price">
                         {formatPrice(offer.priceCents, offer.currency)}
                       </td>
@@ -154,7 +157,7 @@ function CreatorOffers() {
               className="creator-offers-add-slot-button"
               onClick={() => navigate('/creator/offers/add-time-slot')}
             >
-              Add Time Slot
+              {t('availability.addTimeSlot')}
             </button>
           </div>
         </div>

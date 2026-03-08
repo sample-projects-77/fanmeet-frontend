@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
@@ -15,6 +16,7 @@ function formatPrice(priceCents, currency = 'EUR') {
 }
 
 function PaymentForm({ amountCents, currency, bookingId, onSuccess, onError }) {
+  const { t } = useTranslation();
   const stripe = useStripe();
   const elements = useElements();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -39,13 +41,13 @@ function PaymentForm({ amountCents, currency, bookingId, onSuccess, onError }) {
         },
       });
       if (error) {
-        setMessage(error.message || 'Payment failed.');
+        setMessage(error.message || t('booking.paymentFailedShort'));
         onError?.(error);
       } else {
         onSuccess?.();
       }
     } catch (err) {
-      setMessage(err.message || 'Something went wrong.');
+      setMessage(err.message || t('common.errorGeneric'));
       onError?.(err);
     } finally {
       setIsSubmitting(false);
@@ -72,13 +74,14 @@ function PaymentForm({ amountCents, currency, bookingId, onSuccess, onError }) {
         disabled={!stripe || !elements || isSubmitting || !isPaymentComplete}
         aria-busy={isSubmitting}
       >
-        {isSubmitting ? <ButtonLoadingSpinner /> : `Pay ${formatPrice(amountCents, currency)}`}
+        {isSubmitting ? <ButtonLoadingSpinner /> : t('booking.pay', { amount: formatPrice(amountCents, currency) })}
       </button>
     </form>
   );
 }
 
 function FanBookingPayment() {
+  const { t } = useTranslation();
   const { bookingId } = useParams();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -112,7 +115,7 @@ function FanBookingPayment() {
       try {
         const keyRes = await paymentAPI.getStripePublishableKey();
         if (keyRes.StatusCode !== 200 || !keyRes.data?.publishableKey) {
-          if (!cancelled) setError(keyRes.error || 'Stripe is not configured.');
+          if (!cancelled) setError(keyRes.error || t('booking.stripeNotConfigured'));
           return;
         }
 
@@ -121,7 +124,7 @@ function FanBookingPayment() {
 
         const payRes = await paymentAPI.createPayment(bookingId);
         if (payRes.StatusCode !== 200 || !payRes.data?.clientSecret) {
-          if (!cancelled) setError(payRes.error || 'Could not start payment.');
+          if (!cancelled) setError(payRes.error || t('booking.bookingNotFound'));
           return;
         }
 
@@ -134,7 +137,7 @@ function FanBookingPayment() {
         }
       } catch (err) {
         if (!cancelled) {
-          setError(err.response?.data?.error || err.message || 'Something went wrong.');
+          setError(err.response?.data?.error || err.message || t('common.errorGeneric'));
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -161,16 +164,16 @@ function FanBookingPayment() {
       <main className="fan-booking-payment-main">
         <div className="fan-booking-payment-container">
           <header className="fan-booking-payment-header">
-            <Link to="/fan/bookings" className="fan-booking-payment-back" aria-label="Back to bookings">
-              ← Back to bookings
+            <Link to="/fan/bookings" className="fan-booking-payment-back" aria-label={t('booking.goToMyBookings')}>
+              {t('booking.backToBookings')}
             </Link>
-            <h1 className="fan-booking-payment-title">Complete payment</h1>
+            <h1 className="fan-booking-payment-title">{t('booking.completePayment')}</h1>
           </header>
 
           {error && (
             <div className="fan-booking-payment-error-box" role="alert">
               <p>{error}</p>
-              <Link to="/fan/bookings" className="fan-booking-payment-link">Go to my bookings</Link>
+              <Link to="/fan/bookings" className="fan-booking-payment-link">{t('booking.goToMyBookings')}</Link>
             </div>
           )}
 
@@ -179,10 +182,10 @@ function FanBookingPayment() {
           {!loading && !error && paymentData && stripePromise && (
             <div className="fan-booking-payment-card">
               <p className="fan-booking-payment-summary">
-                Total due: <strong>{formatPrice(paymentData.amountCents, paymentData.currency)}</strong>
+                {t('booking.totalDue')}: <strong>{formatPrice(paymentData.amountCents, paymentData.currency)}</strong>
               </p>
               <p className="fan-booking-payment-note">
-                Your card will be authorized now. The amount will be charged when the session ends.
+                {t('booking.cardNote')}
               </p>
               <Elements
                 stripe={stripePromise}

@@ -65,13 +65,14 @@ export function parseOfferSlotToUTC(dateStr, timeStr, creatorTimezone) {
 /**
  * Format a UTC Date for display in the user's local timezone (day only).
  * @param {Date|string} utcDate - Date instance or ISO string from API
- * @returns {string} e.g. "Thursday, Mar 8"
+ * @param {string} [locale] - BCP 47 locale (e.g. 'de', 'en-US') for language-specific day/month names; omit for browser default
+ * @returns {string} e.g. "Thursday, Mar 8" or "Donnerstag, 8. März"
  */
-export function formatUTCDateToLocalDay(utcDate) {
+export function formatUTCDateToLocalDay(utcDate, locale) {
   if (!utcDate) return '—';
   const d = typeof utcDate === 'string' ? new Date(utcDate) : utcDate;
   if (Number.isNaN(d.getTime())) return '—';
-  return d.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
+  return d.toLocaleDateString(locale || undefined, { weekday: 'long', month: 'short', day: 'numeric' });
 }
 
 /**

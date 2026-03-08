@@ -14,6 +14,7 @@ export default function DeleteAccountDialog({
   message = 'Are you sure you want to delete your account? This action cannot be undone.',
   cancelLabel = 'Cancel',
   confirmLabel = 'Delete Account',
+  deletingLabel = 'Deleting…',
 }) {
   if (!open) return null;
 
@@ -53,7 +54,7 @@ export default function DeleteAccountDialog({
             onClick={handleConfirm}
             disabled={deleting}
           >
-            {deleting ? 'Deleting…' : confirmLabel}
+            {deleting ? deletingLabel : confirmLabel}
           </button>
         </div>
       </div>

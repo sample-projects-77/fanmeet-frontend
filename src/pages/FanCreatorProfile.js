@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { profileAPI, chatAPI } from '../services/api';
 import { DEFAULT_AVATAR_URL } from '../constants';
 import FanNav from '../components/FanNav';
@@ -12,6 +13,7 @@ const AVATAR_SIZE = 100;
 const AVATAR_OVERLAP = 40;
 
 function FanCreatorProfile() {
+  const { t } = useTranslation();
   const { creatorId } = useParams();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -43,14 +45,14 @@ function FanCreatorProfile() {
       if (res.StatusCode === 200 && res.data) {
         setCreator(res.data);
       } else {
-        setError(res.error || 'Creator not found');
+        setError(res.error || t('creatorProfile.creatorNotFound'));
       }
     } catch (err) {
-      setError(err.response?.data?.error || err.message || 'Something went wrong');
+      setError(err.response?.data?.error || err.message || t('common.errorGeneric'));
     } finally {
       setLoading(false);
     }
-  }, [creatorId]);
+  }, [creatorId, t]);
 
   useEffect(() => {
     fetchCreator();
@@ -72,14 +74,14 @@ function FanCreatorProfile() {
       if (res.StatusCode === 200 && res.data?.channel?.id) {
         navigate(`/fan/chats/${res.data.channel.id}`);
       } else {
-        setError(res.error || 'Could not start chat');
+        setError(res.error || t('creatorProfile.couldNotStartChat'));
       }
     } catch (err) {
-      setError(err.response?.data?.error || err.message || 'Could not start chat');
+      setError(err.response?.data?.error || err.message || t('creatorProfile.couldNotStartChat'));
     } finally {
       setStartingChat(false);
     }
-  }, [creator, creatorId, navigate]);
+  }, [creator, creatorId, navigate, t]);
 
   if (!user) return null;
 
@@ -97,13 +99,12 @@ function FanCreatorProfile() {
         ) : error ? (
           <div className="fan-creator-details-error-wrap">
             <ErrorWidget errorText={error} onRetry={fetchCreator} />
-            <Link to="/fan/search" className="fan-creator-details-back-link">← Back to Search</Link>
+            <Link to="/fan/search" className="fan-creator-details-back-link">{t('creatorProfile.backToSearch')}</Link>
           </div>
         ) : creator ? (
           <div className="fan-creator-details-container">
-            {/* CreatorDetailsHeader */}
             <header className="fan-creator-details-header">
-              <Link to="/fan/search" className="fan-creator-details-back" aria-label="Back">←</Link>
+              <Link to="/fan/search" className="fan-creator-details-back" aria-label={t('common.back')}>←</Link>
               <div className="fan-creator-details-cover-wrap">
                 {hasCoverPhoto ? (
                   <div
@@ -119,9 +120,9 @@ function FanCreatorProfile() {
                 <img src={creator.avatarUrl || DEFAULT_AVATAR_URL} alt="" className="fan-creator-details-avatar-img" />
               </div>
               <div className="fan-creator-details-meta">
-                <h1 className="fan-creator-details-name">{creator.displayName || 'Creator'}</h1>
+                <h1 className="fan-creator-details-name">{creator.displayName || t('home.creator')}</h1>
                 <p className="fan-creator-details-category">{creator.category || ''}</p>
-                <p className="fan-creator-details-bio-line">{creator.bio?.trim() || 'No description yet.'}</p>
+                <p className="fan-creator-details-bio-line">{creator.bio?.trim() || t('creatorProfile.noDescription')}</p>
               </div>
             </header>
 
@@ -148,7 +149,7 @@ function FanCreatorProfile() {
                   <MessageIcon />
                 </span>
                 <span className="fan-creator-details-action-label">
-                  {startingChat ? 'Starting…' : 'Message'}
+                  {startingChat ? t('creatorProfile.starting') : t('creatorProfile.message')}
                 </span>
                 <span className="fan-creator-details-action-arrow-wrap">
                   <ArrowIcon />
@@ -158,7 +159,7 @@ function FanCreatorProfile() {
                 <span className="fan-creator-details-action-icon-wrap">
                   <OffersIcon />
                 </span>
-                <span className="fan-creator-details-action-label">See offers</span>
+                <span className="fan-creator-details-action-label">{t('creatorProfile.seeOffers')}</span>
                 <span className="fan-creator-details-action-arrow-wrap">
                   <ArrowIcon />
                 </span>
@@ -167,7 +168,7 @@ function FanCreatorProfile() {
                 <span className="fan-creator-details-action-icon-wrap">
                   <StarIcon />
                 </span>
-                <span className="fan-creator-details-action-label">See reviews</span>
+                <span className="fan-creator-details-action-label">{t('creatorProfile.seeReviews')}</span>
                 <span className="fan-creator-details-action-arrow-wrap">
                   <ArrowIcon />
                 </span>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { profileAPI } from '../services/api';
 import { DEFAULT_AVATAR_URL } from '../constants';
 import CreatorNav from '../components/CreatorNav';
@@ -11,6 +12,7 @@ import './CreatorSearch.css';
 const SEARCH_DEBOUNCE_MS = 350;
 
 function CreatorSearch() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [query, setQuery] = useState('');
@@ -48,27 +50,27 @@ function CreatorSearch() {
         setPagination(res.data.pagination || null);
       } else {
         if (!append) {
-          setError(res.error || 'Failed to load creators');
+          setError(res.error || t('search.failedToLoad'));
           setCreators([]);
         }
       }
     } catch (err) {
       if (!append) {
-        setError(err.response?.data?.error || err.message || 'Something went wrong');
+        setError(err.response?.data?.error || err.message || t('common.errorGeneric'));
         setCreators([]);
       }
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     if (user === null) return;
     const trimmed = query.trim();
-    const t = setTimeout(() => {
+    const timer = setTimeout(() => {
       fetchCreators(trimmed);
     }, trimmed ? SEARCH_DEBOUNCE_MS : 0);
-    return () => clearTimeout(t);
+    return () => clearTimeout(timer);
   }, [user, query, fetchCreators]);
 
   const handleSearchChange = (e) => {
@@ -83,17 +85,18 @@ function CreatorSearch() {
 
   if (!user) return null;
 
+  const minLabel = t('common.min');
   const priceStr = (cents) =>
     cents != null ? `${(cents / 100).toFixed(0)} €` : '—';
   const durationStr = (durations) =>
-    durations?.length ? `${Math.min(...durations)} Min` : '—';
+    durations?.length ? `${Math.min(...durations)} ${minLabel}` : '—';
 
   return (
     <div className="creator-search-page">
       <CreatorNav active="search" user={user} onLogout={handleLogout} />
       <main className="creator-search-main">
         <div className="creator-search-container">
-          <h1 className="creator-search-title">Search</h1>
+          <h1 className="creator-search-title">{t('search.title')}</h1>
           <div className="creator-search-bar">
             <span className="creator-search-icon" aria-hidden>
               <SearchIcon />
@@ -101,18 +104,18 @@ function CreatorSearch() {
             <input
               type="search"
               className="creator-search-input"
-              placeholder="Search"
+              placeholder={t('search.placeholder')}
               value={query}
               onChange={handleSearchChange}
               autoComplete="off"
-              aria-label="Search creators"
+              aria-label={t('search.searchCreators')}
             />
           </div>
 
           <section className="creator-search-section">
             <h2 className="creator-search-section-title">
-              Popular Creators
-              <span className="creator-search-flame" aria-label="Popular">🔥</span>
+              {t('home.popularCreators')}
+              <span className="creator-search-flame" aria-label={t('search.popular')}>🔥</span>
             </h2>
             {error ? (
               <ErrorWidget
@@ -123,7 +126,7 @@ function CreatorSearch() {
               <LoadingSpinner />
             ) : creators.length === 0 ? (
               <EmptyWidget
-                text={query ? 'No creators match your search.' : 'No creators yet.'}
+                text={query ? t('search.noMatch') : t('search.noCreators')}
               />
             ) : (
               <div className="creator-search-grid">
@@ -161,7 +164,7 @@ function CreatorSearch() {
                   className="creator-search-load-more"
                   onClick={() => fetchCreators(query.trim(), pagination.currentPage + 1, true)}
                 >
-                  Load more
+                  {t('common.loadMore')}
                 </button>
               </div>
             )}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { profileAPI } from '../services/api';
 import { DEFAULT_AVATAR_URL } from '../constants';
 import CreatorNav from '../components/CreatorNav';
@@ -11,6 +12,7 @@ import './CreatorHome.css';
 const ITEMS_PER_PAGE = 20;
 
 function CreatorHome() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [creators, setCreators] = useState([]);
@@ -52,13 +54,13 @@ function CreatorHome() {
         setCurrentPage(pagination.currentPage ?? page);
       } else {
         if (!append) {
-          setError(res.error || 'Failed to load creators');
+          setError(res.error || t('search.failedToLoad'));
           setCreators([]);
         }
       }
     } catch (err) {
       if (!append) {
-        setError(err.response?.data?.error || err.message || 'Something went wrong');
+        setError(err.response?.data?.error || err.message || t('common.errorGeneric'));
         setCreators([]);
       }
     } finally {
@@ -98,10 +100,11 @@ function CreatorHome() {
 
   if (!user) return null;
 
-  const displayName = user?.userName ?? 'Creator';
+  const displayName = user?.userName ?? t('home.creator');
   const priceStr = (cents) => (cents != null ? `${(cents / 100).toFixed(0)} €` : '');
+  const minLabel = t('common.min');
   const durationStr = (durations) =>
-    durations?.length ? ` / ${Math.min(...durations)} Min` : '';
+    durations?.length ? ` / ${Math.min(...durations)} ${minLabel}` : '';
 
   return (
     <div className="creator-home-page">
@@ -109,23 +112,23 @@ function CreatorHome() {
       <main className="creator-home-main">
         <div className="creator-home-container">
           <section className="creator-home-hero">
-            <h1 className="creator-home-title">Fan Session</h1>
-            <p className="creator-home-welcome">Welcome back, {displayName}!</p>
-            <p className="creator-home-greeting">Nice to see you again 👋</p>
+            <h1 className="creator-home-title">{t('home.title')}</h1>
+            <p className="creator-home-welcome">{t('home.welcomeBack', { name: displayName })}</p>
+            <p className="creator-home-greeting">{t('home.greeting')}</p>
           </section>
 
           <section className="creator-home-section">
-            <h2 className="creator-home-section-title">Popular Creators</h2>
+            <h2 className="creator-home-section-title">{t('home.popularCreators')}</h2>
             {error && (
               <ErrorWidget errorText={error} onRetry={fetchCreators} />
             )}
             {!error && loading && <LoadingSpinner />}
             {!error && !loading && creators.length === 0 && (
-              <EmptyWidget text="No creators yet." />
+              <EmptyWidget text={t('home.noCreators')} />
             )}
             {!error && !loading && creators.length > 0 && (
               <>
-                <ul className="creator-home-creator-list" aria-label="Popular creators">
+                <ul className="creator-home-creator-list" aria-label={t('home.popularCreators')}>
                   {creators.map((c) => (
                     <li key={c.id}>
                       <Link to={`/creator/creators/${c.id}`} className="creator-home-creator-card">

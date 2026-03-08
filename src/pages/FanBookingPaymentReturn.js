@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import FanNav from '../components/FanNav';
 import './FanBookingPaymentReturn.css';
 
@@ -8,6 +9,7 @@ import './FanBookingPaymentReturn.css';
  * Stripe adds ?payment_intent_client_secret=...&redirect_status=succeeded|failed
  */
 function FanBookingPaymentReturn() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [user, setUser] = useState(null);
@@ -64,43 +66,42 @@ function FanBookingPaymentReturn() {
           {status === 'succeeded' && (
             <>
               <div className="fan-booking-payment-return-icon success" aria-hidden>✓</div>
-              <h1 className="fan-booking-payment-return-title">Payment confirmed</h1>
+              <h1 className="fan-booking-payment-return-title">{t('booking.paymentConfirmed')}</h1>
               <p className="fan-booking-payment-return-text">
-                Your card has been authorized. The amount will be charged when the session ends.
-                You can view your booking in My Bookings.
+                {t('booking.paymentConfirmedText')}
               </p>
             </>
           )}
           {status === 'failed' && (
             <>
               <div className="fan-booking-payment-return-icon failed" aria-hidden>✕</div>
-              <h1 className="fan-booking-payment-return-title">Payment failed</h1>
+              <h1 className="fan-booking-payment-return-title">{t('booking.paymentFailed')}</h1>
               <p className="fan-booking-payment-return-text">
-                The payment could not be completed. Please try again from My Bookings or choose another offer.
+                {t('booking.paymentFailedText')}
               </p>
             </>
           )}
           {status === 'processing' && (
             <>
               <div className="fan-booking-payment-return-icon processing" aria-hidden>⋯</div>
-              <h1 className="fan-booking-payment-return-title">Processing</h1>
+              <h1 className="fan-booking-payment-return-title">{t('booking.processing')}</h1>
               <p className="fan-booking-payment-return-text">
-                Your payment is being processed. We’ll update your booking shortly.
+                {t('booking.processingText')}
               </p>
             </>
           )}
           {status === 'unknown' && (
             <>
-              <h1 className="fan-booking-payment-return-title">Booking</h1>
+              <h1 className="fan-booking-payment-return-title">{t('booking.bookingTitle')}</h1>
               <p className="fan-booking-payment-return-text">
-                Check the status of your booking in My Bookings.
+                {t('booking.checkStatus')}
               </p>
             </>
           )}
           <Link to="/fan/bookings" className="fan-booking-payment-return-link">
-            Go to My Bookings
+            {t('booking.goToMyBookings')}
           </Link>
-          <p className="fan-booking-payment-return-redirect">Redirecting in a few seconds…</p>
+          <p className="fan-booking-payment-return-redirect">{t('booking.redirecting')}</p>
         </div>
       </main>
     </div>
@@ -108,3 +109,4 @@ function FanBookingPaymentReturn() {
 }
 
 export default FanBookingPaymentReturn;
+

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { offerAPI } from '../services/api';
 import CreatorNav from '../components/CreatorNav';
 import LoadingSpinner, { ButtonLoadingSpinner } from '../components/LoadingSpinner';
@@ -9,8 +10,10 @@ import { localDateToOfferDateIso } from '../utils/dateTimeUtils';
 import './CreatorAddTimeSlot.css';
 
 function CreatorAddTimeSlot() {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const dateLocale = i18n.language === 'de' ? 'de-DE' : 'en-US';
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -51,7 +54,7 @@ function CreatorAddTimeSlot() {
     setError('');
 
     if (!date || !startTime || !duration || !price) {
-      setError('Please fill in all required fields.');
+      setError(t('availability.fillAllFields'));
       return;
     }
 
@@ -59,7 +62,7 @@ function CreatorAddTimeSlot() {
       String(price).replace(',', '.').trim()
     );
     if (Number.isNaN(parsedPrice) || parsedPrice <= 0) {
-      setError('Please enter a valid price greater than 0.');
+      setError(t('availability.validPrice'));
       return;
     }
 
@@ -69,7 +72,7 @@ function CreatorAddTimeSlot() {
     // Send date as local midnight with user's timezone offset so backend stores UTC correctly.
     const dateIso = localDateToOfferDateIso(date);
     if (!dateIso) {
-      setError('Please select a valid date.');
+      setError(t('availability.validDate'));
       return;
     }
 
@@ -83,7 +86,7 @@ function CreatorAddTimeSlot() {
       startM < 0 ||
       startM > 59
     ) {
-      setError('Please enter a valid start time.');
+      setError(t('availability.validStartTime'));
       return;
     }
     const startTotal = startH * 60 + startM;
@@ -104,13 +107,13 @@ function CreatorAddTimeSlot() {
       if (res.StatusCode === 200 && res.data) {
         navigate('/creator/offers', { replace: true });
       } else {
-        setError(res.error || 'Failed to add time slot.');
+        setError(res.error || t('availability.failedToAdd'));
       }
     } catch (err) {
       setError(
         err.response?.data?.error ||
           err.message ||
-          'Something went wrong.'
+          t('common.errorGeneric')
       );
     } finally {
       setSubmitting(false);
@@ -134,14 +137,14 @@ function CreatorAddTimeSlot() {
       <main className="creator-add-slot-main">
         <div className="creator-add-slot-container">
           <header className="creator-add-slot-header">
-            <Link to="/creator/offers" className="creator-add-slot-back" aria-label="Back">
+            <Link to="/creator/offers" className="creator-add-slot-back" aria-label={t('common.back')}>
               ←
             </Link>
-            <h1 className="creator-add-slot-title">Add Time Slot</h1>
+            <h1 className="creator-add-slot-title">{t('availability.addTimeSlot')}</h1>
           </header>
 
           <p className="creator-add-slot-subtitle">
-            Plan a fan session by setting the day, time, duration, and price.
+            {t('availability.addSlotSubtitle')}
           </p>
 
           <form className="creator-add-slot-form" onSubmit={handleSubmit}>
@@ -152,7 +155,7 @@ function CreatorAddTimeSlot() {
             )}
 
             <div className="creator-add-slot-field">
-              <label htmlFor="date">Date</label>
+              <label htmlFor="date">{t('offers.date')}</label>
               <div
                 className="creator-add-slot-input-wrap creator-add-slot-trigger"
                 onClick={() => setShowDatePicker(true)}
@@ -160,12 +163,12 @@ function CreatorAddTimeSlot() {
                 tabIndex={0}
                 onKeyDown={(e) => e.key === 'Enter' && setShowDatePicker(true)}
                 id="date"
-                aria-label="Select date"
+                aria-label={t('availability.selectDate')}
               >
                 <span className={date ? '' : 'creator-add-slot-placeholder'}>
                   {date
-                    ? date.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })
-                    : 'mm/dd/yyyy'}
+                    ? date.toLocaleDateString(dateLocale, { month: '2-digit', day: '2-digit', year: 'numeric' })
+                    : (dateLocale === 'de-DE' ? 'TT/MM/JJJJ' : 'mm/dd/yyyy')}
                 </span>
               </div>
               {showDatePicker && (
@@ -181,7 +184,7 @@ function CreatorAddTimeSlot() {
             </div>
 
             <div className="creator-add-slot-field">
-              <label htmlFor="startTime">Start Time</label>
+              <label htmlFor="startTime">{t('availability.startTime')}</label>
               <div
                 className="creator-add-slot-input-wrap creator-add-slot-trigger creator-add-slot-time-wrap"
                 onClick={() => setShowTimePicker(true)}
@@ -189,7 +192,7 @@ function CreatorAddTimeSlot() {
                 tabIndex={0}
                 onKeyDown={(e) => e.key === 'Enter' && setShowTimePicker(true)}
                 id="startTime"
-                aria-label="Select start time"
+                aria-label={t('availability.selectStartTime')}
               >
                 <span className={startTime ? '' : 'creator-add-slot-placeholder'}>
                   {startTime || '--:--'}
@@ -203,8 +206,8 @@ function CreatorAddTimeSlot() {
               {showTimePicker && (
                 <TimePickerDialog
                   value={startTime}
-                  onConfirm={(t) => {
-                    setStartTime(t);
+                  onConfirm={(timeStr) => {
+                    setStartTime(timeStr);
                     setShowTimePicker(false);
                   }}
                   onCancel={() => setShowTimePicker(false)}
@@ -213,7 +216,7 @@ function CreatorAddTimeSlot() {
             </div>
 
             <div className="creator-add-slot-field">
-              <label>Duration</label>
+              <label>{t('offers.duration')}</label>
               <div className="creator-add-slot-duration-row">
                 {[15, 30, 60, 90].map((min) => (
                   <button
@@ -225,20 +228,20 @@ function CreatorAddTimeSlot() {
                     }
                     onClick={() => setDuration(min)}
                   >
-                    {min} Min
+                    {min} {t('common.min')}
                   </button>
                 ))}
               </div>
             </div>
 
             <div className="creator-add-slot-field">
-              <label htmlFor="price">Price (EUR) <span className="required">*</span></label>
+              <label htmlFor="price">{t('availability.priceEur')} <span className="required">*</span></label>
               <div className="creator-add-slot-input-wrap">
                 <input
                   id="price"
                   type="text"
                   inputMode="decimal"
-                  placeholder="e.g., 45.00"
+                  placeholder={t('availability.placeholderPrice')}
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
                   required
@@ -253,7 +256,7 @@ function CreatorAddTimeSlot() {
                 disabled={submitting}
                 aria-busy={submitting}
               >
-                {submitting ? <ButtonLoadingSpinner /> : 'Add Time Slot'}
+                {submitting ? <ButtonLoadingSpinner /> : t('availability.addTimeSlot')}
               </button>
             </div>
           </form>

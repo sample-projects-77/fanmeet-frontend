@@ -1,21 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { authAPI, userAPI } from '../services/api';
 import { DEFAULT_AVATAR_URL } from '../constants';
 import LoadingSpinner, { ButtonLoadingSpinner } from '../components/LoadingSpinner';
 import EmptyWidget from '../components/EmptyWidget';
+import { setAppLanguage, SUPPORTED } from '../i18n';
 import './FanPlaceholder.css';
 import './FanProfileEdit.css';
 
 function BackLink() {
+  const { t } = useTranslation();
   return (
     <header className="fan-placeholder-nav">
-      <Link to="/fan/profile">← Profile</Link>
+      <Link to="/fan/profile">← {t('nav.profile')}</Link>
     </header>
   );
 }
 
 export function FanProfileChangePassword() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [oldPassword, setOldPassword] = useState('');
@@ -44,7 +48,7 @@ export function FanProfileChangePassword() {
     setSuccess('');
 
     if (!oldPassword || !newPassword) {
-      setError('Please fill in both fields.');
+      setError(t('profileChangePassword.fillBoth'));
       return;
     }
 
@@ -52,17 +56,17 @@ export function FanProfileChangePassword() {
     try {
       const res = await authAPI.changePassword(oldPassword, newPassword);
       if (res.StatusCode === 200) {
-        setSuccess(res.data?.message || 'Password updated successfully.');
+        setSuccess(res.data?.message || t('profileChangePassword.success'));
         setOldPassword('');
         setNewPassword('');
       } else {
-        setError(res.error || 'Could not change password.');
+        setError(res.error || t('profileChangePassword.couldNotChange'));
       }
     } catch (err) {
       setError(
         err.response?.data?.error ||
           err.message ||
-          'Something went wrong.'
+          t('common.errorGeneric')
       );
     } finally {
       setSaving(false);
@@ -74,10 +78,10 @@ export function FanProfileChangePassword() {
   return (
     <div className="fan-profile-edit-page">
       <header className="fan-profile-edit-header">
-        <Link to="/fan/profile" className="fan-profile-edit-back" aria-label="Back">
+        <Link to="/fan/profile" className="fan-profile-edit-back" aria-label={t('common.back')}>
           ←
         </Link>
-        <h1 className="fan-profile-edit-title">Change Password</h1>
+        <h1 className="fan-profile-edit-title">{t('profileChangePassword.title')}</h1>
       </header>
 
       <main className="fan-profile-edit-main">
@@ -90,27 +94,27 @@ export function FanProfileChangePassword() {
           )}
 
           <div className="fan-profile-edit-field">
-            <label htmlFor="oldPassword">Current password <span className="required">*</span></label>
+            <label htmlFor="oldPassword">{t('profileChangePassword.currentPassword')} <span className="required">*</span></label>
             <input
               type="password"
               id="oldPassword"
               autoComplete="current-password"
               value={oldPassword}
               onChange={(e) => setOldPassword(e.target.value)}
-              placeholder="Enter current password"
+              placeholder={t('profileChangePassword.enterCurrent')}
               required
             />
           </div>
 
           <div className="fan-profile-edit-field">
-            <label htmlFor="newPassword">New password <span className="required">*</span></label>
+            <label htmlFor="newPassword">{t('profileChangePassword.newPassword')} <span className="required">*</span></label>
             <input
               type="password"
               id="newPassword"
               autoComplete="new-password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="Enter new password"
+              placeholder={t('profileChangePassword.enterNew')}
               required
             />
           </div>
@@ -121,7 +125,7 @@ export function FanProfileChangePassword() {
             disabled={saving}
             aria-busy={saving}
           >
-            {saving ? <ButtonLoadingSpinner /> : 'Save Password'}
+            {saving ? <ButtonLoadingSpinner /> : t('profileChangePassword.savePassword')}
           </button>
         </form>
       </main>
@@ -129,12 +133,8 @@ export function FanProfileChangePassword() {
   );
 }
 
-const LANGUAGE_OPTIONS = [
-  { value: 'en', label: 'English' },
-  { value: 'de', label: 'German' },
-];
-
 export function FanProfileLanguage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [locale, setLocale] = useState('en');
@@ -143,6 +143,8 @@ export function FanProfileLanguage() {
   const [success, setSuccess] = useState('');
   const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
   const languageDropdownRef = useRef(null);
+
+  const languageLabels = { en: t('language.english'), de: t('language.german') };
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -154,7 +156,7 @@ export function FanProfileLanguage() {
     try {
       const u = JSON.parse(userJson);
       setUser(u);
-      if (u.language && (u.language === 'en' || u.language === 'de')) {
+      if (u.language && SUPPORTED.includes(u.language)) {
         setLocale(u.language);
       }
     } catch {
@@ -182,18 +184,19 @@ export function FanProfileLanguage() {
     try {
       const res = await userAPI.updateLanguage(locale);
       if (res.StatusCode === 200 && res.data) {
-        setSuccess('Language updated successfully.');
+        setSuccess(t('language.updated'));
         const updatedUser = { ...(user || {}), language: res.data.language || locale };
         setUser(updatedUser);
         localStorage.setItem('user', JSON.stringify(updatedUser));
+        setAppLanguage(locale, true);
       } else {
-        setError(res.error || 'Could not update language.');
+        setError(res.error || t('language.updateFailed'));
       }
     } catch (err) {
       setError(
         err.response?.data?.error ||
           err.message ||
-          'Something went wrong.'
+          t('common.errorGeneric')
       );
     } finally {
       setSaving(false);
@@ -205,10 +208,10 @@ export function FanProfileLanguage() {
   return (
     <div className="fan-profile-edit-page">
       <header className="fan-profile-edit-header">
-        <Link to="/fan/profile" className="fan-profile-edit-back" aria-label="Back">
+        <Link to="/fan/profile" className="fan-profile-edit-back" aria-label={t('common.back')}>
           ←
         </Link>
-        <h1 className="fan-profile-edit-title">Change Language</h1>
+        <h1 className="fan-profile-edit-title">{t('profile.changeLanguage')}</h1>
       </header>
 
       <main className="fan-profile-edit-main">
@@ -221,7 +224,7 @@ export function FanProfileLanguage() {
           )}
 
           <div className="fan-profile-edit-field" ref={languageDropdownRef}>
-            <label htmlFor="language-trigger">Language</label>
+            <label htmlFor="language-trigger">{t('language.label')}</label>
             <div className="fan-profile-edit-language-dropdown">
               <button
                 id="language-trigger"
@@ -230,28 +233,28 @@ export function FanProfileLanguage() {
                 onClick={() => setLanguageDropdownOpen((open) => !open)}
                 aria-expanded={languageDropdownOpen}
                 aria-haspopup="listbox"
-                aria-label="Select language"
+                aria-label={t('language.select')}
               >
-                <span>{LANGUAGE_OPTIONS.find((o) => o.value === locale)?.label ?? 'English'}</span>
+                <span>{languageLabels[locale] ?? languageLabels.en}</span>
                 <span className="fan-profile-edit-language-chevron" aria-hidden>▼</span>
               </button>
               {languageDropdownOpen && (
                 <ul
                   className="fan-profile-edit-language-options"
                   role="listbox"
-                  aria-label="Language options"
+                  aria-label={t('language.options')}
                 >
-                  {LANGUAGE_OPTIONS.map((opt) => (
-                    <li key={opt.value} role="option" aria-selected={locale === opt.value}>
+                  {SUPPORTED.map((value) => (
+                    <li key={value} role="option" aria-selected={locale === value}>
                       <button
                         type="button"
-                        className={`fan-profile-edit-language-option ${locale === opt.value ? 'selected' : ''}`}
+                        className={`fan-profile-edit-language-option ${locale === value ? 'selected' : ''}`}
                         onClick={() => {
-                          setLocale(opt.value);
+                          setLocale(value);
                           setLanguageDropdownOpen(false);
                         }}
                       >
-                        {opt.label}
+                        {languageLabels[value]}
                       </button>
                     </li>
                   ))}
@@ -266,7 +269,7 @@ export function FanProfileLanguage() {
             disabled={saving}
             aria-busy={saving}
           >
-            {saving ? <ButtonLoadingSpinner /> : 'Save Language'}
+            {saving ? <ButtonLoadingSpinner /> : t('language.save')}
           </button>
         </form>
       </main>
@@ -275,6 +278,7 @@ export function FanProfileLanguage() {
 }
 
 export function FanProfileBlocked() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [blocked, setBlocked] = useState([]);
@@ -307,7 +311,7 @@ export function FanProfileBlocked() {
           setBlocked((prev) => (append ? [...prev, ...list] : list));
           setPagination(res.data.pagination || null);
         } else if (!append) {
-          setError(res.error || 'Failed to load blocked users.');
+          setError(res.error || t('profileBlocked.failedToLoad'));
           setBlocked([]);
         }
       } catch (err) {
@@ -315,7 +319,7 @@ export function FanProfileBlocked() {
           setError(
             err.response?.data?.error ||
               err.message ||
-              'Something went wrong.'
+              t('common.errorGeneric')
           );
           setBlocked([]);
         }
@@ -323,7 +327,7 @@ export function FanProfileBlocked() {
         setLoading(false);
       }
     },
-    []
+    [t]
   );
 
   useEffect(() => {
@@ -332,7 +336,8 @@ export function FanProfileBlocked() {
   }, [user, fetchBlocked]);
 
   const handleUnblock = async (blockedUser) => {
-    if (!window.confirm(`Unblock ${blockedUser.displayName || blockedUser.userName || 'this user'}?`)) {
+    const name = blockedUser.displayName || blockedUser.userName || t('profileBlocked.thisUser');
+    if (!window.confirm(t('profileBlocked.unblockConfirm', { name }))) {
       return;
     }
     try {
@@ -340,13 +345,13 @@ export function FanProfileBlocked() {
       if (res.StatusCode === 200) {
         setBlocked((prev) => prev.filter((b) => b.userId !== blockedUser.userId));
       } else {
-        alert(res.error || 'Could not unblock user.');
+        alert(res.error || t('profileBlocked.couldNotUnblock'));
       }
     } catch (err) {
       alert(
         err.response?.data?.error ||
           err.message ||
-          'Something went wrong.'
+          t('common.errorGeneric')
       );
     }
   };
@@ -356,10 +361,10 @@ export function FanProfileBlocked() {
   return (
     <div className="fan-search-page">
       <header className="fan-profile-edit-header">
-        <Link to="/fan/profile" className="fan-profile-edit-back" aria-label="Back">
+        <Link to="/fan/profile" className="fan-profile-edit-back" aria-label={t('common.back')}>
           ←
         </Link>
-        <h1 className="fan-profile-edit-title">Blocked Users</h1>
+        <h1 className="fan-profile-edit-title">{t('profileBlocked.title')}</h1>
       </header>
 
       <main className="fan-search-main">
@@ -372,7 +377,7 @@ export function FanProfileBlocked() {
               <LoadingSpinner />
             </div>
           ) : blocked.length === 0 ? (
-            <EmptyWidget text="You have not blocked any users." />
+            <EmptyWidget text={t('profileBlocked.empty')} />
           ) : (
             <div className="fan-search-grid">
               {blocked.map((b) => (
@@ -389,7 +394,7 @@ export function FanProfileBlocked() {
                       {b.displayName || b.userName || 'User'}
                     </span>
                     <span className="fan-creator-category">
-                      {b.reason || 'Blocked user'}
+                      {b.reason || t('profileBlocked.blockedUser')}
                     </span>
                   </div>
                   <div className="fan-creator-meta">
@@ -398,7 +403,7 @@ export function FanProfileBlocked() {
                       className="fan-search-load-more"
                       onClick={() => handleUnblock(b)}
                     >
-                      Unblock
+                      {t('profileBlocked.unblock')}
                     </button>
                   </div>
                 </div>
@@ -413,7 +418,7 @@ export function FanProfileBlocked() {
                 className="fan-search-load-more"
                 onClick={() => fetchBlocked(pagination.currentPage + 1, true)}
               >
-                Load more
+                {t('common.loadMore')}
               </button>
             </div>
           )}

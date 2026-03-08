@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { profileAPI } from '../services/api';
 import { DEFAULT_AVATAR_URL } from '../constants';
 import { ButtonLoadingSpinner } from '../components/LoadingSpinner';
 import './FanProfileEdit.css';
 
 function FanProfileEdit() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const isCreator = location.pathname.startsWith('/creator');
@@ -57,7 +59,7 @@ function FanProfileEdit() {
     e.preventDefault();
     setError('');
     if (!userName.trim()) {
-      setError('Username is required.');
+      setError(t('profileEdit.usernameRequired'));
       return;
     }
     setSaving(true);
@@ -78,13 +80,13 @@ function FanProfileEdit() {
         localStorage.setItem('user', JSON.stringify(updated));
         navigate(profilePath, { replace: true });
       } else {
-        setError(res.error || 'Failed to save.');
+        setError(res.error || t('profileEdit.failedToSave'));
       }
     } catch (err) {
       setError(
         err.response?.data?.error ||
           err.message ||
-          'Something went wrong.'
+          t('common.errorGeneric')
       );
     } finally {
       setSaving(false);
@@ -96,10 +98,10 @@ function FanProfileEdit() {
   return (
     <div className="fan-profile-edit-page">
       <header className="fan-profile-edit-header">
-        <Link to={profilePath} className="fan-profile-edit-back" aria-label="Back">
+        <Link to={profilePath} className="fan-profile-edit-back" aria-label={t('common.back')}>
           ←
         </Link>
-        <h1 className="fan-profile-edit-title">Edit Profile</h1>
+        <h1 className="fan-profile-edit-title">{t('profileEdit.title')}</h1>
       </header>
 
       <main className="fan-profile-edit-main">
@@ -112,7 +114,7 @@ function FanProfileEdit() {
                 className="fan-profile-edit-avatar-img"
               />
             </div>
-            <label className="fan-profile-edit-camera-btn" aria-label="Change photo">
+            <label className="fan-profile-edit-camera-btn" aria-label={t('profileEdit.changePhoto')}>
               <input
                 type="file"
                 accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
@@ -128,20 +130,20 @@ function FanProfileEdit() {
           )}
 
           <div className="fan-profile-edit-field">
-            <label htmlFor="userName">Username <span className="required">*</span></label>
+            <label htmlFor="userName">{t('auth.username')} <span className="required">*</span></label>
             <input
               type="text"
               id="userName"
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
               required
-              placeholder="Enter username"
+              placeholder={t('auth.usernamePlaceholder')}
               autoComplete="username"
             />
           </div>
 
           <div className="fan-profile-edit-field">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">{t('auth.email')}</label>
             <input
               type="email"
               id="email"
@@ -159,7 +161,7 @@ function FanProfileEdit() {
             disabled={saving}
             aria-busy={saving}
           >
-            {saving ? <ButtonLoadingSpinner /> : 'Save Changes'}
+            {saving ? <ButtonLoadingSpinner /> : t('profileEdit.saveProfile')}
           </button>
         </form>
       </main>

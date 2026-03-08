@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { offerAPI, bookingAPI } from '../services/api';
 import FanNav from '../components/FanNav';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -19,13 +20,13 @@ function formatPrice(priceCents, currency = 'EUR') {
   return `${value} ${currency}`;
 }
 
-/** Format offer date for display in user's local timezone. */
-function formatOfferDay(offer) {
+/** Format offer date for display in user's local timezone. locale for day/month names. */
+function formatOfferDay(offer, locale) {
   if (!offer?.date || !offer?.startTime) return '—';
   const tz = (offer.creatorTimezone || offer.timezone || 'UTC').toString().trim();
   const utcDate = parseOfferSlotToUTC(offer.date, offer.startTime, tz);
   if (Number.isNaN(utcDate.getTime())) return (offer.date || '').toString();
-  return formatUTCDateToLocalDay(utcDate);
+  return formatUTCDateToLocalDay(utcDate, locale);
 }
 
 /** Format offer time range in user's local timezone. */
@@ -41,9 +42,11 @@ function formatOfferTimeRange(offer) {
 }
 
 function FanCreatorOffers() {
+  const { t, i18n } = useTranslation();
   const { creatorId } = useParams();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const locale = i18n.language === 'de' ? 'de-DE' : 'en-US';
   const [offers, setOffers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -73,16 +76,16 @@ function FanCreatorOffers() {
       if (res.StatusCode === 200 && res.data) {
         setOffers(res.data.offers || []);
       } else {
-        setError(res.error || 'Failed to load offers');
+        setError(res.error || t('offers.failedToLoad'));
         setOffers([]);
       }
     } catch (err) {
-      setError(err.response?.data?.error || err.message || 'Something went wrong');
+      setError(err.response?.data?.error || err.message || t('common.errorGeneric'));
       setOffers([]);
     } finally {
       setLoading(false);
     }
-  }, [creatorId]);
+  }, [creatorId, t]);
 
   useEffect(() => {
     fetchOffers();
@@ -107,12 +110,12 @@ function FanCreatorOffers() {
         startTime: startTimeISO,
       });
       if (createRes.StatusCode !== 200 || !createRes.data?.id) {
-        setError(createRes.error || 'Failed to create booking');
+        setError(createRes.error || t('offers.failedToCreateBooking'));
         return;
       }
       navigate(`/fan/bookings/${createRes.data.id}/pay`, { replace: true });
     } catch (err) {
-      setError(err.response?.data?.error || err.message || 'Something went wrong');
+      setError(err.response?.data?.error || err.message || t('common.errorGeneric'));
     } finally {
       setBookingInProgress(null);
     }
@@ -128,10 +131,10 @@ function FanCreatorOffers() {
       <main className="creator-offers-main">
         <div className="creator-offers-container">
           <header className="creator-offers-header">
-            <Link to={`/fan/creators/${creatorId}`} className="creator-offers-back" aria-label="Back to creator">
+            <Link to={`/fan/creators/${creatorId}`} className="creator-offers-back" aria-label={t('common.back')}>
               ←
             </Link>
-            <h1 className="creator-offers-title">Offers</h1>
+            <h1 className="creator-offers-title">{t('offers.title')}</h1>
           </header>
 
           <div className="creator-offers-divider" aria-hidden />
@@ -141,25 +144,25 @@ function FanCreatorOffers() {
           ) : loading ? (
             <LoadingSpinner />
           ) : bookableOffers.length === 0 ? (
-            <EmptyWidget text="No offers available." />
+            <EmptyWidget text={t('offers.noOffers')} />
           ) : (
             <div className="creator-offers-table-wrap">
               <table className="creator-offers-table">
                 <thead>
                   <tr>
-                    <th className="creator-offers-th-day">Day</th>
-                    <th>Time</th>
-                    <th>Duration</th>
-                    <th className="creator-offers-th-price">Price</th>
-                    <th className="creator-offers-th-action" aria-label="Action" />
+                    <th className="creator-offers-th-day">{t('availability.day')}</th>
+                    <th>{t('offers.time')}</th>
+                    <th>{t('offers.duration')}</th>
+                    <th className="creator-offers-th-price">{t('offers.price')}</th>
+                    <th className="creator-offers-th-action" aria-label={t('common.action')} />
                   </tr>
                 </thead>
                 <tbody>
                   {bookableOffers.map((offer) => (
                     <tr key={offer.id}>
-                      <td>{formatOfferDay(offer)}</td>
+                      <td>{formatOfferDay(offer, locale)}</td>
                       <td>{formatOfferTimeRange(offer)}</td>
-                      <td>{(offer.duration ?? offer.durationMinutes) != null ? `${offer.duration ?? offer.durationMinutes} Min.` : '—'}</td>
+                      <td>{(offer.duration ?? offer.durationMinutes) != null ? `${offer.duration ?? offer.durationMinutes} ${t('availability.minAbbr')}` : '—'}</td>
                       <td className="creator-offers-price">
                         {formatPrice(offer.priceCents, offer.currency)}
                       </td>
@@ -173,7 +176,7 @@ function FanCreatorOffers() {
                             onKeyDown={(e) => e.key === 'Enter' && handleBookNow(offer)}
                             aria-busy={bookingInProgress === offer.id}
                           >
-                            {bookingInProgress === offer.id ? 'Booking…' : 'Book now'}
+                            {bookingInProgress === offer.id ? t('offers.booking') : t('offers.bookNow')}
                           </span>
                         )}
                       </td>

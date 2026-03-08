@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { bookingAPI } from '../services/api';
 import FanNav from '../components/FanNav';
 import CreatorNav from '../components/CreatorNav';
@@ -77,31 +78,36 @@ function formatTimeRange(startIso, durationMinutes) {
 
 /**
  * Join is allowed from (start - 5 min) until end time. Countdown is to start until then; after end, "Session ended".
+ * Returns { text, canJoin }; text is translated when t is provided.
  */
-function getJoinCountdown(startIso, durationMinutes) {
+function getJoinCountdown(startIso, durationMinutes, t) {
   if (!startIso) return { text: '—', canJoin: false };
   const start = new Date(startIso);
   const durationMs = (durationMinutes || 0) * 60 * 1000;
   const end = new Date(start.getTime() + durationMs);
   const now = new Date();
   if (now.getTime() > end.getTime()) {
-    return { text: 'Session ended', canJoin: false };
+    return { text: t ? t('sessions.sessionEnded') : 'Session ended', canJoin: false };
   }
   const msToStart = start.getTime() - now.getTime();
-  if (msToStart <= 0) return { text: 'Join now', canJoin: true };
+  if (msToStart <= 0) return { text: t ? t('sessions.joinNow') : 'Join now', canJoin: true };
   const totalMinutes = Math.floor(msToStart / (60 * 1000));
   const canJoin = totalMinutes <= JOIN_ENABLE_MINUTES;
-  if (totalMinutes < 1) return { text: 'Join now', canJoin: true };
-  if (totalMinutes < 60) return { text: `Join in ${totalMinutes} min`, canJoin };
+  if (totalMinutes < 1) return { text: t ? t('sessions.joinNow') : 'Join now', canJoin: true };
+  if (totalMinutes < 60) return { text: t ? t('sessions.joinInMin', { count: totalMinutes }) : `Join in ${totalMinutes} min`, canJoin };
   const hours = Math.floor(totalMinutes / 60);
   const mins = totalMinutes % 60;
-  if (hours < 24) return { text: `Join in ${hours}h ${mins > 0 ? mins + 'm' : ''}`.trim(), canJoin };
+  if (hours < 24) {
+    const text = t ? t('sessions.joinInHours', { hours, mins: mins > 0 ? mins + 'm' : '' }).trim() : `Join in ${hours}h ${mins > 0 ? mins + 'm' : ''}`.trim();
+    return { text, canJoin };
+  }
   const days = Math.floor(hours / 24);
   const h = hours % 24;
-  return { text: `Join in ${days}d ${h}h`, canJoin };
+  return { text: t ? t('sessions.joinInDays', { days, hours: h }) : `Join in ${days}d ${h}h`, canJoin };
 }
 
 export function FanAllSessions() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [upcoming, setUpcoming] = useState([]);
@@ -112,7 +118,7 @@ export function FanAllSessions() {
   const [reviewDialogBookingId, setReviewDialogBookingId] = useState(null);
   const [, setTick] = useState(0);
   useEffect(() => {
-    const id = setInterval(() => setTick((t) => t + 1), 60000);
+    const id = setInterval(() => setTick((x) => x + 1), 60000);
     return () => clearInterval(id);
   }, []);
 
@@ -136,7 +142,7 @@ export function FanAllSessions() {
     try {
       const res = await bookingAPI.getFanBookings({ page: 1, itemsPerPage: 100 });
       if (res.StatusCode !== 200 || !res.data) {
-        setError(res.error || 'Failed to load sessions');
+        setError(res.error || t('sessions.failedToLoad'));
         setUpcoming([]);
         setCompleted([]);
         return;
@@ -157,13 +163,13 @@ export function FanAllSessions() {
       setUpcoming(upcomingList);
       setCompleted(completedList);
     } catch (err) {
-      setError(err.response?.data?.error || err.message || 'Failed to load sessions');
+      setError(err.response?.data?.error || err.message || t('sessions.failedToLoad'));
       setUpcoming([]);
       setCompleted([]);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     if (user) fetchBookings();
@@ -176,7 +182,7 @@ export function FanAllSessions() {
   };
 
   const handleJoin = (session) => {
-    const countdown = getJoinCountdown(session.startTime, session.durationMinutes);
+    const countdown = getJoinCountdown(session.startTime, session.durationMinutes, t);
     if (countdown.canJoin) navigate(`/fan/bookings/${session.id}/call`);
   };
 
@@ -184,17 +190,17 @@ export function FanAllSessions() {
 
   const list = activeTab === 'upcoming' ? upcoming : completed;
   const emptyMessage =
-    activeTab === 'upcoming' ? 'No upcoming sessions found.' : 'No completed sessions found.';
+    activeTab === 'upcoming' ? t('sessions.noUpcoming') : t('sessions.noCompleted');
 
   return (
     <div className="all-sessions-page">
       <FanNav active="home" user={user} onLogout={handleLogout} />
       <main className="all-sessions-main">
         <header className="all-sessions-header">
-          <Link to="/fan/home" className="all-sessions-back" aria-label="Back">
+          <Link to="/fan/home" className="all-sessions-back" aria-label={t('common.back')}>
             ←
           </Link>
-          <h1 className="all-sessions-title">All Sessions</h1>
+          <h1 className="all-sessions-title">{t('sessions.allSessions')}</h1>
         </header>
 
         <div className="all-sessions-tabs">
@@ -203,14 +209,14 @@ export function FanAllSessions() {
             className={`all-sessions-tab ${activeTab === 'upcoming' ? 'all-sessions-tab--active' : ''}`}
             onClick={() => setActiveTab('upcoming')}
           >
-            Upcoming
+            {t('sessions.upcoming')}
           </button>
           <button
             type="button"
             className={`all-sessions-tab ${activeTab === 'completed' ? 'all-sessions-tab--active' : ''}`}
             onClick={() => setActiveTab('completed')}
           >
-            Completed
+            {t('sessions.completed')}
           </button>
         </div>
 
@@ -238,7 +244,7 @@ export function FanAllSessions() {
                         <div className="all-sessions-card-top">
                           <span className="all-sessions-card-name">{session.creatorName}</span>
                           <span className={`all-sessions-card-status all-sessions-card-status--${activeTab === 'upcoming' ? 'paid' : (session.status || 'completed')}`}>
-                            {activeTab === 'upcoming' ? 'Paid' : (session.status || 'completed').replace(/_/g, ' ')}
+                            {activeTab === 'upcoming' ? t('sessions.paid') : (session.status || 'completed').replace(/_/g, ' ')}
                           </span>
                         </div>
                         <div className="all-sessions-card-row">
@@ -270,7 +276,7 @@ export function FanAllSessions() {
                             className="all-sessions-give-review-btn"
                             onClick={() => setReviewDialogBookingId(session.id)}
                           >
-                            Give Review
+                            {t('sessions.giveReview')}
                           </button>
                         )}
                       </div>
@@ -294,6 +300,7 @@ export function FanAllSessions() {
 }
 
 export function CreatorAllSessions() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [upcoming, setUpcoming] = useState([]);
@@ -328,7 +335,7 @@ export function CreatorAllSessions() {
     try {
       const res = await bookingAPI.getCreatorBookings({ page: 1, itemsPerPage: 100 });
       if (res.StatusCode !== 200 || !res.data) {
-        setError(res.error || 'Failed to load sessions');
+        setError(res.error || t('sessions.failedToLoad'));
         setUpcoming([]);
         setCompleted([]);
         return;
@@ -349,13 +356,13 @@ export function CreatorAllSessions() {
       setUpcoming(upcomingList);
       setCompleted(completedList);
     } catch (err) {
-      setError(err.response?.data?.error || err.message || 'Failed to load sessions');
+      setError(err.response?.data?.error || err.message || t('sessions.failedToLoad'));
       setUpcoming([]);
       setCompleted([]);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     if (user) fetchBookings();
@@ -368,7 +375,7 @@ export function CreatorAllSessions() {
   };
 
   const handleJoin = (session) => {
-    const countdown = getJoinCountdown(session.startTime, session.durationMinutes);
+    const countdown = getJoinCountdown(session.startTime, session.durationMinutes, t);
     if (countdown.canJoin) navigate(`/creator/bookings/${session.id}/call`);
   };
 
@@ -376,17 +383,17 @@ export function CreatorAllSessions() {
 
   const list = activeTab === 'upcoming' ? upcoming : completed;
   const emptyMessage =
-    activeTab === 'upcoming' ? 'No upcoming sessions found.' : 'No completed sessions found.';
+    activeTab === 'upcoming' ? t('sessions.noUpcoming') : t('sessions.noCompleted');
 
   return (
     <div className="all-sessions-page">
       <CreatorNav active="home" user={user} onLogout={handleLogout} />
       <main className="all-sessions-main">
         <header className="all-sessions-header">
-          <Link to="/creator/dashboard" className="all-sessions-back" aria-label="Back">
+          <Link to="/creator/dashboard" className="all-sessions-back" aria-label={t('common.back')}>
             ←
           </Link>
-          <h1 className="all-sessions-title">All Sessions</h1>
+          <h1 className="all-sessions-title">{t('sessions.allSessions')}</h1>
         </header>
 
         <div className="all-sessions-tabs">
@@ -395,14 +402,14 @@ export function CreatorAllSessions() {
             className={`all-sessions-tab ${activeTab === 'upcoming' ? 'all-sessions-tab--active' : ''}`}
             onClick={() => setActiveTab('upcoming')}
           >
-            Upcoming
+            {t('sessions.upcoming')}
           </button>
           <button
             type="button"
             className={`all-sessions-tab ${activeTab === 'completed' ? 'all-sessions-tab--active' : ''}`}
             onClick={() => setActiveTab('completed')}
           >
-            Completed
+            {t('sessions.completed')}
           </button>
         </div>
 
@@ -420,9 +427,9 @@ export function CreatorAllSessions() {
             </div>
           )}
           {!error && !loading && list.length > 0 && (
-            <ul className="all-sessions-list" aria-label="Sessions">
+            <ul className="all-sessions-list" aria-label={t('sessions.ariaSessions')}>
               {list.map((session) => {
-                const countdown = activeTab === 'upcoming' ? getJoinCountdown(session.startTime, session.durationMinutes) : null;
+                const countdown = activeTab === 'upcoming' ? getJoinCountdown(session.startTime, session.durationMinutes, t) : null;
                 return (
                   <li key={session.id}>
                     <div className="all-sessions-card">
@@ -430,7 +437,7 @@ export function CreatorAllSessions() {
                         <div className="all-sessions-card-top">
                           <span className="all-sessions-card-name">{session.fanName}</span>
                           <span className={`all-sessions-card-status all-sessions-card-status--${activeTab === 'upcoming' ? 'paid' : (session.status || 'completed')}`}>
-                            {activeTab === 'upcoming' ? 'Paid' : (session.status || 'completed').replace(/_/g, ' ')}
+                            {activeTab === 'upcoming' ? t('sessions.paid') : (session.status || 'completed').replace(/_/g, ' ')}
                           </span>
                         </div>
                         <div className="all-sessions-card-row">
@@ -462,7 +469,7 @@ export function CreatorAllSessions() {
                             className="all-sessions-give-review-btn"
                             onClick={() => setReviewDialogBookingId(session.id)}
                           >
-                            Give Review
+                            {t('sessions.giveReview')}
                           </button>
                         )}
                       </div>

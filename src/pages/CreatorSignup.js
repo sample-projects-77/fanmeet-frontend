@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { authAPI } from '../services/api';
 import { ButtonLoadingSpinner } from '../components/LoadingSpinner';
 import './AuthForm.css';
@@ -7,6 +8,7 @@ import './AuthForm.css';
 let isSubmitting = false;
 
 function CreatorSignup() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     userName: '',
@@ -29,15 +31,15 @@ function CreatorSignup() {
     e.preventDefault();
     if (isSubmitting || loading) return;
     if (!formData.userName?.trim() || !formData.email?.trim() || !formData.password) {
-      setError('Please fill in all required fields.');
+      setError(t('auth.fillAllFields'));
       return;
     }
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match.');
+      setError(t('auth.passwordsDoNotMatch'));
       return;
     }
     if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters.');
+      setError(t('auth.passwordMinLength'));
       return;
     }
 
@@ -57,14 +59,14 @@ function CreatorSignup() {
         if (response.data.user) localStorage.setItem('user', JSON.stringify(response.data.user));
         navigate('/creator/home', { replace: true });
       } else {
-        setError(response.error || response.message || 'Signup failed. Please try again.');
+        setError(response.error || response.message || t('auth.signupFailed'));
       }
     } catch (err) {
       setError(
         err.response?.data?.error ||
           err.response?.data?.message ||
           err.message ||
-          'An error occurred. Please try again.'
+          t('auth.errorOccurred')
       );
     } finally {
       setLoading(false);
@@ -75,16 +77,16 @@ function CreatorSignup() {
   return (
     <div className="auth-page dark">
       <header className="auth-header">
-        <Link to="/" className="auth-back" aria-label="Back">←</Link>
-        <h2 className="auth-screen-title">Creator Sign-up</h2>
+        <Link to="/" className="auth-back" aria-label={t('common.back')}>←</Link>
+        <h2 className="auth-screen-title">{t('auth.creatorSignUp')}</h2>
       </header>
       <div className="auth-body">
-        <h1 className="auth-heading">Set up your creator profile</h1>
-        <p className="auth-subtitle">Grow your community and manage paid sessions with fans.</p>
+        <h1 className="auth-heading">{t('auth.creatorSetupHeading')}</h1>
+        <p className="auth-subtitle">{t('auth.creatorSetupSubtitle')}</p>
         {error && <div className="auth-error">{error}</div>}
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="auth-field">
-            <label htmlFor="userName">Username <span className="required">*</span></label>
+            <label htmlFor="userName">{t('auth.username')} <span className="required">*</span></label>
             <input
               type="text"
               id="userName"
@@ -92,24 +94,24 @@ function CreatorSignup() {
               value={formData.userName}
               onChange={handleChange}
               required
-              placeholder="Enter your username"
+              placeholder={t('auth.usernamePlaceholder')}
               autoComplete="username"
             />
           </div>
           <div className="auth-field">
-            <label htmlFor="bio">Bio</label>
+            <label htmlFor="bio">{t('auth.bio')}</label>
             <textarea
               id="bio"
               name="bio"
               value={formData.bio}
               onChange={handleChange}
-              placeholder="Tell us about yourself (optional)"
+              placeholder={t('auth.bioPlaceholder')}
               rows={3}
               className="auth-textarea"
             />
           </div>
           <div className="auth-field">
-            <label htmlFor="email">Email <span className="required">*</span></label>
+            <label htmlFor="email">{t('auth.email')} <span className="required">*</span></label>
             <input
               type="email"
               id="email"
@@ -122,7 +124,7 @@ function CreatorSignup() {
             />
           </div>
           <div className="auth-field">
-            <label htmlFor="password">Password <span className="required">*</span></label>
+            <label htmlFor="password">{t('auth.password')} <span className="required">*</span></label>
             <div className="auth-input-wrap">
               <input
                 type={showPassword ? 'text' : 'password'}
@@ -131,14 +133,14 @@ function CreatorSignup() {
                 value={formData.password}
                 onChange={handleChange}
                 required
-                placeholder="••••••••"
+                placeholder={t('auth.passwordPlaceholder')}
                 autoComplete="new-password"
               />
               <button
                 type="button"
                 className="auth-toggle-password"
                 onClick={() => setShowPassword(!showPassword)}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                aria-label={showPassword ? t('auth.hidePassword') : t('auth.showPassword')}
               >
                 {showPassword ? (
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
@@ -149,7 +151,7 @@ function CreatorSignup() {
             </div>
           </div>
           <div className="auth-field">
-            <label htmlFor="confirmPassword">Confirm password <span className="required">*</span></label>
+            <label htmlFor="confirmPassword">{t('auth.confirmPassword')} <span className="required">*</span></label>
             <div className="auth-input-wrap">
               <input
                 type={showConfirmPassword ? 'text' : 'password'}
@@ -158,14 +160,14 @@ function CreatorSignup() {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required
-                placeholder="••••••••"
+                placeholder={t('auth.confirmPasswordPlaceholder')}
                 autoComplete="new-password"
               />
               <button
                 type="button"
                 className="auth-toggle-password"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                aria-label={showConfirmPassword ? t('auth.hidePassword') : t('auth.showPassword')}
               >
                 {showConfirmPassword ? (
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
@@ -176,7 +178,7 @@ function CreatorSignup() {
             </div>
           </div>
           <button type="submit" className="auth-submit" disabled={loading} aria-busy={loading}>
-            {loading ? <ButtonLoadingSpinner /> : 'Create account'}
+            {loading ? <ButtonLoadingSpinner /> : t('auth.createAccountButton')}
           </button>
         </form>
       </div>

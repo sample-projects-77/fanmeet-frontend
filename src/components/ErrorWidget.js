@@ -1,23 +1,26 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import './SharedWidgets.css';
 
 /**
  * Flutter TNSErrorWidget – circle with error icon (red), message, optional Retry button.
  */
-export default function ErrorWidget({ errorText = 'Could not fetch data.', onRetry }) {
+export default function ErrorWidget({ errorText, onRetry }) {
+  const { t } = useTranslation();
+  const displayError = errorText ?? t('common.couldNotFetch');
   return (
     <div className="shared-error-wrap">
       <div className="shared-error-icon-wrap" aria-hidden>
         <ErrorIcon />
       </div>
-      <p className="shared-error-text">{errorText}</p>
+      <p className="shared-error-text">{displayError}</p>
       {onRetry && (
         <button
           type="button"
           className="shared-error-retry-btn btn-secondary"
           onClick={onRetry}
         >
-          Retry
+          {t('common.retry')}
         </button>
       )}
     </div>

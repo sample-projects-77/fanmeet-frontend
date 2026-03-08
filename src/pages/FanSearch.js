@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { profileAPI } from '../services/api';
 import { DEFAULT_AVATAR_URL } from '../constants';
 import FanNav from '../components/FanNav';
@@ -11,6 +12,7 @@ import './FanSearch.css';
 const SEARCH_DEBOUNCE_MS = 350;
 
 function FanSearch() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [query, setQuery] = useState('');
@@ -48,13 +50,13 @@ function FanSearch() {
         setPagination(res.data.pagination || null);
       } else {
         if (!append) {
-          setError(res.error || 'Failed to load creators');
+          setError(res.error || t('search.failedToLoad'));
           setCreators([]);
         }
       }
     } catch (err) {
       if (!append) {
-        setError(err.response?.data?.error || err.message || 'Something went wrong');
+        setError(err.response?.data?.error || err.message || t('common.errorGeneric'));
         setCreators([]);
       }
     } finally {
@@ -94,7 +96,7 @@ function FanSearch() {
       <FanNav active="search" user={user} onLogout={handleLogout} />
       <main className="fan-search-main">
         <div className="fan-search-container">
-          <h1 className="fan-search-title">Search</h1>
+          <h1 className="fan-search-title">{t('search.title')}</h1>
           <div className="fan-search-bar">
             <span className="fan-search-icon" aria-hidden>
               <SearchIcon />
@@ -102,18 +104,18 @@ function FanSearch() {
             <input
               type="search"
               className="fan-search-input"
-              placeholder="Search"
+              placeholder={t('search.placeholder')}
               value={query}
               onChange={handleSearchChange}
               autoComplete="off"
-              aria-label="Search creators"
+              aria-label={t('search.searchCreators')}
             />
           </div>
 
           <section className="fan-search-section">
             <h2 className="fan-search-section-title">
-              Popular Creators
-              <span className="fan-search-flame" aria-label="Popular">🔥</span>
+              {t('home.popularCreators')}
+              <span className="fan-search-flame" aria-label={t('search.popular')}>🔥</span>
             </h2>
             {error ? (
               <ErrorWidget
@@ -124,7 +126,7 @@ function FanSearch() {
               <LoadingSpinner />
             ) : creators.length === 0 ? (
               <EmptyWidget
-                text={query ? 'No creators match your search.' : 'No creators yet.'}
+                text={query ? t('search.noMatch') : t('search.noCreators')}
               />
             ) : (
               <div className="fan-search-grid">
@@ -162,7 +164,7 @@ function FanSearch() {
                   className="fan-search-load-more"
                   onClick={() => fetchCreators(query.trim(), pagination.currentPage + 1, true)}
                 >
-                  Load more
+                  {t('common.loadMore')}
                 </button>
               </div>
             )}

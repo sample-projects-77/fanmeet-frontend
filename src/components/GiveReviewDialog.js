@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { reviewAPI } from '../services/api';
 import { ButtonLoadingSpinner } from './LoadingSpinner';
 import './GiveReviewDialog.css';
@@ -19,19 +20,20 @@ function StarOutline({ className, size = 32 }) {
   );
 }
 
-function InteractiveStarRating({ rating, onRatingChanged, starCount = 5, size = 32 }) {
+function InteractiveStarRating({ rating, onRatingChanged, starCount = 5, size = 32, t }) {
   return (
-    <div className="give-review-stars" role="group" aria-label="Rating">
+    <div className="give-review-stars" role="group" aria-label={t ? t('reviews.rating') : 'Rating'}>
       {Array.from({ length: starCount }, (_, i) => {
         const value = i + 1;
         const filled = value <= rating;
+        const starLabel = t ? (value === 1 ? t('reviews.star') : t('reviews.stars')) : (value === 1 ? 'star' : 'stars');
         return (
           <button
             key={value}
             type="button"
             className="give-review-star-btn"
             onClick={() => onRatingChanged(value)}
-            aria-label={`${value} star${value === 1 ? '' : 's'}`}
+            aria-label={`${value} ${starLabel}`}
             aria-pressed={filled}
           >
             {filled ? (
@@ -47,6 +49,7 @@ function InteractiveStarRating({ rating, onRatingChanged, starCount = 5, size = 
 }
 
 export function GiveReviewDialog({ bookingId, onClose, onSuccess }) {
+  const { t } = useTranslation();
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -56,11 +59,11 @@ export function GiveReviewDialog({ bookingId, onClose, onSuccess }) {
     e.preventDefault();
     setErrorMessage(null);
     if (rating < 1 || rating > 5) {
-      setErrorMessage('Please select a rating.');
+      setErrorMessage(t('reviews.selectRating'));
       return;
     }
     if (!comment.trim()) {
-      setErrorMessage('Please enter a comment.');
+      setErrorMessage(t('reviews.enterComment'));
       return;
     }
     setSubmitting(true);
@@ -71,12 +74,12 @@ export function GiveReviewDialog({ bookingId, onClose, onSuccess }) {
         onClose(true);
         return;
       }
-      setErrorMessage(res.error || 'Something went wrong.');
+      setErrorMessage(res.error || t('common.errorGeneric'));
     } catch (err) {
-      const msg = err.response?.data?.error || err.message || 'Something went wrong.';
+      const msg = err.response?.data?.error || err.message || t('common.errorGeneric');
       const display =
-        msg === 'RATING_REQUIRED' ? 'Please select a rating.' :
-        msg === 'COMMENT_REQUIRED' ? 'Please enter a comment.' :
+        msg === 'RATING_REQUIRED' ? t('reviews.selectRating') :
+        msg === 'COMMENT_REQUIRED' ? t('reviews.enterComment') :
         msg;
       setErrorMessage(display);
     } finally {
@@ -91,19 +94,19 @@ export function GiveReviewDialog({ bookingId, onClose, onSuccess }) {
   return (
     <div className="give-review-dialog-backdrop" onClick={handleBackdropClick} role="dialog" aria-modal="true" aria-labelledby="give-review-title">
       <div className="give-review-dialog">
-        <h2 id="give-review-title" className="give-review-dialog-title">Give Review</h2>
+        <h2 id="give-review-title" className="give-review-dialog-title">{t('reviews.giveReview')}</h2>
 
         <form onSubmit={handleSubmit} className="give-review-form">
-          <label className="give-review-label">Rating</label>
+          <label className="give-review-label">{t('reviews.rating')}</label>
           <div className="give-review-stars-wrap">
-            <InteractiveStarRating rating={rating} onRatingChanged={setRating} />
+            <InteractiveStarRating rating={rating} onRatingChanged={setRating} t={t} />
           </div>
 
-          <label className="give-review-label" htmlFor="give-review-comment">Comment</label>
+          <label className="give-review-label" htmlFor="give-review-comment">{t('reviews.comment')}</label>
           <textarea
             id="give-review-comment"
             className="give-review-textarea tns-text-field"
-            placeholder="Write your review..."
+            placeholder={t('reviews.writeReview')}
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             rows={4}
@@ -121,7 +124,7 @@ export function GiveReviewDialog({ bookingId, onClose, onSuccess }) {
               onClick={() => onClose(false)}
               disabled={submitting}
             >
-              Cancel
+              {t('common.cancel')}
             </button>
             <button
               type="submit"
@@ -131,10 +134,10 @@ export function GiveReviewDialog({ bookingId, onClose, onSuccess }) {
               {submitting ? (
                 <>
                   <ButtonLoadingSpinner />
-                  <span>Submitting…</span>
+                  <span>{t('reviews.submitting')}</span>
                 </>
               ) : (
-                'Submit'
+                t('reviews.submit')
               )}
             </button>
           </div>
