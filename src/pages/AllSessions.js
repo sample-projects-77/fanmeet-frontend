@@ -75,13 +75,21 @@ function formatTimeRange(startIso, durationMinutes) {
   }
 }
 
-function getJoinCountdown(startIso) {
+/**
+ * Join is allowed from (start - 5 min) until end time. Countdown is to start until then; after end, "Session ended".
+ */
+function getJoinCountdown(startIso, durationMinutes) {
   if (!startIso) return { text: '—', canJoin: false };
   const start = new Date(startIso);
+  const durationMs = (durationMinutes || 0) * 60 * 1000;
+  const end = new Date(start.getTime() + durationMs);
   const now = new Date();
-  const ms = start.getTime() - now.getTime();
-  if (ms <= 0) return { text: 'Session started', canJoin: true };
-  const totalMinutes = Math.floor(ms / (60 * 1000));
+  if (now.getTime() > end.getTime()) {
+    return { text: 'Session ended', canJoin: false };
+  }
+  const msToStart = start.getTime() - now.getTime();
+  if (msToStart <= 0) return { text: 'Join now', canJoin: true };
+  const totalMinutes = Math.floor(msToStart / (60 * 1000));
   const canJoin = totalMinutes <= JOIN_ENABLE_MINUTES;
   if (totalMinutes < 1) return { text: 'Join now', canJoin: true };
   if (totalMinutes < 60) return { text: `Join in ${totalMinutes} min`, canJoin };
@@ -137,8 +145,10 @@ export function FanAllSessions() {
       const now = new Date();
       const upcomingList = allBookings.filter((b) => {
         const status = (b.status || '').toLowerCase();
+        if (status !== 'paid') return false;
         const start = new Date(b.startTime);
-        return status === 'paid' && start > now;
+        const end = new Date(start.getTime() + (b.durationMinutes || 0) * 60 * 1000);
+        return end > now;
       });
       const completedList = allBookings.filter((b) => {
         const status = (b.status || '').toLowerCase();
@@ -166,7 +176,7 @@ export function FanAllSessions() {
   };
 
   const handleJoin = (session) => {
-    const countdown = getJoinCountdown(session.startTime);
+    const countdown = getJoinCountdown(session.startTime, session.durationMinutes);
     if (countdown.canJoin) navigate(`/fan/bookings/${session.id}/call`);
   };
 
@@ -220,7 +230,7 @@ export function FanAllSessions() {
           {!error && !loading && list.length > 0 && (
             <ul className="all-sessions-list" aria-label="Sessions">
               {list.map((session) => {
-                const countdown = activeTab === 'upcoming' ? getJoinCountdown(session.startTime) : null;
+                const countdown = activeTab === 'upcoming' ? getJoinCountdown(session.startTime, session.durationMinutes) : null;
                 return (
                   <li key={session.id}>
                     <div className="all-sessions-card">
@@ -327,8 +337,10 @@ export function CreatorAllSessions() {
       const now = new Date();
       const upcomingList = allBookings.filter((b) => {
         const status = (b.status || '').toLowerCase();
+        if (status !== 'paid') return false;
         const start = new Date(b.startTime);
-        return status === 'paid' && start > now;
+        const end = new Date(start.getTime() + (b.durationMinutes || 0) * 60 * 1000);
+        return end > now;
       });
       const completedList = allBookings.filter((b) => {
         const status = (b.status || '').toLowerCase();
@@ -356,7 +368,7 @@ export function CreatorAllSessions() {
   };
 
   const handleJoin = (session) => {
-    const countdown = getJoinCountdown(session.startTime);
+    const countdown = getJoinCountdown(session.startTime, session.durationMinutes);
     if (countdown.canJoin) navigate(`/creator/bookings/${session.id}/call`);
   };
 
@@ -410,7 +422,7 @@ export function CreatorAllSessions() {
           {!error && !loading && list.length > 0 && (
             <ul className="all-sessions-list" aria-label="Sessions">
               {list.map((session) => {
-                const countdown = activeTab === 'upcoming' ? getJoinCountdown(session.startTime) : null;
+                const countdown = activeTab === 'upcoming' ? getJoinCountdown(session.startTime, session.durationMinutes) : null;
                 return (
                   <li key={session.id}>
                     <div className="all-sessions-card">
