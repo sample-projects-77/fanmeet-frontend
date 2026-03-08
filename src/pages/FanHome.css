@@ -109,22 +109,30 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  overflow: hidden;
 }
 
 .fan-home-creator-name {
   font-size: 1rem;
   font-weight: 700;
   color: var(--white);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .fan-home-creator-category {
   font-size: 0.8125rem;
   color: var(--dark-grey-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .fan-home-creator-meta {
   flex-shrink: 0;
   text-align: right;
+  min-width: fit-content;
 }
 
 .fan-home-creator-price {

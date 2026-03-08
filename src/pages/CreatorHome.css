@@ -107,22 +107,30 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  overflow: hidden;
 }
 
 .creator-home-creator-name {
   font-size: 1rem;
   font-weight: 700;
   color: var(--white);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .creator-home-creator-category {
   font-size: 0.8125rem;
   color: var(--dark-grey-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .creator-home-creator-meta {
   flex-shrink: 0;
   text-align: right;
+  min-width: fit-content;
 }
 
 .creator-home-creator-price {

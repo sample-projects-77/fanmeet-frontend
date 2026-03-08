@@ -184,3 +184,18 @@
   justify-content: center;
   box-sizing: border-box;
 }
+
+/* Mobile: chat list rows full width, room for bottom nav */
+@media (max-width: 1024px) {
+  .fan-chats-main {
+    padding: 24px 0 calc(64px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .fan-chats-container {
+    max-width: 100%;
+  }
+
+  .fan-chats-row {
+    padding: 14px 16px;
+  }
+}

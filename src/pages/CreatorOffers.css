@@ -189,6 +189,13 @@
   pointer-events: none; /* allow underlying page clicks except button */
 }
 
+/* Mobile/tablet: sit above bottom nav so button is not hidden */
+@media (max-width: 1024px) {
+  .creator-offers-add-slot-wrap {
+    bottom: calc(64px + 24px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
 .creator-offers-add-slot-button {
   width: 100%;
   max-width: 360px;

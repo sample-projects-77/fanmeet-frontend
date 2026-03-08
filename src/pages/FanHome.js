@@ -161,7 +161,7 @@ function FanHome() {
                 </ul>
                 {hasNextPage && (
                   <div ref={loadMoreRef} className="fan-home-load-more-sentinel" aria-hidden>
-                    {loadingMore && <LoadingSpinner />}
+                    {loadingMore && <LoadingSpinner inline />}
                   </div>
                 )}
               </>

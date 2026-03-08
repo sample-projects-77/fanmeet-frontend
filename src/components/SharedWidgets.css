@@ -1,12 +1,23 @@
 /* Shared: LoadingSpinner, EmptyWidget (Flutter EmptyWidget), ErrorWidget (TNSErrorWidget) */
 
 /* ----- Loading spinner ----- */
+/* Default: fixed overlay so spinner is in the exact middle of the viewport */
 .shared-loading-wrap {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 160px;
   padding: 24px;
+  background: var(--bg-primary);
+}
+
+/* Inline context (e.g. load more at bottom of list): no overlay, compact */
+.shared-loading-wrap.shared-loading-wrap--inline {
+  position: static;
+  min-height: 60px;
+  background: transparent;
 }
 
 .shared-loading-spinner {

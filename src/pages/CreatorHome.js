@@ -161,7 +161,7 @@ function CreatorHome() {
                 </ul>
                 {hasNextPage && (
                   <div ref={loadMoreRef} className="creator-home-load-more-sentinel" aria-hidden>
-                    {loadingMore && <LoadingSpinner />}
+                    {loadingMore && <LoadingSpinner inline />}
                   </div>
                 )}
               </>

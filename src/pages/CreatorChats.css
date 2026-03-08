@@ -97,6 +97,21 @@
   background: rgba(255, 255, 255, 0.04);
 }
 
+/* Mobile: chat list rows full width, room for bottom nav */
+@media (max-width: 1024px) {
+  .creator-chats-main {
+    padding: 24px 0 calc(64px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .creator-chats-container {
+    max-width: 100%;
+  }
+
+  .creator-chats-row {
+    padding: 14px 16px;
+  }
+}
+
 .creator-chats-avatar-wrap {
   flex-shrink: 0;
   width: 56px;

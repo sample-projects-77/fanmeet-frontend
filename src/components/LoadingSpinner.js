@@ -1,9 +1,13 @@
 import React from 'react';
 import './SharedWidgets.css';
 
-export default function LoadingSpinner() {
+export default function LoadingSpinner({ inline }) {
   return (
-    <div className="shared-loading-wrap" role="status" aria-label="Loading">
+    <div
+      className={`shared-loading-wrap${inline ? ' shared-loading-wrap--inline' : ''}`}
+      role="status"
+      aria-label="Loading"
+    >
       <div className="shared-loading-spinner" />
     </div>
   );

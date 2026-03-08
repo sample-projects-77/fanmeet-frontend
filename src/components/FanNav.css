@@ -93,12 +93,28 @@
   color: var(--accent-yellow);
 }
 
-@media (max-width: 768px) {
+/* Match bottom nav breakpoint: hide top nav links so only one navbar shows (1024px–769px) */
+@media (max-width: 1024px) {
   .fan-nav-inner {
     padding: 0 16px;
   }
-
   .fan-nav-links {
     display: none;
+  }
+  .fan-nav-logo {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 140px;
+  }
+}
+
+@media (max-width: 400px) {
+  .fan-nav-username {
+    display: none;
+  }
+  .fan-nav-inner {
+    padding: 0 12px;
   }
 }

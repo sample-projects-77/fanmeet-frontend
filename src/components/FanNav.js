@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { DEFAULT_AVATAR_URL } from '../constants';
+import BottomNav from './BottomNav';
 import './FanNav.css';
 
 export default function FanNav({ active, userName, user, avatarUrl, onLogout }) {
@@ -10,6 +11,7 @@ export default function FanNav({ active, userName, user, avatarUrl, onLogout }) 
   const displayAvatar = user?.avatarUrl ?? avatarUrl ?? DEFAULT_AVATAR_URL;
 
   return (
+    <>
     <header className="fan-nav">
       <div className="fan-nav-inner">
         <Link to="/fan/home" className="fan-nav-logo">
@@ -31,5 +33,7 @@ export default function FanNav({ active, userName, user, avatarUrl, onLogout }) 
         </div>
       </div>
     </header>
+    <BottomNav variant="fan" active={active} />
+    </>
   );
 }

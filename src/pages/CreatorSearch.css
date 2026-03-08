@@ -160,22 +160,30 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  overflow: hidden;
 }
 
 .creator-search-name {
   font-size: 1rem;
   font-weight: 600;
   color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .creator-search-category {
   font-size: 0.8125rem;
   color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .creator-search-meta {
   flex-shrink: 0;
   text-align: right;
+  min-width: fit-content;
 }
 
 .creator-search-price {
