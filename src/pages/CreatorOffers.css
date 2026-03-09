@@ -21,6 +21,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-width: 0; /* allow shrink so table wrap is viewport-bounded on small screens */
 }
 
 .creator-offers-header {
@@ -79,13 +80,233 @@
 }
 
 .creator-offers-table-wrap {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0; /* allow flex shrink so width is bounded on small screens */
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .creator-offers-table {
   width: 100%;
+  min-width: 480px;
   border-collapse: collapse;
   font-family: var(--font-sans);
+}
+
+/* Mobile: reduced padding and font size so content fits in viewport */
+@media (max-width: 767px) {
+  .creator-offers-main {
+    padding: 16px 6px 96px;
+  }
+
+  .creator-offers-header {
+    margin-bottom: 12px;
+  }
+
+  .creator-offers-title {
+    font-size: 22px;
+  }
+
+  .creator-offers-back {
+    font-size: 20px;
+    padding: 2px 6px;
+  }
+
+  .creator-offers-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    min-width: 0;
+  }
+
+  .creator-offers-table {
+    min-width: 0;
+    width: 100%;
+    table-layout: fixed;
+    box-sizing: border-box;
+  }
+
+  /* Column widths: Day Time Duration Price Book now – Duration has room for full heading */
+  .creator-offers-table .creator-offers-th-day,
+  .creator-offers-table td:first-child {
+    width: 20%;
+  }
+
+  .creator-offers-table th:nth-child(2),
+  .creator-offers-table td:nth-child(2) {
+    width: 18%;
+  }
+
+  .creator-offers-table th:nth-child(3),
+  .creator-offers-table td:nth-child(3) {
+    width: 20%;
+  }
+
+  .creator-offers-table .creator-offers-th-price,
+  .creator-offers-table td.creator-offers-price {
+    width: 18%;
+  }
+
+  .creator-offers-table .creator-offers-th-action,
+  .creator-offers-table td.creator-offers-td-action {
+    width: 24%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  /* Table headers: center align for mobile */
+  .creator-offers-table th {
+    padding: 3px 2px;
+    font-size: 8px;
+    font-weight: 500;
+    line-height: 1.2;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    word-break: break-word;
+    text-align: center;
+  }
+
+  .creator-offers-table .creator-offers-th-day {
+    min-width: 0;
+  }
+
+  .creator-offers-th-action {
+    padding-right: 4px;
+    padding-left: 2px;
+  }
+
+  /* Table data: center align for mobile */
+  .creator-offers-table td {
+    padding: 3px 2px;
+    font-size: 8px;
+    font-weight: 400;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+  }
+
+  .creator-offers-table td:first-child {
+    padding-left: 4px;
+    text-align: left;
+  }
+
+  .creator-offers-table th.creator-offers-th-day {
+    text-align: left;
+  }
+
+  .creator-offers-table td:first-child,
+  .creator-offers-table td:nth-child(2) {
+    word-break: break-word;
+    white-space: normal;
+  }
+
+  .creator-offers-table td.creator-offers-td-action {
+    padding: 5px 4px 5px 2px;
+    overflow: visible;
+    vertical-align: middle;
+    text-align: right;
+  }
+
+  /* Book now button: larger, text centered in bubble */
+  .creator-offers-book-btn {
+    padding: 6px 10px;
+    font-size: 10px !important;
+    font-weight: 600;
+    white-space: nowrap;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    max-width: 100%;
+    background: var(--accent-yellow);
+    color: var(--black);
+    -webkit-text-size-adjust: none;
+    text-size-adjust: none;
+  }
+}
+
+/* Extra small screens (375px): smaller font, less padding, lighter weight – less odd wrapping */
+@media (max-width: 375px) {
+  .creator-offers-main {
+    padding: 10px 4px 96px;
+  }
+
+  .creator-offers-header {
+    margin-bottom: 6px;
+  }
+
+  .creator-offers-title {
+    font-size: 20px;
+  }
+
+  .creator-offers-back {
+    font-size: 16px;
+    padding: 2px 3px;
+  }
+
+  .creator-offers-table th {
+    padding: 5px 1px;
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 1.15;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    text-align: center;
+  }
+
+  .creator-offers-th-action {
+    padding-right: 2px;
+    padding-left: 1px;
+  }
+
+  .creator-offers-table td {
+    padding: 5px 1px;
+    font-size: 9px;
+    font-weight: 300;
+    line-height: 1.15;
+    overflow: hidden;
+    text-overflow: clip;
+    white-space: normal;
+    word-break: break-word;
+    text-align: center;
+  }
+
+  .creator-offers-table td:first-child {
+    padding-left: 2px;
+    text-align: left;
+  }
+
+  .creator-offers-table th.creator-offers-th-day {
+    text-align: left;
+  }
+
+  .creator-offers-table td:first-child,
+  .creator-offers-table td:nth-child(2) {
+    word-break: break-word;
+    white-space: normal;
+  }
+
+  .creator-offers-table td.creator-offers-td-action {
+    padding: 3px 2px 3px 1px;
+    overflow: visible;
+    white-space: normal;
+  }
+
+  /* Book now: text centered in bubble */
+  .creator-offers-book-btn {
+    padding: 5px 8px;
+    font-size: 9px !important;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-text-size-adjust: none;
+    text-size-adjust: none;
+  }
 }
 
 /* Table header – Flutter: Container darkBlueShade3, padding 12, border bottom secondaryColor 0.5, width 2 */
@@ -112,10 +333,26 @@
   min-width: 140px;
 }
 
+/* Sticky action column so "Book now" stays visible on mobile when table scrolls horizontally */
 .creator-offers-th-action {
   width: 1%;
   white-space: nowrap;
   min-width: 100px;
+  position: sticky;
+  right: 0;
+  z-index: 2;
+  background: var(--dark-blue-shade-3);
+  box-shadow: -4px 0 8px rgba(0, 0, 0, 0.15);
+  padding-right: 16px;
+}
+
+.creator-offers-table td.creator-offers-td-action {
+  position: sticky;
+  right: 0;
+  z-index: 1;
+  background: var(--primary-color);
+  box-shadow: -4px 0 8px rgba(0, 0, 0, 0.15);
+  padding-right: 16px;
 }
 
 .creator-offers-th-price {
@@ -132,29 +369,30 @@
   border-bottom: none;
 }
 
-.creator-offers-table td {
-  padding: 12px;
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--white);
-  vertical-align: middle;
-  font-family: var(--font-sans);
-}
-
-.creator-offers-table td:first-child {
-  padding-left: 12px;
+/* Base td styles for desktop only; mobile/tablet use media queries above */
+@media (min-width: 768px) {
+  .creator-offers-table td {
+    padding: 12px;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--white);
+    vertical-align: middle;
+    font-family: var(--font-sans);
+  }
 }
 
 .creator-offers-table td.creator-offers-price {
   text-align: left;
-  font-size: 12px;
+  font-size: 9px;
   font-weight: 400;
   color: #4e9d75;
 }
 
-/* Book now button – pill shape, background #3c341f, text secondaryColor (yellow/gold), single line */
+/* Book now button – pill shape, text centered in bubble */
 .creator-offers-book-btn {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 12px 24px;
   border-radius: 999px;
   background: #3c341f;

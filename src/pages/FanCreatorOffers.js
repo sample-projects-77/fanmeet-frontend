@@ -166,7 +166,7 @@ function FanCreatorOffers() {
                       <td className="creator-offers-price">
                         {formatPrice(offer.priceCents, offer.currency)}
                       </td>
-                      <td>
+                      <td className="creator-offers-td-action">
                         {offer.status === 'available' && (
                           <span
                             className="creator-offers-book-btn"
