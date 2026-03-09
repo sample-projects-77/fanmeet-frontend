@@ -67,6 +67,7 @@
   .bottom-nav-icon svg {
     width: 24px;
     height: 24px;
+    fill: currentColor;
   }
 
   .bottom-nav-label {

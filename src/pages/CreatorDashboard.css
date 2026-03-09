@@ -130,25 +130,24 @@
   min-height: 0;
 }
 
+/* Flutter: gradient only (no base color when gradient set), border lightGreyShade3 0.5, shadow iconColor 0.1 */
 .creator-metric-card--earnings {
   grid-column: 1 / -1;
   background: linear-gradient(
     to bottom right,
-    rgba(46, 204, 113, 0.08),   /* greenSuccess 0.08 */
+    rgba(46, 204, 113, 0.08),   /* AppColors.greenSuccess 0.08 */
     transparent
   );
-  background-color: var(--dark-blue-shade-3);
-  box-shadow: 0 4px 20px rgba(46, 204, 113, 0.1);  /* iconColor greenSuccess 0.1 */
+  box-shadow: 0 4px 20px rgba(46, 204, 113, 0.1);   /* iconColor greenSuccess 0.1 */
 }
 
 .creator-metric-card--sessions {
   background: linear-gradient(
     to bottom right,
-    rgba(91, 159, 255, 0.08),   /* blueAccent 0.08 */
+    rgba(91, 159, 255, 0.08),   /* AppColors.blueAccent 0.08 */
     transparent
   );
-  background-color: var(--dark-blue-shade-3);
-  box-shadow: 0 4px 20px rgba(91, 159, 255, 0.1);  /* iconColor blueAccent 0.1 */
+  box-shadow: 0 4px 20px rgba(91, 159, 255, 0.1);   /* iconColor blueAccent 0.1 */
   text-decoration: none;
   color: inherit;
   cursor: pointer;
@@ -170,11 +169,10 @@ a.creator-metric-card--rating:hover {
 .creator-metric-card--rating {
   background: linear-gradient(
     to bottom right,
-    rgba(244, 192, 70, 0.08),   /* secondaryColor 0.08 */
+    rgba(244, 192, 70, 0.08),   /* AppColors.secondaryColor 0.08 */
     transparent
   );
-  background-color: var(--dark-blue-shade-3);
-  box-shadow: 0 4px 20px rgba(244, 192, 70, 0.1);  /* iconColor secondaryColor 0.1 */
+  box-shadow: 0 4px 20px rgba(244, 192, 70, 0.1);   /* iconColor secondaryColor 0.1 */
 }
 
 /* Icon container: gradient 0.2 → 0.05, padding 10, radius 12 */
