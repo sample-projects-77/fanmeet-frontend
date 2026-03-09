@@ -148,34 +148,31 @@ a.fan-stat-card--blue:hover {
   box-shadow: 0 4px 24px rgba(91, 159, 255, 0.2);
 }
 
-/* Match CreatorDashboard stat card gradients/shadows */
+/* Match CreatorDashboard stat card: gradient only, alpha 0.20, shadow 0.1 */
 .fan-stat-card--gold {
   background: linear-gradient(
     to bottom right,
-    rgba(244, 192, 70, 0.08),
+    rgba(244, 192, 70, 0.20),
     transparent
   );
-  background-color: var(--dark-blue-shade-3);
   box-shadow: 0 4px 20px rgba(244, 192, 70, 0.1);
 }
 
 .fan-stat-card--blue {
   background: linear-gradient(
     to bottom right,
-    rgba(91, 159, 255, 0.08),
+    rgba(91, 159, 255, 0.20),
     transparent
   );
-  background-color: var(--dark-blue-shade-3);
   box-shadow: 0 4px 20px rgba(91, 159, 255, 0.1);
 }
 
 .fan-stat-card--green {
   background: linear-gradient(
     to bottom right,
-    rgba(46, 204, 113, 0.08),
+    rgba(46, 204, 113, 0.20),
     transparent
   );
-  background-color: var(--dark-blue-shade-3);
   box-shadow: 0 4px 20px rgba(46, 204, 113, 0.1);
 }
 
