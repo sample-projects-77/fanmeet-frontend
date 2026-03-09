@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import FanNav from '../components/FanNav';
+import CreatorNav from '../components/CreatorNav';
 import CreatorReviewsContent from '../components/CreatorReviewsContent';
 import './FanCreatorReviews.css';
 
-function FanCreatorReviews() {
+/**
+ * Creator viewing another creator's reviews — same content as fan "See reviews", with creator nav and back link.
+ */
+function CreatorCreatorReviews() {
   const { creatorId } = useParams();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -33,10 +36,10 @@ function FanCreatorReviews() {
 
   return (
     <div className="fan-creator-reviews-page">
-      <FanNav active="search" user={user} onLogout={handleLogout} />
-      <CreatorReviewsContent backTo={`/fan/creators/${creatorId}`} />
+      <CreatorNav active="search" user={user} onLogout={handleLogout} />
+      <CreatorReviewsContent backTo={`/creator/creators/${creatorId}`} />
     </div>
   );
 }
 
-export default FanCreatorReviews;
+export default CreatorCreatorReviews;

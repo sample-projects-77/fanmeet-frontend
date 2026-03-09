@@ -44,34 +44,6 @@ export function CreatorReviews() {
   );
 }
 
-export function CreatorCreatorOffers() {
-  const { creatorId } = useParams();
-  return (
-    <div className="fan-placeholder">
-      <BackLink to={`/creator/creators/${creatorId}`} label="Creator" />
-      <main className="fan-placeholder-main">
-        <h1>Creator offers</h1>
-        <p>Offers for this creator will appear here. Coming soon.</p>
-        <Link to={`/creator/creators/${creatorId}`} className="fan-placeholder-back">Back to Creator</Link>
-      </main>
-    </div>
-  );
-}
-
-export function CreatorCreatorReviews() {
-  const { creatorId } = useParams();
-  return (
-    <div className="fan-placeholder">
-      <BackLink to={`/creator/creators/${creatorId}`} label="Creator" />
-      <main className="fan-placeholder-main">
-        <h1>Creator reviews</h1>
-        <p>Reviews for this creator will appear here. Coming soon.</p>
-        <Link to={`/creator/creators/${creatorId}`} className="fan-placeholder-back">Back to Creator</Link>
-      </main>
-    </div>
-  );
-}
-
 export function CreatorProfileEdit() {
   return (
     <div className="fan-placeholder">

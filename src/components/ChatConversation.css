@@ -1,5 +1,6 @@
 .chat-conversation-page {
   min-height: 100vh;
+  min-height: 100dvh; /* iOS: use dynamic viewport so layout fits when browser UI is visible */
   background: var(--bg-primary, #0f0f0f);
   color: var(--text-primary, #e0e0e0);
 }
@@ -25,8 +26,9 @@
   }
 
   .chat-conversation-wrap {
-    /* 56px header + 16px main top padding + 64px bottom nav + safe area */
+    /* Use dvh on iOS so layout uses visible viewport when browser UI is shown */
     height: calc(100vh - 56px - 16px - 64px - env(safe-area-inset-bottom, 0px));
+    height: calc(100dvh - 56px - 16px - 64px - env(safe-area-inset-bottom, 0px));
     min-height: 300px;
     max-width: 100%;
   }
@@ -41,6 +43,7 @@
   .chat-conversation-stream .str-chat__message-input-wrapper,
   .chat-conversation-stream .str-chat__message-input {
     padding: 12px 16px 12px 16px !important;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;
     max-width: 100%;
     box-sizing: border-box;
   }

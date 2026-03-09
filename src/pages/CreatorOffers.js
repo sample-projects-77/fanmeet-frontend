@@ -126,7 +126,7 @@ function CreatorOffers() {
             <EmptyWidget text={t('availability.noSlots')} />
           ) : (
             <div className="creator-offers-table-wrap">
-              <table className="creator-offers-table">
+              <table className="creator-offers-table creator-offers-table--availability">
                 <thead>
                   <tr>
                     <th className="creator-offers-th-day">{t('availability.day')}</th>

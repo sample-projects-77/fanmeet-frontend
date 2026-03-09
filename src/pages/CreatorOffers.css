@@ -154,6 +154,32 @@
     box-sizing: border-box;
   }
 
+  /* 4-column availability table (Set Your Availability): same look as Offers, no Book now column */
+  .creator-offers-table--availability .creator-offers-th-day,
+  .creator-offers-table--availability td:first-child {
+    width: 28%;
+  }
+  .creator-offers-table--availability th:nth-child(2),
+  .creator-offers-table--availability td:nth-child(2) {
+    width: 26%;
+  }
+  .creator-offers-table--availability th:nth-child(3),
+  .creator-offers-table--availability td:nth-child(3) {
+    width: 24%;
+  }
+  .creator-offers-table--availability .creator-offers-th-price,
+  .creator-offers-table--availability td.creator-offers-price {
+    width: 22%;
+  }
+
+  /* Set Your Availability page only: more padding in table columns */
+  .creator-offers-table--availability th {
+    padding: 8px 6px;
+  }
+  .creator-offers-table--availability td {
+    padding: 8px 6px;
+  }
+
   /* Table headers: center align for mobile */
   .creator-offers-table th {
     padding: 3px 2px;
@@ -263,6 +289,24 @@
     padding-left: 1px;
   }
 
+  /* 4-column availability table: column widths sum to 100% */
+  .creator-offers-table--availability .creator-offers-th-day,
+  .creator-offers-table--availability td:first-child {
+    width: 28%;
+  }
+  .creator-offers-table--availability th:nth-child(2),
+  .creator-offers-table--availability td:nth-child(2) {
+    width: 26%;
+  }
+  .creator-offers-table--availability th:nth-child(3),
+  .creator-offers-table--availability td:nth-child(3) {
+    width: 24%;
+  }
+  .creator-offers-table--availability .creator-offers-th-price,
+  .creator-offers-table--availability td.creator-offers-price {
+    width: 22%;
+  }
+
   .creator-offers-table td {
     padding: 5px 1px;
     font-size: 9px;
@@ -294,6 +338,14 @@
     padding: 3px 2px 3px 1px;
     overflow: visible;
     white-space: normal;
+  }
+
+  /* Set Your Availability page only: more padding in table columns (375px) */
+  .creator-offers-table--availability th {
+    padding: 6px 4px;
+  }
+  .creator-offers-table--availability td {
+    padding: 6px 4px;
   }
 
   /* Book now: text centered in bubble */
@@ -331,6 +383,14 @@
 /* Day column flex 2 equivalent – first column gets more space */
 .creator-offers-table .creator-offers-th-day {
   min-width: 140px;
+}
+
+/* Set Your Availability page only: extra padding in table columns (desktop) */
+.creator-offers-table--availability th {
+  padding: 14px 16px;
+}
+.creator-offers-table--availability td {
+  padding: 14px 16px;
 }
 
 /* Sticky action column so "Book now" stays visible on mobile when table scrolls horizontally */
