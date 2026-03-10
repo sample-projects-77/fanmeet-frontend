@@ -473,6 +473,11 @@
   }
 }
 
+/* When menu is open: raise dialog overlay above message row (Stream default is z-index: 2, message row is 10000) */
+body.fanmeet-message-menu-open .str-chat__dialog-overlay {
+  z-index: 10002 !important;
+}
+
 /* ========== Scroll lock when message options menu is open ========== */
 body.fanmeet-message-menu-open .chat-conversation-stream .str-chat__list,
 body.fanmeet-message-menu-open .chat-conversation-stream .str-chat__message-list-scroll,
@@ -483,6 +488,13 @@ body.fanmeet-message-menu-open .chat-conversation-stream .str-chat__ul {
   overscroll-behavior: none !important;
 }
 
+/* When menu is open: let clicks pass through non-active messages so the options menu (Copy, Edit, etc.) receives them */
+body.fanmeet-message-menu-open .chat-conversation-stream .str-chat__message:not(.fanmeet-message-menu-open):not(:has(.fanmeet-message-menu-open)),
+body.fanmeet-message-menu-open .chat-conversation-stream .str-chat__li:not(.fanmeet-message-menu-open):not(:has(.fanmeet-message-menu-open)),
+body.fanmeet-message-menu-open .chat-conversation-stream [class*="virtual-list-message"]:not(.fanmeet-message-menu-open):not(:has(.fanmeet-message-menu-open)) {
+  pointer-events: none !important;
+}
+
 /* ========== Active message above backdrop + highlight ========== */
 .chat-conversation-stream .str-chat__message.fanmeet-message-menu-open,
 .chat-conversation-stream .str-chat__li.fanmeet-message-menu-open,
@@ -490,14 +502,26 @@ body.fanmeet-message-menu-open .chat-conversation-stream .str-chat__ul {
   position: relative;
   z-index: 10000;
 }
+/* Let clicks pass through the active message row to the options menu (dialog is in portal with lower z-index) */
+.chat-conversation-stream .str-chat__message.fanmeet-message-menu-open,
+.chat-conversation-stream .str-chat__li.fanmeet-message-menu-open,
+.chat-conversation-stream [class*="virtual-list-message"].fanmeet-message-menu-open {
+  pointer-events: none !important;
+}
 .chat-conversation-stream .fanmeet-message-menu-open .str-chat__message-bubble {
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85);
   transition: box-shadow 0.2s ease;
 }
-/* Hide reactions & pin indicator on active message when options menu is open (prevents overlap) */
+/* Hide reactions, metadata (timestamp/last seen) & pin indicator on active message when options menu is open (prevents overlap) */
 .chat-conversation-stream .fanmeet-message-menu-open .str-chat__message-reactions-host,
+.chat-conversation-stream .fanmeet-message-menu-open .str-chat__message-metadata,
 .chat-conversation-stream .fanmeet-message-menu-open .str-chat__message-metadata::before {
   visibility: hidden !important;
+}
+/* Ensure metadata cannot block clicks on the options menu – clicks pass through to Copy/Edit/etc */
+.chat-conversation-stream .fanmeet-message-menu-open .str-chat__message-reactions-host,
+.chat-conversation-stream .fanmeet-message-menu-open .str-chat__message-metadata {
+  pointer-events: none !important;
 }
 
 /* ========== Combined message menu (emojis + actions) – opens ABOVE message ========== */
