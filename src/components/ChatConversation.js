@@ -111,6 +111,29 @@ function CombinedMessageOptions() {
     return () => row.classList.remove(className);
   }, [isOpen]);
 
+  /* When menu is open: prevent body and chat list from scrolling */
+  useEffect(() => {
+    if (!isOpen) return;
+    const scrollY = window.scrollY;
+    document.body.classList.add('fanmeet-message-menu-open');
+    document.body.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    return () => {
+      document.body.classList.remove('fanmeet-message-menu-open');
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.body.style.right = '';
+      window.scrollTo(0, scrollY);
+    };
+  }, [isOpen]);
+
   if (
     !message?.type ||
     message.type === 'error' ||

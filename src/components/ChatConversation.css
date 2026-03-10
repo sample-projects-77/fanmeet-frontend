@@ -450,6 +450,16 @@
   }
 }
 
+/* ========== Scroll lock when message options menu is open ========== */
+body.fanmeet-message-menu-open .chat-conversation-stream .str-chat__list,
+body.fanmeet-message-menu-open .chat-conversation-stream .str-chat__message-list-scroll,
+body.fanmeet-message-menu-open .chat-conversation-stream [data-virtuoso-scroller],
+body.fanmeet-message-menu-open .chat-conversation-stream .str-chat__ul {
+  overflow: hidden !important;
+  touch-action: none !important;
+  overscroll-behavior: none !important;
+}
+
 /* ========== Active message above backdrop + highlight ========== */
 .chat-conversation-stream .str-chat__message.fanmeet-message-menu-open,
 .chat-conversation-stream .str-chat__li.fanmeet-message-menu-open,
