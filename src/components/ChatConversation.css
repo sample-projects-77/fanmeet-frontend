@@ -494,6 +494,11 @@ body.fanmeet-message-menu-open .chat-conversation-stream .str-chat__ul {
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85);
   transition: box-shadow 0.2s ease;
 }
+/* Hide reactions & pin indicator on active message when options menu is open (prevents overlap) */
+.chat-conversation-stream .fanmeet-message-menu-open .str-chat__message-reactions-host,
+.chat-conversation-stream .fanmeet-message-menu-open .str-chat__message-metadata::before {
+  visibility: hidden !important;
+}
 
 /* ========== Combined message menu (emojis + actions) – opens ABOVE message ========== */
 .chat-conversation-stream .str-chat__dialog-contents:has(.fanmeet-combined-message-menu),
@@ -502,7 +507,7 @@ body.fanmeet-message-menu-open .chat-conversation-stream .str-chat__ul {
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
-  z-index: 9999 !important;
+  z-index: 10001 !important; /* above message row (10000) so menu stays on top of reactions & pin */
   overflow: visible !important;
 }
 .fanmeet-combined-message-menu {
