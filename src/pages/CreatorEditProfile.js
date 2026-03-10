@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { profileAPI } from '../services/api';
 import LoadingSpinner, { ButtonLoadingSpinner } from '../components/LoadingSpinner';
 import './CreatorEditProfile.css';
@@ -43,6 +44,7 @@ function EditOutlinedIcon() {
 }
 
 function CreatorEditProfile() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -63,14 +65,14 @@ function CreatorEditProfile() {
         setEditingCategory((res.data.category || '').trim());
         setEditingBio(res.data.bio || '');
       } else {
-        setError(res.error || 'Failed to load profile');
+        setError(res.error || t('creatorEdit.failedToLoad'));
       }
     } catch (err) {
-      setError(err.response?.data?.error || err.message || 'Something went wrong');
+      setError(err.response?.data?.error || err.message || t('common.errorGeneric'));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -101,7 +103,7 @@ function CreatorEditProfile() {
   const handleSave = async (e) => {
     e.preventDefault();
     if (!editingCategory.trim()) {
-      setError('Please select a category.');
+      setError(t('creatorEdit.selectCategoryError'));
       return;
     }
     setSaving(true);
@@ -127,10 +129,10 @@ function CreatorEditProfile() {
         }
         setIsEditing(false);
       } else {
-        setError(res.error || 'Failed to save.');
+        setError(res.error || t('creatorEdit.failedToSave'));
       }
     } catch (err) {
-      setError(err.response?.data?.error || err.message || 'Something went wrong');
+      setError(err.response?.data?.error || err.message || t('common.errorGeneric'));
     } finally {
       setSaving(false);
     }
@@ -144,10 +146,10 @@ function CreatorEditProfile() {
   return (
     <div className="creator-edit-profile-page">
       <header className="creator-edit-profile-header">
-        <Link to="/creator/dashboard" className="creator-edit-profile-back" aria-label="Back">
+        <Link to="/creator/dashboard" className="creator-edit-profile-back" aria-label={t('common.back')}>
           ←
         </Link>
-        <h1 className="creator-edit-profile-title">Edit Profile</h1>
+        <h1 className="creator-edit-profile-title">{t('creatorEdit.title')}</h1>
       </header>
 
       <main className="creator-edit-profile-main">
@@ -165,7 +167,7 @@ function CreatorEditProfile() {
               <span className="creator-edit-profile-meta-icon" aria-hidden>
                 <WorkspacePremiumIcon />
               </span>
-              <span className="creator-edit-profile-meta-label">Category</span>
+              <span className="creator-edit-profile-meta-label">{t('creatorEdit.category')}</span>
               {!isEditing && (
                 <button
                   type="button"
@@ -173,7 +175,7 @@ function CreatorEditProfile() {
                   onClick={handleEnterEdit}
                 >
                   <EditOutlinedIcon />
-                  <span>Edit Profile</span>
+                  <span>{t('profile.editProfile')}</span>
                 </button>
               )}
             </div>
@@ -182,14 +184,14 @@ function CreatorEditProfile() {
 
             {isEditing ? (
               <>
-                <label className="creator-edit-profile-field-label">Category</label>
+                <label className="creator-edit-profile-field-label">{t('creatorEdit.category')}</label>
                 <select
                   className="creator-edit-profile-select tns-text-field"
                   value={editingCategory}
                   onChange={(e) => setEditingCategory(e.target.value)}
                   disabled={saving}
                 >
-                  <option value="">Select category</option>
+                  <option value="">{t('creatorEdit.selectCategory')}</option>
                   {(
                     (() => {
                       const current = (profile?.category || '').trim();
@@ -202,11 +204,11 @@ function CreatorEditProfile() {
                   ))}
                 </select>
                 <div className="creator-edit-profile-gap creator-edit-profile-gap--small" />
-                <label className="creator-edit-profile-field-label" htmlFor="creator-edit-bio">Bio</label>
+                <label className="creator-edit-profile-field-label" htmlFor="creator-edit-bio">{t('creatorEdit.bio')}</label>
                 <textarea
                   id="creator-edit-bio"
                   className="creator-edit-profile-textarea tns-text-field"
-                  placeholder="Tell fans about yourself"
+                  placeholder={t('creatorEdit.bioPlaceholder')}
                   value={editingBio}
                   onChange={(e) => setEditingBio(e.target.value)}
                   rows={4}
@@ -220,7 +222,7 @@ function CreatorEditProfile() {
                     onClick={handleCancelEdit}
                     disabled={saving}
                   >
-                    Cancel
+                    {t('common.cancel')}
                   </button>
                   <button
                     type="button"
@@ -231,10 +233,10 @@ function CreatorEditProfile() {
                     {saving ? (
                       <>
                         <ButtonLoadingSpinner />
-                        <span>Saving…</span>
+                        <span>{t('creatorEdit.saving')}</span>
                       </>
                     ) : (
-                      'Save'
+                      t('common.save')
                     )}
                   </button>
                 </div>
@@ -244,7 +246,7 @@ function CreatorEditProfile() {
                 {category ? (
                   <span className="creator-edit-profile-pill">{category}</span>
                 ) : (
-                  <span className="creator-edit-profile-placeholder">Select a category</span>
+                  <span className="creator-edit-profile-placeholder">{t('creatorEdit.selectCategoryPlaceholder')}</span>
                 )}
                 {bio != null && bio !== '' && (
                   <>
@@ -253,7 +255,7 @@ function CreatorEditProfile() {
                       <span className="creator-edit-profile-meta-icon" aria-hidden>
                         <PersonOutlineIcon />
                       </span>
-                      <span className="creator-edit-profile-meta-label">Bio</span>
+                      <span className="creator-edit-profile-meta-label">{t('creatorEdit.bio')}</span>
                     </div>
                     <div className="creator-edit-profile-gap creator-edit-profile-gap--small" />
                     <p className="creator-edit-profile-bio-text">{bio}</p>

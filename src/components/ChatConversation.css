@@ -473,10 +473,13 @@
   }
 }
 
-/* When menu is open: raise dialog overlay above message row (Stream default is z-index: 2, message row is 10000) */
+/* When menu is open: overlay above other messages; active message row (10003) is above overlay so bubble stays visible */
 body.fanmeet-message-menu-open .str-chat__dialog-overlay {
   z-index: 10002 !important;
+  background: transparent !important;
 }
+
+/* Keep backdrop blur – message bubble (z-index 10003) and menu (above backdrop) stay sharp; only background is blurred */
 
 /* ========== Scroll lock when message options menu is open ========== */
 body.fanmeet-message-menu-open .chat-conversation-stream .str-chat__list,
@@ -495,14 +498,14 @@ body.fanmeet-message-menu-open .chat-conversation-stream [class*="virtual-list-m
   pointer-events: none !important;
 }
 
-/* ========== Active message above backdrop + highlight ========== */
+/* ========== Active message above overlay so bubble stays visible; menu opens below ========== */
 .chat-conversation-stream .str-chat__message.fanmeet-message-menu-open,
 .chat-conversation-stream .str-chat__li.fanmeet-message-menu-open,
 .chat-conversation-stream [class*="virtual-list-message"].fanmeet-message-menu-open {
   position: relative;
-  z-index: 10000;
+  z-index: 10003 !important; /* above overlay (10002) so message bubble is visible */
 }
-/* Let clicks pass through the active message row to the options menu (dialog is in portal with lower z-index) */
+/* Let clicks pass through the active message row so menu options receive clicks */
 .chat-conversation-stream .str-chat__message.fanmeet-message-menu-open,
 .chat-conversation-stream .str-chat__li.fanmeet-message-menu-open,
 .chat-conversation-stream [class*="virtual-list-message"].fanmeet-message-menu-open {
