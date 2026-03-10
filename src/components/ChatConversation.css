@@ -273,30 +273,103 @@
   justify-content: flex-end !important;
 }
 
-/* Message inner: column layout so bubble is on top, timestamp BELOW (Flutter) – never row */
+/* Message inner: grid so bubble and options share same row – three-dots sit inside bubble (top-right) */
 .chat-conversation-stream .str-chat__message-inner,
 .chat-conversation-stream .str-chat__message-simple .str-chat__message-inner {
   margin: 0 !important;
   min-width: 0 !important;
   max-width: 360px !important;
   width: fit-content !important;
-  display: flex !important;
-  flex-direction: column !important;
-  flex-wrap: nowrap !important;
-  align-items: flex-start !important;
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  grid-template-rows: auto auto auto auto !important;
+  align-items: start !important;
+  justify-items: start !important;
   flex: 0 0 auto !important;
   position: relative !important;
+  gap: 0 !important;
+  row-gap: 4px !important;
 }
-/* Hide message options (three-dots, emoji) to avoid bouncy UI on hover */
-.chat-conversation-stream .str-chat__message-options,
-.chat-conversation-stream .str-chat__li:hover .str-chat__message-options,
-.chat-conversation-stream .str-chat__message-inner:hover .str-chat__message-options,
-.chat-conversation-stream .str-chat__message:hover .str-chat__message-options {
+/* Grid placement: reactions full width; bubble and options share same cell (row 2) so dots sit inside bubble top-right */
+.chat-conversation-stream .str-chat__message-inner > .str-chat__message-reactions-host {
+  grid-column: 1 / -1 !important;
+  grid-row: 1 !important;
+}
+.chat-conversation-stream .str-chat__message-inner > .str-chat__message-bubble {
+  grid-column: 1 / -1 !important;
+  grid-row: 2 !important;
+}
+.chat-conversation-stream .str-chat__message-inner > .str-chat__message-options {
+  grid-column: 1 / -1 !important;
+  grid-row: 2 !important;
+  align-self: start !important;
+  justify-self: end !important;
+  width: auto !important;
+  max-width: fit-content !important;
+  pointer-events: none !important; /* let hover hit bubble; button re-enables below */
+  z-index: 1 !important; /* above bubble so three-dots are visible when opacity: 1 */
+}
+/* Received messages: ensure three-dots stay on the right side of the bubble */
+.chat-conversation-stream .str-chat__message.str-chat__message--other .str-chat__message-options {
+  justify-self: end !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  width: auto !important;
+}
+.chat-conversation-stream .str-chat__message-inner > .str-chat__message-options .str-chat__message-actions-box-button {
+  pointer-events: auto !important;
+}
+.chat-conversation-stream .str-chat__message-inner > .str-chat__message-bubble {
+  position: relative;
+  z-index: 0;
+}
+.chat-conversation-stream .str-chat__message-inner > .str-chat__message-replies-count-button,
+.chat-conversation-stream .str-chat__message-inner > [class*="thread-link"],
+.chat-conversation-stream .str-chat__message-inner > .str-chat__message-is-reply-in-channel-indicator {
+  grid-column: 1 / -1 !important;
+  grid-row: 3 !important;
+}
+.chat-conversation-stream .str-chat__message-inner > .str-chat__message-metadata {
+  grid-column: 1 / -1 !important;
+  grid-row: 4 !important;
+}
+/* Only show three-dots in the options row; hide emoji and thread buttons (keep .str-chat__message-actions-container) */
+.chat-conversation-stream .str-chat__message-options > .str-chat__message-reply-in-thread-button,
+.chat-conversation-stream .str-chat__message-options > [class*="reaction-selector"],
+.chat-conversation-stream .str-chat__message-options > [class*="ReactionSelector"] {
   display: none !important;
+}
+.chat-conversation-stream .str-chat__message-options > *:not(.str-chat__message-actions-container) {
+  display: none !important;
+}
+/* Message options (three dots): hidden by default, show on hover (JS adds .chat-conversation-message-hovered) or when menu open */
+.chat-conversation-stream .str-chat__message-options {
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.chat-conversation-stream .chat-conversation-message-hovered .str-chat__message-options,
+.chat-conversation-stream .str-chat__message-options.str-chat__message-options--active {
+  opacity: 1 !important;
+}
+/* Three-dots button: visible and clickable when options are shown */
+.chat-conversation-stream .str-chat__message-actions-box-button {
+  color: var(--text-secondary, #888);
+  padding: 4px;
+  border-radius: 4px;
+  background: transparent !important;
+}
+.chat-conversation-stream .str-chat__message-actions-box-button:hover,
+.chat-conversation-stream .str-chat__message-actions-box-button:focus {
+  color: var(--text-primary, #fff);
+  background: transparent !important;
+}
+.chat-conversation-stream .str-chat__message-options .str-chat__message-actions-container,
+.chat-conversation-stream .str-chat__message-options .str-chat__message-actions-container:hover {
+  background: transparent !important;
 }
 .chat-conversation-stream .str-chat__message.str-chat__message--me .str-chat__message-inner,
 .chat-conversation-stream .str-chat__message.str-chat__message--me.str-chat__message-simple .str-chat__message-inner {
-  align-items: flex-end !important;
+  justify-items: end !important;
   gap: 0 !important;
   row-gap: 4px !important;
 }
@@ -316,7 +389,7 @@
   max-width: min(80%, 320px) !important;
   width: max-content;
   min-width: 5em !important;
-  padding: 0.5rem !important;
+  padding: 0.5rem 2rem 0.5rem 0.5rem !important;
   box-sizing: border-box !important;
   overflow: hidden !important;
 }
@@ -339,13 +412,13 @@
   padding: 0 !important;
   margin: 0 !important;
 }
-/* Bubble: wider min-width so short phrases (e.g. "Hi", "aaaaa adf") stay on one line */
+/* Bubble: wider min-width so short phrases (e.g. "Hi", "aaaaa adf") stay on one line; extra padding-right for three-dots */
 .chat-conversation-stream .str-chat__message-inner .str-chat__message-bubble {
   min-width: 5em !important;
   min-height: 2.6em !important;
   max-width: min(80%, 320px) !important;
   width: max-content !important;
-  padding: 0.5rem !important;
+  padding: 0.5rem 2rem 0.5rem 0.5rem !important;
   border: none !important;
   box-shadow: none !important;
   box-sizing: border-box !important;
@@ -376,7 +449,7 @@
   width: max-content;
   min-width: 5em !important;
   min-height: 2.6em !important;
-  padding: 0.5rem !important;
+  padding: 0.5rem 2rem 0.5rem 0.5rem !important;
   box-sizing: border-box !important;
   overflow: hidden !important;
   flex-shrink: 0 !important;
