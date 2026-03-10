@@ -223,6 +223,20 @@
     margin-right: 0 !important;
     margin-inline-end: 0 !important;
   }
+
+  /* Hide three-dots on mobile; options open only via long-press on the message bubble */
+  .chat-conversation-stream .str-chat__message-options .str-chat__message-actions-container,
+  .chat-conversation-stream .str-chat__message-options .str-chat__message-simple__actions__action--options {
+    display: none !important;
+  }
+
+  /* Prevent text selection on long-press so long-press opens options instead of selecting text */
+  .chat-conversation-stream .str-chat__message-bubble,
+  .chat-conversation-stream .str-chat__message-bubble * {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
 }
 
 /* Hide scrollbar: target every descendant so we catch Virtuoso’s inner scroller no matter what */
@@ -295,6 +309,49 @@
   grid-column: 1 / -1 !important;
   grid-row: 1 !important;
 }
+/* Reactions list above message: dark, no white background */
+.chat-conversation-stream .str-chat__message-reactions-host .str-chat__message-reactions-list,
+.chat-conversation-stream .str-chat__message-reactions-host [class*="ReactionsList"] {
+  background: transparent !important;
+  color: var(--text-primary, #e0e0e0) !important;
+  border-radius: 14px !important;
+  padding: 6px 10px !important;
+  display: inline-flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px 10px !important;
+  box-shadow: none !important;
+}
+.chat-conversation-stream .str-chat__message-reactions-host button.str-chat__message-reactions-list-item,
+.chat-conversation-stream .str-chat__message-reactions-host [class*="reaction"] button {
+  color: var(--text-primary, #e0e0e0) !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 2px 4px !important;
+}
+/* Reaction selector popover (opens on emoji click): no white background, match dark theme */
+.chat-conversation-stream .str-chat__reaction-selector,
+.chat-conversation-stream .str-chat__message-reaction-selector,
+.str-chat__reaction-selector,
+.str-chat__message-reaction-selector {
+  background: var(--bg-secondary, #1a1a1a) !important;
+  border-radius: 14px !important;
+  padding: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid var(--border-light, rgba(255, 255, 255, 0.1)) !important;
+}
+.chat-conversation-stream .str-chat__message-reactions-options .str-chat__message-reactions-option,
+.str-chat__message-reactions-options .str-chat__message-reactions-option {
+  color: var(--text-primary, #e0e0e0) !important;
+}
+/* Dialog wrapper when it contains reaction selector only (remove white) */
+.chat-conversation-stream .str-chat__dialog-contents:has(.str-chat__reaction-selector),
+.chat-conversation-stream .str-chat__dialog-contents:has(.str-chat__message-reaction-selector),
+.str-chat__dialog-contents:has(.str-chat__reaction-selector),
+.str-chat__dialog-contents:has(.str-chat__message-reaction-selector) {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
 .chat-conversation-stream .str-chat__message-inner > .str-chat__message-bubble {
   grid-column: 1 / -1 !important;
   grid-row: 2 !important;
@@ -316,7 +373,9 @@
   justify-content: flex-end !important;
   width: auto !important;
 }
-.chat-conversation-stream .str-chat__message-inner > .str-chat__message-options .str-chat__message-actions-box-button {
+/* Re-enable clicks on three-dots and emoji (reaction) buttons – parent has pointer-events: none */
+.chat-conversation-stream .str-chat__message-inner > .str-chat__message-options .str-chat__message-actions-box-button,
+.chat-conversation-stream .str-chat__message-inner > .str-chat__message-options .str-chat__message-reactions-button {
   pointer-events: auto !important;
 }
 .chat-conversation-stream .str-chat__message-inner > .str-chat__message-bubble {
@@ -333,20 +392,18 @@
   grid-column: 1 / -1 !important;
   grid-row: 4 !important;
 }
-/* Only show three-dots in the options row; hide emoji and thread buttons (keep .str-chat__message-actions-container) */
-.chat-conversation-stream .str-chat__message-options > .str-chat__message-reply-in-thread-button,
-.chat-conversation-stream .str-chat__message-options > [class*="reaction-selector"],
-.chat-conversation-stream .str-chat__message-options > [class*="ReactionSelector"] {
+/* Show three-dots and reaction (emoji) button; hide only reply-in-thread for cleaner 1:1 UI */
+.chat-conversation-stream .str-chat__message-options > .str-chat__message-reply-in-thread-button {
   display: none !important;
 }
-.chat-conversation-stream .str-chat__message-options > *:not(.str-chat__message-actions-container) {
-  display: none !important;
-}
-/* Message options (three dots): hidden by default, show on hover (JS adds .chat-conversation-message-hovered) or when menu open */
+/* Message options (three dots): hidden by default, show on hover (CSS-only so it works on first open) or when menu open */
 .chat-conversation-stream .str-chat__message-options {
   opacity: 0;
   transition: opacity 0.15s ease;
 }
+.chat-conversation-stream .str-chat__li:hover .str-chat__message-options,
+.chat-conversation-stream .str-chat__message:hover .str-chat__message-options,
+.chat-conversation-stream .str-chat__message-inner:hover .str-chat__message-options,
 .chat-conversation-stream .chat-conversation-message-hovered .str-chat__message-options,
 .chat-conversation-stream .str-chat__message-options.str-chat__message-options--active {
   opacity: 1 !important;
@@ -367,6 +424,223 @@
 .chat-conversation-stream .str-chat__message-options .str-chat__message-actions-container:hover {
   background: transparent !important;
 }
+
+/* ========== Backdrop when message options are open (blur + darken) ========== */
+/* Backdrop is inside the dialog so it shares stacking with the menu; menu stays on top */
+.fanmeet-message-menu-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 0 !important;
+  background: rgba(0, 0, 0, 0.45) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation: fanmeet-backdrop-in 0.2s ease-out;
+}
+@keyframes fanmeet-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ========== Active message above backdrop + highlight ========== */
+.chat-conversation-stream .str-chat__message.fanmeet-message-menu-open,
+.chat-conversation-stream .str-chat__li.fanmeet-message-menu-open,
+.chat-conversation-stream [class*="virtual-list-message"].fanmeet-message-menu-open {
+  position: relative;
+  z-index: 10000;
+}
+.chat-conversation-stream .fanmeet-message-menu-open .str-chat__message-bubble {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85);
+  transition: box-shadow 0.2s ease;
+}
+
+/* ========== Combined message menu (emojis + actions) – opens ABOVE message ========== */
+.chat-conversation-stream .str-chat__dialog-contents:has(.fanmeet-combined-message-menu),
+.str-chat__dialog-contents:has(.fanmeet-combined-message-menu) {
+  margin-bottom: 8px !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  z-index: 9999 !important;
+  overflow: visible !important;
+}
+.fanmeet-combined-message-menu {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 260px;
+  animation: fanmeet-menu-in 0.2s ease-out;
+}
+@keyframes fanmeet-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Reaction bar: separate white card with tail pointing to message */
+.fanmeet-reaction-strip {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px 12px !important;
+  padding: 10px 14px !important;
+  flex-wrap: wrap;
+  background: #fff !important;
+  border-radius: 14px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
+  position: relative;
+}
+.fanmeet-reaction-strip::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid #fff;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.1));
+}
+.fanmeet-reaction-option {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #1a1a1a;
+  cursor: pointer;
+  font-size: 1.25rem;
+}
+.fanmeet-reaction-option:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+/* Actions panel: separate white card (Edit, Copy, Pin, Delete) */
+.fanmeet-message-actions-list {
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 6px 0 !important;
+  background: #fff !important;
+  border-radius: 14px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
+  overflow: hidden;
+}
+.fanmeet-message-action {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  width: 100% !important;
+  padding: 10px 14px !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: #1a1a1a !important;
+  font-weight: 600 !important;
+  font-size: 0.9375rem !important;
+  text-align: left !important;
+  cursor: pointer;
+}
+.fanmeet-message-action:hover {
+  background: rgba(0, 0, 0, 0.06) !important;
+}
+.fanmeet-message-action--delete {
+  color: #dc3545 !important;
+}
+
+/* ========== Message actions: bottom sheet style (Edit, Copy, Pin, Delete) ========== */
+/* Dialog that contains the actions box: bottom sheet on mobile only */
+@media (max-width: 1024px) {
+  .chat-conversation-stream .str-chat__dialog-contents:has(.str-chat__message-actions-box) {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    top: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 16px 16px 0 0 !important;
+    background: #fff !important;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15) !important;
+    padding: 12px 0 calc(12px + env(safe-area-inset-bottom, 0px)) 0 !important;
+    margin: 0 !important;
+  }
+  .chat-conversation-stream .str-chat__dialog-contents:has(.str-chat__message-actions-box) .str-chat__message-actions-box {
+    position: static !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    min-width: auto !important;
+    width: 100% !important;
+  }
+  .chat-conversation-stream .str-chat__dialog-contents:has(.str-chat__message-actions-box) .str-chat__message-actions-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+    padding: 0 16px !important;
+  }
+  .chat-conversation-stream .str-chat__dialog-contents:has(.str-chat__message-actions-box) .str-chat__message-actions-list-item-button {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 14px 0 !important;
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+    color: #1a1a1a !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    text-align: left !important;
+    width: 100% !important;
+    justify-content: flex-start !important;
+  }
+  .chat-conversation-stream .str-chat__dialog-contents:has(.str-chat__message-actions-box) .str-chat__message-actions-list-item-button:hover,
+  .chat-conversation-stream .str-chat__dialog-contents:has(.str-chat__message-actions-box) .str-chat__message-actions-list-item-button:focus {
+    background: rgba(0, 0, 0, 0.06) !important;
+  }
+  /* Icons for actions: 1=Copy Message, 2=Pin, 3=Edit Message, 4=Delete */
+  .chat-conversation-stream .str-chat__dialog-contents:has(.str-chat__message-actions-box) .str-chat__message-actions-list-item-button:nth-child(1)::before {
+    content: ''; display: inline-block; width: 22px; height: 22px; flex-shrink: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231a1a1a' stroke-width='2'%3E%3Crect x='9' y='9' width='13' height='13' rx='2' ry='2'/%3E%3Cpath d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'/%3E%3C/svg%3E") center/contain no-repeat;
+  }
+  .chat-conversation-stream .str-chat__dialog-contents:has(.str-chat__message-actions-box) .str-chat__message-actions-list-item-button:nth-child(2)::before {
+    content: ''; display: inline-block; width: 22px; height: 22px; flex-shrink: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231a1a1a' stroke-width='2'%3E%3Cpath d='M12 17v5M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24v0a2 2 0 0 0 1.11 1.79l1.78.9A2 2 0 0 1 9 20.24v0M15 10.76a2 2 0 0 0 1.11 1.79l1.78.9A2 2 0 0 1 19 15.24v0a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 15 20.24v0M9 4v2M15 4v2M9 2h6'/%3E%3C/svg%3E") center/contain no-repeat;
+  }
+  .chat-conversation-stream .str-chat__dialog-contents:has(.str-chat__message-actions-box) .str-chat__message-actions-list-item-button:nth-child(3)::before {
+    content: ''; display: inline-block; width: 22px; height: 22px; flex-shrink: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231a1a1a' stroke-width='2'%3E%3Cpath d='M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7'/%3E%3Cpath d='M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z'/%3E%3C/svg%3E") center/contain no-repeat;
+  }
+  .chat-conversation-stream .str-chat__dialog-contents:has(.str-chat__message-actions-box) .str-chat__message-actions-list-item-button:nth-child(4)::before {
+    content: ''; display: inline-block; width: 22px; height: 22px; flex-shrink: 0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23dc3545' stroke-width='2'%3E%3Cpolyline points='3 6 5 6 21 6'/%3E%3Cpath d='M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2'/%3E%3Cline x1='10' y1='11' x2='10' y2='17'/%3E%3Cline x1='14' y1='11' x2='14' y2='17'/%3E%3C/svg%3E") center/contain no-repeat;
+  }
+  .chat-conversation-stream .str-chat__dialog-contents:has(.str-chat__message-actions-box) .str-chat__message-actions-list-item-button:nth-child(4) {
+    color: #dc3545 !important;
+  }
+  .chat-conversation-stream .str-chat__dialog-contents:has(.str-chat__message-actions-box)::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: -1;
+    pointer-events: none;
+  }
+}
+
 .chat-conversation-stream .str-chat__message.str-chat__message--me .str-chat__message-inner,
 .chat-conversation-stream .str-chat__message.str-chat__message--me.str-chat__message-simple .str-chat__message-inner {
   justify-items: end !important;
@@ -498,6 +772,15 @@
 .chat-conversation-stream .str-chat__message-sender-avatar img,
 .chat-conversation-stream .str-chat__message.str-chat__message--other .str-chat__avatar img {
   background: #1e3a5f;
+}
+
+/* "Edited" label below message (SDK uses .str-chat__mesage-simple-edited - typo) */
+.chat-conversation-stream .str-chat__mesage-simple-edited,
+.chat-conversation-stream .str-chat__message-simple-edited {
+  font-size: 0.75rem !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+  font-style: italic;
+  margin-left: 4px;
 }
 
 /* Timestamp BELOW bubble (Flutter): own row, consistent spacing */
