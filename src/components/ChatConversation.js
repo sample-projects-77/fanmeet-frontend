@@ -271,16 +271,12 @@ function ChatContent({ channelId, backTo, backLabel, NavComponent }) {
   );
 }
 
-const LONG_PRESS_MS = 500;
-
 function ChatConversation({ backTo, backLabel, NavComponent }) {
   const { channelId } = useParams();
   const navigate = useNavigate();
   const { client, connecting, error, connect, disconnect, isReady } = useChat();
   const [user, setUser] = useState(null);
   const streamRef = useRef(null);
-  const longPressTimerRef = useRef(null);
-  const longPressMessageRef = useRef(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -300,54 +296,57 @@ function ChatConversation({ backTo, backLabel, NavComponent }) {
     if (!client && !connecting) connect();
   }, [client, connecting, connect]);
 
-  /* Mobile: long-press on message bubble opens the three-dots actions menu (Delete, Reply, etc.) */
+  /* Mobile: tap on message bubble opens options menu (three-dots hidden by CSS on small screens).
+   * Attach to document so we work regardless of when messages mount (avoids refresh-needed bug). */
   useEffect(() => {
-    const container = streamRef.current;
-    if (!container) return;
+    if (!isReady) return;
 
-    const clearLongPress = () => {
-      if (longPressTimerRef.current) {
-        clearTimeout(longPressTimerRef.current);
-        longPressTimerRef.current = null;
-      }
-      longPressMessageRef.current = null;
+    const isMobileWidth = () => typeof window !== 'undefined' && window.innerWidth <= 1024;
+
+    const openMessageOptions = (innerOrMessage) => {
+      if (!innerOrMessage) return;
+      const btn = innerOrMessage.querySelector?.('[data-testid="message-actions-toggle-button"]');
+      if (btn) btn.click();
     };
 
-    const onTouchStart = (e) => {
-      /* Only handle long-press when touch starts on the message bubble (not avatar, timestamp, etc.) */
-      const bubble = e.target.closest?.('.str-chat__message-bubble');
+    const tryOpenFromTarget = (target) => {
+      if (!isMobileWidth()) return;
+      const container = document.querySelector('.chat-conversation-stream');
+      if (!container?.contains(target)) return;
+      const bubble = target?.closest?.('.str-chat__message-bubble');
       if (!bubble) return;
-      const message = bubble.closest?.('.str-chat__message');
-      if (!message) return;
-      if (e.target.closest?.('.str-chat__message-actions-box-button')) return;
-      if (e.target.closest?.('.str-chat__message-actions-box')) return;
-      longPressMessageRef.current = message;
-      longPressTimerRef.current = setTimeout(() => {
-        longPressTimerRef.current = null;
-        const msg = longPressMessageRef.current;
-        longPressMessageRef.current = null;
-        if (!msg) return;
-        const btn = msg.querySelector?.('[data-testid="message-actions-toggle-button"]');
-        if (btn) btn.click();
-      }, LONG_PRESS_MS);
+      if (target?.closest?.('[data-testid="message-actions-toggle-button"]')) return;
+      if (target?.closest?.('.str-chat__message-actions-box')) return;
+      const innerOrMessage =
+        bubble.closest?.('.str-chat__message-inner') || bubble.closest?.('.str-chat__message');
+      if (innerOrMessage) openMessageOptions(innerOrMessage);
     };
 
-    const onTouchEnd = clearLongPress;
-    const onTouchMove = clearLongPress;
-    const onTouchCancel = clearLongPress;
+    const onTouchEnd = (e) => {
+      const touch = e.changedTouches?.[0];
+      const target = touch ? document.elementFromPoint(touch.clientX, touch.clientY) : e.target;
+      tryOpenFromTarget(target);
+    };
 
-    container.addEventListener('touchstart', onTouchStart, { passive: true });
-    container.addEventListener('touchend', onTouchEnd, { passive: true });
-    container.addEventListener('touchmove', onTouchMove, { passive: true });
-    container.addEventListener('touchcancel', onTouchCancel, { passive: true });
+    const onClick = (e) => {
+      tryOpenFromTarget(e.target);
+    };
+
+    const onContextMenu = (e) => {
+      const bubble = e.target.closest?.('.str-chat__message-bubble');
+      if (bubble) e.preventDefault();
+    };
+
+    document.addEventListener('touchend', onTouchEnd, { passive: true });
+    document.addEventListener('click', onClick, true);
+    document.addEventListener('contextmenu', onContextMenu, true);
+
     return () => {
-      container.removeEventListener('touchstart', onTouchStart);
-      container.removeEventListener('touchend', onTouchEnd);
-      container.removeEventListener('touchmove', onTouchMove);
-      container.removeEventListener('touchcancel', onTouchCancel);
-      clearLongPress();
+      document.removeEventListener('touchend', onTouchEnd);
+      document.removeEventListener('click', onClick, true);
+      document.removeEventListener('contextmenu', onContextMenu, true);
     };
-  }, []);
+  }, [isReady, channelId]);
 
   const handleLogout = () => {
     disconnect();
