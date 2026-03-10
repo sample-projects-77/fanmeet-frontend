@@ -18,7 +18,7 @@
   min-height: 400px;
 }
 
-/* Mobile/tablet: full-width bars (channel header + message input), room for bottom nav */
+/* Mobile/tablet: full-width header and input (no side gaps), room for bottom nav */
 @media (max-width: 1024px) {
   .chat-conversation-main {
     padding: 16px 0 0 0;
@@ -33,19 +33,33 @@
     max-width: 100%;
   }
 
-  /* Channel header bar: full mobile width */
+  /* Back link: keep horizontal padding so it's not flush */
+  .chat-conversation-back {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  /* Channel header: full width, no side gaps; internal padding for content */
   .chat-conversation-stream .str-chat__channel-header {
     padding-left: 16px !important;
     padding-right: 16px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
 
-  /* Message input bar: full mobile width */
+  /* Message input: full width, no side gaps; internal padding for content */
   .chat-conversation-stream .str-chat__message-input-wrapper,
   .chat-conversation-stream .str-chat__message-input {
     padding: 12px 16px 12px 16px !important;
     padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;
-    max-width: 100%;
-    box-sizing: border-box;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .chat-conversation-stream .str-chat__message-input-inner,
@@ -84,6 +98,7 @@
   justify-content: center;
   padding: 48px 24px;
   text-align: center;
+  min-height: 200px;
 }
 
 .chat-conversation-error p {
@@ -245,11 +260,19 @@
 }
 
 /* Hide scrollbar: target every descendant so we catch Virtuoso’s inner scroller no matter what */
+.chat-conversation-page,
+.chat-conversation-page *,
+.chat-conversation-wrap,
+.chat-conversation-wrap *,
 .chat-conversation-stream,
 .chat-conversation-stream * {
   scrollbar-width: none !important;
   -ms-overflow-style: none !important;
 }
+.chat-conversation-page::-webkit-scrollbar,
+.chat-conversation-page *::-webkit-scrollbar,
+.chat-conversation-wrap::-webkit-scrollbar,
+.chat-conversation-wrap *::-webkit-scrollbar,
 .chat-conversation-stream::-webkit-scrollbar,
 .chat-conversation-stream *::-webkit-scrollbar {
   display: none !important;
@@ -488,7 +511,8 @@ body.fanmeet-message-menu-open .chat-conversation-stream .str-chat__ul {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  min-width: 260px;
+  min-width: min(260px, 100vw - 32px);
+  max-width: calc(100vw - 32px);
   animation: fanmeet-menu-in 0.2s ease-out;
 }
 @keyframes fanmeet-menu-in {
@@ -683,8 +707,10 @@ body.fanmeet-message-menu-open .chat-conversation-stream .str-chat__ul {
   row-gap: 4px !important;
 }
 
-/* ========== Pinned message indicator ========== */
-.chat-conversation-stream .str-chat__message--pinned .str-chat__message-bubble {
+/* ========== Pinned message indicator (higher specificity so bubble rules don't override) ========== */
+.chat-conversation-stream .str-chat__message.str-chat__message--pinned .str-chat__message-bubble,
+.chat-conversation-stream .str-chat__message.str-chat__message--other.str-chat__message--pinned .str-chat__message-bubble,
+.chat-conversation-stream .str-chat__message.str-chat__message--me.str-chat__message--pinned .str-chat__message-bubble {
   box-shadow: 0 0 0 1px rgba(249, 214, 92, 0.5) !important;
 }
 .chat-conversation-stream .str-chat__message--pinned .str-chat__message-metadata::before {
