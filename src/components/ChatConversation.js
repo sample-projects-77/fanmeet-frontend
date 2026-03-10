@@ -44,10 +44,35 @@ const CHAT_REACTION_OPTIONS = [
   { type: 'wow', Component: () => <ReactionEmoji fallback="⁉️" type="wow" />, name: '?!' },
 ];
 
+/** Copy text to clipboard; works on mobile (Clipboard API + execCommand fallback) */
+function copyToClipboard(text) {
+  if (!text) return;
+  if (navigator.clipboard?.writeText) {
+    navigator.clipboard.writeText(text).catch(() => {
+      fallbackCopy(text);
+    });
+    return;
+  }
+  fallbackCopy(text);
+}
+function fallbackCopy(text) {
+  if (!document.queryCommandSupported?.('copy')) return;
+  const el = document.createElement('textarea');
+  el.value = text;
+  el.style.cssText = 'position:fixed;left:-9999px;top:0;';
+  document.body.appendChild(el);
+  el.select();
+  try {
+    document.execCommand('copy');
+  } finally {
+    document.body.removeChild(el);
+  }
+}
+
 const CUSTOM_MESSAGE_ACTIONS = {
   'Copy Message': (message) => {
     const text = message?.text || '';
-    if (navigator.clipboard?.writeText) navigator.clipboard.writeText(text);
+    copyToClipboard(text);
   },
 };
 
@@ -70,6 +95,7 @@ function CombinedMessageOptions() {
   const { t } = useTranslationContext('CombinedMessageOptions');
   const buttonRef = useRef(null);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [placement, setPlacement] = useState('top-end');
   const dialogIdNamespace = threadList ? '-thread-' : '';
   const dialogId = `message-actions${dialogIdNamespace}--${message?.id}`;
   const { dialog, dialogManager } = useDialogOnNearestManager({ id: dialogId });
@@ -82,21 +108,24 @@ function CombinedMessageOptions() {
     setAnchorEl(bubble || null);
   }, []);
 
-  /* Keep menu below nav bar: clamp top so it never goes under the header */
-  const MIN_TOP_PX = 56;
-  useEffect(() => {
-    if (!isOpen) return;
-    const run = () => {
-      const wrapper = document.querySelector('.fanmeet-combined-message-menu')?.closest('.str-chat__dialog-contents');
-      if (!wrapper) return;
-      const rect = wrapper.getBoundingClientRect();
-      if (rect.top < MIN_TOP_PX) {
-        wrapper.style.top = `${MIN_TOP_PX}px`;
-      }
-    };
-    const id = requestAnimationFrame(() => requestAnimationFrame(run));
-    return () => cancelAnimationFrame(id);
-  }, [isOpen]);
+  /* When insufficient space above (navbar), open menu below the message */
+  const NAV_HEIGHT_PX = 100;
+  const MENU_HEIGHT_ESTIMATE_PX = 220;
+  useLayoutEffect(() => {
+    if (!isOpen) {
+      setPlacement('top-end');
+      return;
+    }
+    const el = anchorEl || buttonRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const spaceAbove = rect.top;
+    if (spaceAbove < NAV_HEIGHT_PX + MENU_HEIGHT_ESTIMATE_PX) {
+      setPlacement('bottom-end');
+    } else {
+      setPlacement('top-end');
+    }
+  }, [isOpen, anchorEl]);
 
   /* When menu is open: highlight message row (above backdrop) and show blurred backdrop */
   useEffect(() => {
@@ -160,7 +189,7 @@ function CombinedMessageOptions() {
       <DialogAnchor
         dialogManagerId={dialogManager?.id}
         id={dialogId}
-        placement="top-end"
+        placement={placement}
         referenceElement={anchorEl || buttonRef.current}
         tabIndex={-1}
         trapFocus
@@ -173,56 +202,112 @@ function CombinedMessageOptions() {
             role="presentation"
             aria-hidden
           />
-          <div className="fanmeet-combined-message-menu">
-          <div className="fanmeet-reaction-strip">
-            {CHAT_REACTION_OPTIONS.map(({ type, Component }) => (
-              <button
-                key={type}
-                type="button"
-                className="fanmeet-reaction-option"
-                onClick={(e) => {
-                  handleReaction?.(type, e);
-                  close();
-                }}
-                aria-label={`React ${type}`}
-              >
-                <Component />
-              </button>
-            ))}
-          </div>
-          <div className="fanmeet-message-actions-list">
-            {customMessageActions?.['Copy Message'] && (
-              <button
-                type="button"
-                className="fanmeet-message-action"
-                onClick={() => {
-                  customMessageActions['Copy Message'](message);
-                  close();
-                }}
-              >
-                {t('Copy Message') || 'Copy Message'}
-              </button>
-            )}
-            {hasEdit && (
-              <button type="button" className="fanmeet-message-action" onClick={() => { setEditingState?.(); close(); }}>
-                {t('Edit Message') || 'Edit Message'}
-              </button>
-            )}
-            {hasPin && !message.parent_id && (
-              <button type="button" className="fanmeet-message-action" onClick={() => { handlePin?.(); close(); }}>
-                {message.pinned ? (t('Unpin') || 'Unpin') : (t('Pin to Conversation') || 'Pin to Conversation')}
-              </button>
-            )}
-            {hasDelete && (
-              <button
-                type="button"
-                className="fanmeet-message-action fanmeet-message-action--delete"
-                onClick={(e) => { handleDelete?.(e); close(); }}
-              >
-                {t('Delete Message') || 'Delete Message'}
-              </button>
-            )}
-          </div>
+          <div className={`fanmeet-combined-message-menu ${placement === 'bottom-end' ? 'fanmeet-combined-message-menu--below' : ''}`}>
+          {placement === 'bottom-end' ? (
+            <>
+              <div className="fanmeet-message-actions-list">
+                {customMessageActions?.['Copy Message'] && (
+                  <button
+                    type="button"
+                    className="fanmeet-message-action"
+                    onClick={() => {
+                      customMessageActions['Copy Message'](message);
+                      close();
+                    }}
+                  >
+                    {t('Copy Message') || 'Copy Message'}
+                  </button>
+                )}
+                {hasEdit && (
+                  <button type="button" className="fanmeet-message-action" onClick={() => { setEditingState?.(); close(); }}>
+                    {t('Edit Message') || 'Edit Message'}
+                  </button>
+                )}
+                {hasPin && !message.parent_id && (
+                  <button type="button" className="fanmeet-message-action" onClick={(e) => { handlePin?.(e); close(); }}>
+                    {message.pinned ? (t('Unpin') || 'Unpin') : (t('Pin to Conversation') || 'Pin to Conversation')}
+                  </button>
+                )}
+                {hasDelete && (
+                  <button
+                    type="button"
+                    className="fanmeet-message-action fanmeet-message-action--delete"
+                    onClick={(e) => { handleDelete?.(e); close(); }}
+                  >
+                    {t('Delete Message') || 'Delete Message'}
+                  </button>
+                )}
+              </div>
+              <div className="fanmeet-reaction-strip fanmeet-reaction-strip--below">
+                {CHAT_REACTION_OPTIONS.map(({ type, Component }) => (
+                  <button
+                    key={type}
+                    type="button"
+                    className="fanmeet-reaction-option"
+                    onClick={(e) => {
+                      handleReaction?.(type, e);
+                      close();
+                    }}
+                    aria-label={`React ${type}`}
+                  >
+                    <Component />
+                  </button>
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="fanmeet-reaction-strip">
+                {CHAT_REACTION_OPTIONS.map(({ type, Component }) => (
+                  <button
+                    key={type}
+                    type="button"
+                    className="fanmeet-reaction-option"
+                    onClick={(e) => {
+                      handleReaction?.(type, e);
+                      close();
+                    }}
+                    aria-label={`React ${type}`}
+                  >
+                    <Component />
+                  </button>
+                ))}
+              </div>
+              <div className="fanmeet-message-actions-list">
+                {customMessageActions?.['Copy Message'] && (
+                  <button
+                    type="button"
+                    className="fanmeet-message-action"
+                    onClick={() => {
+                      customMessageActions['Copy Message'](message);
+                      close();
+                    }}
+                  >
+                    {t('Copy Message') || 'Copy Message'}
+                  </button>
+                )}
+                {hasEdit && (
+                  <button type="button" className="fanmeet-message-action" onClick={() => { setEditingState?.(); close(); }}>
+                    {t('Edit Message') || 'Edit Message'}
+                  </button>
+                )}
+                {hasPin && !message.parent_id && (
+                  <button type="button" className="fanmeet-message-action" onClick={(e) => { handlePin?.(e); close(); }}>
+                    {message.pinned ? (t('Unpin') || 'Unpin') : (t('Pin to Conversation') || 'Pin to Conversation')}
+                  </button>
+                )}
+                {hasDelete && (
+                  <button
+                    type="button"
+                    className="fanmeet-message-action fanmeet-message-action--delete"
+                    onClick={(e) => { handleDelete?.(e); close(); }}
+                  >
+                    {t('Delete Message') || 'Delete Message'}
+                  </button>
+                )}
+              </div>
+            </>
+          )}
         </div>
         </>
       </DialogAnchor>
