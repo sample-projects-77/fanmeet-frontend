@@ -8,6 +8,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import EmptyWidget from '../components/EmptyWidget';
 import ErrorWidget from '../components/ErrorWidget';
 import './CreatorHome.css';
+import './CreatorSearch.css';
 
 const ITEMS_PER_PAGE = 20;
 
@@ -101,10 +102,9 @@ function CreatorHome({ embedded, user: userProp, onLogout: onLogoutProp }) {
   if (!user) return null;
 
   const displayName = user?.userName ?? t('home.creator');
-  const priceStr = (cents) => (cents != null ? `${(cents / 100).toFixed(0)} €` : '');
-  const minLabel = t('common.min');
+  const priceStr = (cents) => (cents != null ? `${(cents / 100).toFixed(0)} €` : '—');
   const durationStr = (durations) =>
-    durations?.length ? ` / ${Math.min(...durations)} ${minLabel}` : '';
+    durations?.length ? `${Math.min(...durations)} ${t('common.min')}` : '—';
 
   return (
     <div className="creator-home-page">
@@ -131,28 +131,26 @@ function CreatorHome({ embedded, user: userProp, onLogout: onLogoutProp }) {
                 <ul className="creator-home-creator-list" aria-label={t('home.popularCreators')}>
                   {creators.map((c) => (
                     <li key={c.id}>
-                      <Link to={`/creator/creators/${c.id}`} className="creator-home-creator-card">
-                        <div className="creator-home-creator-avatar-wrap">
+                      <Link to={`/creator/creators/${c.id}`} className="creator-search-creator-card">
+                        <div className="creator-search-avatar-wrap">
                           <img
                             src={c.avatarUrl || DEFAULT_AVATAR_URL}
                             alt=""
-                            className="creator-home-creator-avatar"
+                            className="creator-search-avatar-img"
                           />
                         </div>
-                        <div className="creator-home-creator-info">
-                          <span className="creator-home-creator-name">
+                        <div className="creator-search-info">
+                          <span className="creator-search-name">
                             {c.displayName || c.userName || c.id}
                           </span>
                           {c.category && (
-                            <span className="creator-home-creator-category">{c.category}</span>
+                            <span className="creator-search-category">{c.category}</span>
                           )}
                         </div>
-                        {(c.startingPriceCents != null || (c.sessionDurations?.length > 0)) && (
-                          <div className="creator-home-creator-meta">
-                            <span className="creator-home-creator-price">
-                              {priceStr(c.startingPriceCents)}
-                              {durationStr(c.sessionDurations)}
-                            </span>
+                        {c.startingPriceCents != null && (
+                          <div className="creator-search-meta">
+                            <span className="creator-search-price">{priceStr(c.startingPriceCents)}</span>
+                            <span className="creator-search-duration">/ {durationStr(c.sessionDurations)}</span>
                           </div>
                         )}
                       </Link>

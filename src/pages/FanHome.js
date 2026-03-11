@@ -8,6 +8,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import EmptyWidget from '../components/EmptyWidget';
 import ErrorWidget from '../components/ErrorWidget';
 import './FanHome.css';
+import './FanSearch.css';
 
 const ITEMS_PER_PAGE = 20;
 
@@ -101,10 +102,9 @@ function FanHome({ embedded, user: userProp, onLogout: onLogoutProp }) {
   if (!user) return null;
 
   const displayName = user?.userName ?? t('home.fan');
-  const priceStr = (cents) => (cents != null ? `${(cents / 100).toFixed(0)} €` : '');
-  const minLabel = t('common.min');
+  const priceStr = (cents) => (cents != null ? `${(cents / 100).toFixed(0)} €` : '—');
   const durationStr = (durations) =>
-    durations?.length ? ` / ${Math.min(...durations)} ${minLabel}` : '';
+    durations?.length ? `${Math.min(...durations)} ${t('common.min')}` : '—';
 
   return (
     <div className="fan-home-page">
@@ -131,28 +131,26 @@ function FanHome({ embedded, user: userProp, onLogout: onLogoutProp }) {
                 <ul className="fan-home-creator-list" aria-label={t('home.popularCreators')}>
                   {creators.map((c) => (
                     <li key={c.id}>
-                      <Link to={`/fan/creators/${c.id}`} className="fan-home-creator-card">
-                        <div className="fan-home-creator-avatar-wrap">
+                      <Link to={`/fan/creators/${c.id}`} className="fan-creator-card">
+                        <div className="fan-creator-avatar-wrap">
                           <img
                             src={c.avatarUrl || DEFAULT_AVATAR_URL}
                             alt=""
-                            className="fan-home-creator-avatar"
+                            className="fan-creator-avatar-img"
                           />
                         </div>
-                        <div className="fan-home-creator-info">
-                          <span className="fan-home-creator-name">
+                        <div className="fan-creator-info">
+                          <span className="fan-creator-name">
                             {c.displayName || c.userName || c.id}
                           </span>
                           {c.category && (
-                            <span className="fan-home-creator-category">{c.category}</span>
+                            <span className="fan-creator-category">{c.category}</span>
                           )}
                         </div>
-                        {(c.startingPriceCents != null || (c.sessionDurations?.length > 0)) && (
-                          <div className="fan-home-creator-meta">
-                            <span className="fan-home-creator-price">
-                              {priceStr(c.startingPriceCents)}
-                              {durationStr(c.sessionDurations)}
-                            </span>
+                        {c.startingPriceCents != null && (
+                          <div className="fan-creator-meta">
+                            <span className="fan-creator-price">{priceStr(c.startingPriceCents)}</span>
+                            <span className="fan-creator-duration">/ {durationStr(c.sessionDurations)}</span>
                           </div>
                         )}
                       </Link>

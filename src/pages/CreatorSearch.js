@@ -149,10 +149,12 @@ function CreatorSearch({ embedded, user: userProp, onLogout: onLogoutProp }) {
                         <span className="creator-search-category">{c.category}</span>
                       )}
                     </div>
-                    <div className="creator-search-meta">
-                      <span className="creator-search-price">{priceStr(c.startingPriceCents)}</span>
-                      <span className="creator-search-duration">/ {durationStr(c.sessionDurations)}</span>
-                    </div>
+                    {c.startingPriceCents != null && (
+                      <div className="creator-search-meta">
+                        <span className="creator-search-price">{priceStr(c.startingPriceCents)}</span>
+                        <span className="creator-search-duration">/ {durationStr(c.sessionDurations)}</span>
+                      </div>
+                    )}
                   </Link>
                 ))}
               </div>

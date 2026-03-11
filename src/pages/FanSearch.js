@@ -149,10 +149,12 @@ function FanSearch({ embedded, user: userProp, onLogout: onLogoutProp }) {
                         <span className="fan-creator-category">{c.category}</span>
                       )}
                     </div>
-                    <div className="fan-creator-meta">
-                      <span className="fan-creator-price">{priceStr(c.startingPriceCents)}</span>
-                      <span className="fan-creator-duration">/ {durationStr(c.sessionDurations)}</span>
-                    </div>
+                    {c.startingPriceCents != null && (
+                      <div className="fan-creator-meta">
+                        <span className="fan-creator-price">{priceStr(c.startingPriceCents)}</span>
+                        <span className="fan-creator-duration">/ {durationStr(c.sessionDurations)}</span>
+                      </div>
+                    )}
                   </Link>
                 ))}
               </div>
