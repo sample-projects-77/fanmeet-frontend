@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { profileAPI } from '../services/api';
-import { DEFAULT_AVATAR_URL } from '../constants';
+import { getCached, setCached } from '../utils/routeDataCache';
 import { ButtonLoadingSpinner } from '../components/LoadingSpinner';
 import './FanProfileEdit.css';
 
@@ -43,18 +43,25 @@ function FanProfileEdit() {
 
   useEffect(() => {
     if (!isCreator) return;
+    const applyProfile = (data) => {
+      if (!data) return;
+      setProfile(data);
+      setCoverPreview(data.coverPhoto || null);
+      setHourlyRateEur(
+        data.hourlyRateCents != null && data.hourlyRateCents !== ''
+          ? String(Number(data.hourlyRateCents) / 100)
+          : ''
+      );
+    };
+    const cached = getCached('creatorMyProfile');
+    if (cached) applyProfile(cached);
     let cancelled = false;
     (async () => {
       try {
         const res = await profileAPI.getMyProfile();
         if (cancelled || res.StatusCode !== 200 || !res.data) return;
-        setProfile(res.data);
-        setCoverPreview(res.data.coverPhoto || null);
-        setHourlyRateEur(
-          res.data.hourlyRateCents != null && res.data.hourlyRateCents !== ''
-            ? String(res.data.hourlyRateCents / 100)
-            : ''
-        );
+        setCached('creatorMyProfile', res.data);
+        applyProfile(res.data);
       } catch (_) {}
     })();
     return () => { cancelled = true; };
@@ -130,9 +137,9 @@ function FanProfileEdit() {
           avatarUrl: d.avatarUrl ?? user.avatarUrl,
         };
         localStorage.setItem('user', JSON.stringify(updated));
-        if (isCreator && res.data.coverPhoto != null) {
-          setCoverPreview(res.data.coverPhoto);
-          setProfile((p) => (p ? { ...p, coverPhoto: res.data.coverPhoto } : null));
+        if (isCreator) {
+          const nextProfile = { ...profile, ...d };
+          setCached('creatorMyProfile', nextProfile);
         }
         navigate(profilePath, { replace: true });
       } else {
@@ -182,11 +189,13 @@ function FanProfileEdit() {
 
           <div className="fan-profile-edit-avatar-wrap">
             <div className="fan-profile-edit-avatar-box">
-              <img
-                src={avatarPreview || user?.avatarUrl || DEFAULT_AVATAR_URL}
-                alt=""
-                className="fan-profile-edit-avatar-img"
-              />
+              {(avatarPreview || user?.avatarUrl) ? (
+                <img
+                  src={avatarPreview || user.avatarUrl}
+                  alt=""
+                  className="fan-profile-edit-avatar-img"
+                />
+              ) : null}
             </div>
             <label className="fan-profile-edit-camera-btn" aria-label={t('profileEdit.changePhoto')}>
               <input

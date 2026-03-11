@@ -41,25 +41,110 @@
   margin-bottom: 0;
 }
 
-.fan-creator-details-back {
-  position: absolute;
-  left: 24px;
-  top: 16px;
-  z-index: 2;
-  color: var(--white);
+/* Top bar: back arrow + three dots (above cover, Flutter-style) */
+.fan-creator-details-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px 14px;
+  background: var(--bg-primary);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.fan-creator-details-top-bar .fan-creator-details-back {
+  position: static;
+  color: var(--text-primary);
   font-size: 24px;
   text-decoration: none;
   line-height: 1;
   padding: 6px 10px;
+  margin: -6px -10px;
   border-radius: 8px;
-  background: rgba(0, 0, 0, 0.3);
+  background: transparent;
 }
 
-.fan-creator-details-back:hover {
-  background: rgba(0, 0, 0, 0.5);
-  color: var(--white);
+.fan-creator-details-top-bar .fan-creator-details-back:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
 }
 
+.fan-creator-details-menu-wrap {
+  position: relative;
+}
+
+.fan-creator-details-dots-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.fan-creator-details-dots-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+}
+
+.fan-creator-details-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  min-width: 180px;
+  padding: 6px 0;
+  background: var(--dark-blue-shade-3, #1e2229);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  z-index: 10;
+}
+
+.fan-creator-details-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  background: none;
+  color: var(--tertiary-color);
+  font-size: 14px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.fan-creator-details-dropdown-item:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.fan-creator-details-dropdown-item--block {
+  color: var(--red, #e57373);
+}
+
+.fan-creator-details-dropdown-item--block:hover:not(:disabled) {
+  background: rgba(229, 115, 115, 0.12);
+}
+
+.fan-creator-details-dropdown-item:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.fan-creator-details-dropdown-item svg {
+  flex-shrink: 0;
+}
+
+/* Cover photo below the top bar */
 .fan-creator-details-cover-wrap {
   position: relative;
   width: 100%;
@@ -82,7 +167,7 @@
 .fan-creator-details-avatar-wrap {
   position: relative;
   left: 24px;
-  bottom: 40px;
+  bottom: 20px;
   width: 100px;
   height: 100px;
   border-radius: 50%;
@@ -114,7 +199,8 @@
 }
 
 .fan-creator-details-meta {
-  padding: 12px 24px 0 24px; /* 52px from avatar overlap = 12 + 40 */
+  padding: 0 24px 0 24px;
+  margin-top: -8px;
 }
 
 .fan-creator-details-name {

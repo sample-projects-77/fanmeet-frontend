@@ -101,6 +101,11 @@ export const userAPI = {
     return response.data;
   },
 
+  blockUser: async (userId, reason) => {
+    const response = await api.post('/users/me/blocked-users', { userId, reason });
+    return response.data;
+  },
+
   unblockUser: async (userId) => {
     const safeId = String(userId);
     const response = await api.delete(`/users/me/blocked-users/${encodeURIComponent(safeId)}`);

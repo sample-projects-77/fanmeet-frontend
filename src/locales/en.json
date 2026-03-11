@@ -203,6 +203,13 @@
   "creatorProfile.backToSearch": "← Back to Search",
   "creatorProfile.creatorNotFound": "Creator not found",
   "creatorProfile.couldNotStartChat": "Could not start chat",
+  "creatorProfile.moreOptions": "More options",
+  "creatorProfile.blockCreator": "Block Creator",
+  "creatorProfile.blockDialogTitle": "Block Creator",
+  "creatorProfile.blockConfirm": "Are you sure you want to block {{name}}? You will no longer see their profile or offers.",
+  "creatorProfile.blocking": "Blocking…",
+  "creatorProfile.thisCreator": "this creator",
+  "creatorProfile.couldNotBlock": "Could not block creator.",
 
   "offers.title": "Offers",
   "offers.noOffers": "No offers available.",

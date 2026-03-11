@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { profileAPI, chatAPI } from '../services/api';
+import { profileAPI, chatAPI, userAPI } from '../services/api';
 import { DEFAULT_AVATAR_URL } from '../constants';
 import FanNav from '../components/FanNav';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorWidget from '../components/ErrorWidget';
+import DeleteAccountDialog from '../components/DeleteAccountDialog';
 import './FanCreatorProfile.css';
 
 const COVER_HEIGHT = 180;
@@ -21,6 +22,10 @@ function FanCreatorProfile() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [startingChat, setStartingChat] = useState(false);
+  const [blocking, setBlocking] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [blockDialogOpen, setBlockDialogOpen] = useState(false);
+  const menuRef = React.useRef(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -83,6 +88,41 @@ function FanCreatorProfile() {
     }
   }, [creator, creatorId, navigate, t]);
 
+  const handleBlockCreatorConfirm = useCallback(async () => {
+    if (!creator) return;
+    const userIdToBlock = creator._id ? `creator_${creator._id}` : creatorId;
+    if (!userIdToBlock) return;
+    setBlocking(true);
+    setError(null);
+    try {
+      const res = await userAPI.blockUser(userIdToBlock);
+      if (res.StatusCode === 201) {
+        setBlockDialogOpen(false);
+        navigate('/fan/search', { replace: true });
+      } else {
+        setError(res.error || t('creatorProfile.couldNotBlock'));
+      }
+    } catch (err) {
+      setError(err.response?.data?.error || err.message || t('creatorProfile.couldNotBlock'));
+    } finally {
+      setBlocking(false);
+    }
+  }, [creator, creatorId, navigate, t]);
+
+  const handleBlockCreatorClick = useCallback(() => {
+    setMenuOpen(false);
+    setBlockDialogOpen(true);
+  }, []);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const close = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) setMenuOpen(false);
+    };
+    document.addEventListener('click', close);
+    return () => document.removeEventListener('click', close);
+  }, [menuOpen]);
+
   if (!user) return null;
 
   const hasCoverPhoto =
@@ -104,7 +144,32 @@ function FanCreatorProfile() {
         ) : creator ? (
           <div className="fan-creator-details-container">
             <header className="fan-creator-details-header">
-              <Link to="/fan/search" className="fan-creator-details-back" aria-label={t('common.back')}>←</Link>
+              <div className="fan-creator-details-top-bar">
+                <Link to="/fan/search" className="fan-creator-details-back" aria-label={t('common.back')}>←</Link>
+                <div className="fan-creator-details-menu-wrap" ref={menuRef}>
+                  <button
+                    type="button"
+                    className="fan-creator-details-dots-btn"
+                    onClick={(e) => { e.stopPropagation(); setMenuOpen((v) => !v); }}
+                    aria-label={t('creatorProfile.moreOptions')}
+                    aria-expanded={menuOpen}
+                  >
+                    <ThreeDotsIcon />
+                  </button>
+                  {menuOpen && (
+                    <div className="fan-creator-details-dropdown">
+                      <button
+                        type="button"
+                        className="fan-creator-details-dropdown-item fan-creator-details-dropdown-item--block"
+                        onClick={handleBlockCreatorClick}
+                      >
+                        <BlockIcon />
+                        <span>{t('creatorProfile.blockCreator')}</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
               <div className="fan-creator-details-cover-wrap">
                 {hasCoverPhoto ? (
                   <div
@@ -177,7 +242,38 @@ function FanCreatorProfile() {
           </div>
         ) : null}
       </main>
+
+      <DeleteAccountDialog
+        open={blockDialogOpen}
+        onClose={() => setBlockDialogOpen(false)}
+        onConfirm={handleBlockCreatorConfirm}
+        deleting={blocking}
+        title={t('creatorProfile.blockDialogTitle')}
+        message={creator ? t('creatorProfile.blockConfirm', { name: creator.displayName || creator.userName || t('creatorProfile.thisCreator') }) : ''}
+        cancelLabel={t('common.cancel')}
+        confirmLabel={t('creatorProfile.blockCreator')}
+        deletingLabel={t('creatorProfile.blocking')}
+      />
     </div>
+  );
+}
+
+function ThreeDotsIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24" aria-hidden>
+      <circle cx="12" cy="6" r="1.5" />
+      <circle cx="12" cy="12" r="1.5" />
+      <circle cx="12" cy="18" r="1.5" />
+    </svg>
+  );
+}
+
+function BlockIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
+      <circle cx="12" cy="12" r="10" />
+      <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+    </svg>
   );
 }
 
