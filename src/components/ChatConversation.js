@@ -414,12 +414,16 @@ function ChatContent({ channelId, backTo, backLabel, NavComponent }) {
   );
 }
 
+const CHAT_MOBILE_BREAKPOINT_PX = 1024;
+const KEYBOARD_OPEN_THRESHOLD = 0.85; /* viewport height shrinks when keyboard opens */
+
 function ChatConversation({ backTo, backLabel, NavComponent }) {
   const { channelId } = useParams();
   const navigate = useNavigate();
   const { client, connecting, error, connect, disconnect, isReady } = useChat();
   const [user, setUser] = useState(null);
   const streamRef = useRef(null);
+  const mainRef = useRef(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -491,6 +495,58 @@ function ChatConversation({ backTo, backLabel, NavComponent }) {
     };
   }, [isReady, channelId]);
 
+  /* Mobile: when keyboard opens, resize chat main to visual viewport so input sits right above keyboard; hide bottom nav */
+  useEffect(() => {
+    if (!isReady || typeof window === 'undefined' || !window.visualViewport) return;
+    const main = mainRef.current;
+    if (!main) return;
+    if (window.innerWidth > CHAT_MOBILE_BREAKPOINT_PX) return;
+
+    const applyViewport = () => {
+      const vv = window.visualViewport;
+      const keyboardLikelyOpen = vv.height < window.innerHeight * KEYBOARD_OPEN_THRESHOLD;
+      if (keyboardLikelyOpen) {
+        main.style.position = 'fixed';
+        main.style.top = '0';
+        main.style.left = '0';
+        main.style.right = '0';
+        main.style.width = '100%';
+        main.style.height = `${vv.height}px`;
+        main.style.overflow = 'hidden';
+        main.style.zIndex = '10';
+        document.body.classList.add('fanmeet-chat-keyboard-open');
+      } else {
+        main.style.position = '';
+        main.style.top = '';
+        main.style.left = '';
+        main.style.right = '';
+        main.style.width = '';
+        main.style.height = '';
+        main.style.overflow = '';
+        main.style.zIndex = '';
+        document.body.classList.remove('fanmeet-chat-keyboard-open');
+      }
+    };
+
+    applyViewport();
+    window.visualViewport.addEventListener('resize', applyViewport);
+    window.visualViewport.addEventListener('scroll', applyViewport);
+
+    return () => {
+      window.visualViewport.removeEventListener('resize', applyViewport);
+      window.visualViewport.removeEventListener('scroll', applyViewport);
+      main.style.position = '';
+      main.style.top = '';
+      main.style.left = '';
+      main.style.right = '';
+      main.style.width = '';
+      main.style.height = '';
+      main.style.overflow = '';
+      main.style.zIndex = '';
+      document.body.classList.remove('fanmeet-chat-keyboard-open');
+    };
+  }, [isReady]);
+
   const handleLogout = () => {
     disconnect();
     localStorage.removeItem('token');
@@ -548,7 +604,7 @@ function ChatConversation({ backTo, backLabel, NavComponent }) {
           onLogout={handleLogout}
         />
       )}
-      <main className="chat-conversation-main">
+      <main className="chat-conversation-main" ref={mainRef}>
         <div className="chat-conversation-wrap">
           <div className="chat-conversation-back">
             <Link to={backTo}>← {backLabel}</Link>

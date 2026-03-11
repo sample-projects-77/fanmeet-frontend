@@ -1,3 +1,8 @@
+/* When chat keyboard is open on mobile, hide bottom nav so input sits right above keyboard */
+body.fanmeet-chat-keyboard-open .bottom-nav {
+  display: none !important;
+}
+
 .chat-conversation-page {
   min-height: 100vh;
   min-height: 100dvh; /* iOS: use dynamic viewport so layout fits when browser UI is visible */
@@ -6,7 +11,7 @@
 }
 
 .chat-conversation-main {
-  padding: 16px 20px 48px;
+  padding: 16px 20px 0px;
 }
 
 .chat-conversation-wrap {
@@ -22,7 +27,7 @@
 @media (max-width: 1024px) {
   .chat-conversation-main {
     padding: 16px 0 0 0;
-    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
   }
 
   .chat-conversation-wrap {
