@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { profileAPI } from '../services/api';
@@ -25,7 +25,9 @@ function FanSearch({ embedded, user: userProp, onLogout: onLogoutProp }) {
   const [creators, setCreators] = useState([]);
   const [pagination, setPagination] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
+  const loadMoreRef = useRef(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -42,8 +44,12 @@ function FanSearch({ embedded, user: userProp, onLogout: onLogoutProp }) {
   }, [navigate]);
 
   const fetchCreators = useCallback(async (q, page = 1, append = false) => {
-    setLoading(true);
-    if (!append) setError(null);
+    if (append) {
+      setLoadingMore(true);
+    } else {
+      setLoading(true);
+      setError(null);
+    }
     try {
       const res = await profileAPI.getCreators({
         q: q || '',
@@ -66,7 +72,11 @@ function FanSearch({ embedded, user: userProp, onLogout: onLogoutProp }) {
         setCreators([]);
       }
     } finally {
-      setLoading(false);
+      if (append) {
+        setLoadingMore(false);
+      } else {
+        setLoading(false);
+      }
     }
   }, []);
 
@@ -74,11 +84,28 @@ function FanSearch({ embedded, user: userProp, onLogout: onLogoutProp }) {
   useEffect(() => {
     if (user === null) return;
     const trimmed = query.trim();
-    const t = setTimeout(() => {
+    const timer = setTimeout(() => {
       fetchCreators(trimmed);
     }, trimmed ? SEARCH_DEBOUNCE_MS : 0);
-    return () => clearTimeout(t);
+    return () => clearTimeout(timer);
   }, [user, query, fetchCreators]);
+
+  // Infinite scroll: load next page when sentinel is visible
+  useEffect(() => {
+    if (!pagination?.hasNextPage || loadingMore || loading) return;
+    const el = loadMoreRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          fetchCreators(query.trim(), pagination.currentPage + 1, true);
+        }
+      },
+      { rootMargin: '200px', threshold: 0 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [pagination?.hasNextPage, pagination?.currentPage, loadingMore, loading, query, fetchCreators]);
 
   const handleSearchChange = (e) => {
     setQuery(e.target.value);
@@ -159,15 +186,9 @@ function FanSearch({ embedded, user: userProp, onLogout: onLogoutProp }) {
                 ))}
               </div>
             )}
-            {pagination?.hasNextPage && !loading && creators.length > 0 && (
-              <div className="fan-search-more">
-                <button
-                  type="button"
-                  className="fan-search-load-more"
-                  onClick={() => fetchCreators(query.trim(), pagination.currentPage + 1, true)}
-                >
-                  {t('common.loadMore')}
-                </button>
+            {pagination?.hasNextPage && creators.length > 0 && (
+              <div ref={loadMoreRef} className="fan-search-load-more-sentinel" aria-hidden>
+                {loadingMore && <LoadingSpinner inline />}
               </div>
             )}
           </section>
