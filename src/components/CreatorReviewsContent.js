@@ -85,20 +85,21 @@ function CreatorReviewsContent({ backTo }) {
 
   return (
     <main className="fan-creator-reviews-main">
+      <header className="fan-creator-reviews-header">
+        <Link to={backTo} className="fan-creator-reviews-back" aria-label="Back to creator">
+          ←
+        </Link>
+        <h1 className="fan-creator-reviews-title">Reviews</h1>
+      </header>
       <div className="fan-creator-reviews-container">
-        <header className="fan-creator-reviews-header">
-          <Link to={backTo} className="fan-creator-reviews-back" aria-label="Back to creator">
-            ←
-          </Link>
-          <h1 className="fan-creator-reviews-title">Reviews</h1>
-        </header>
-
         {error ? (
           <ErrorWidget errorText={error} onRetry={fetchReviews} />
         ) : loading ? (
           <LoadingSpinner />
         ) : reviews.length === 0 ? (
-          <EmptyWidget text="No reviews yet." />
+          <div className="fan-creator-reviews-empty-wrap">
+            <EmptyWidget text="No reviews yet." />
+          </div>
         ) : (
           <ul className="fan-creator-reviews-list">
             {reviews.map((review) => (
