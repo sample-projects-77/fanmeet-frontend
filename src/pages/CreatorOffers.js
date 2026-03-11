@@ -111,8 +111,9 @@ function CreatorOffers() {
       setOffers(cached.offers);
       setPagination(cached.pagination || null);
       setLoading(false);
+      return;
     }
-    fetchOffers(!!cached?.offers);
+    fetchOffers(false);
   }, [user?.id, fetchOffers]);
 
   const handleLogout = () => {

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { profileAPI } from '../services/api';
+import { getCached, setCached } from '../utils/routeDataCache';
 import { DEFAULT_AVATAR_URL } from '../constants';
 import FanNav from '../components/FanNav';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -10,6 +11,7 @@ import ErrorWidget from '../components/ErrorWidget';
 import './FanSearch.css';
 
 const SEARCH_DEBOUNCE_MS = 350;
+const CACHE_KEY = 'searchDefault';
 
 function FanSearch({ embedded, user: userProp, onLogout: onLogoutProp }) {
   const { t } = useTranslation();
@@ -43,10 +45,10 @@ function FanSearch({ embedded, user: userProp, onLogout: onLogoutProp }) {
     }
   }, [navigate]);
 
-  const fetchCreators = useCallback(async (q, page = 1, append = false) => {
+  const fetchCreators = useCallback(async (q, page = 1, append = false, backgroundRefresh = false) => {
     if (append) {
       setLoadingMore(true);
-    } else {
+    } else if (!backgroundRefresh) {
       setLoading(true);
       setError(null);
     }
@@ -59,7 +61,9 @@ function FanSearch({ embedded, user: userProp, onLogout: onLogoutProp }) {
       if (res.StatusCode === 200 && res.data) {
         const list = res.data.creators || [];
         setCreators((prev) => (append ? [...prev, ...list] : list));
-        setPagination(res.data.pagination || null);
+        const pag = res.data.pagination || null;
+        setPagination(pag);
+        if (!append && !q) setCached(CACHE_KEY, { creators: list, pagination: pag });
       } else {
         if (!append) {
           setError(res.error || t('search.failedToLoad'));
@@ -78,12 +82,22 @@ function FanSearch({ embedded, user: userProp, onLogout: onLogoutProp }) {
         setLoading(false);
       }
     }
-  }, []);
+  }, [t]);
 
   // Initial load and when query changes (debounced)
   useEffect(() => {
     if (user === null) return;
     const trimmed = query.trim();
+    if (!trimmed) {
+      const cached = getCached(CACHE_KEY);
+      if (cached?.creators) {
+        setCreators(cached.creators);
+        setPagination(cached.pagination || null);
+        setLoading(false);
+        setError(null);
+        return;
+      }
+    }
     const timer = setTimeout(() => {
       fetchCreators(trimmed);
     }, trimmed ? SEARCH_DEBOUNCE_MS : 0);

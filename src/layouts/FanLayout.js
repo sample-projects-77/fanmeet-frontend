@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate, Outlet } from 'react-router-dom';
 import FanNav from '../components/FanNav';
 import { clearAllCached } from '../utils/routeDataCache';
+import { preloadFanData } from '../utils/prefetch';
 import FanHome from '../pages/FanHome';
 import FanSearch from '../pages/FanSearch';
 import FanDashboard from '../pages/FanDashboard';
@@ -63,6 +64,11 @@ export default function FanLayout() {
       navigate('/login', { replace: true });
     }
   }, [navigate]);
+
+  // Preload all tab data once after login; tabs then use cached data only (no refetch on tab switch)
+  useEffect(() => {
+    if (user) preloadFanData();
+  }, [user]);
 
   useEffect(() => {
     if (currentTabKey && !mountedTabs.includes(currentTabKey)) {

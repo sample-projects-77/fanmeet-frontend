@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { chatAPI } from '../services/api';
+import { getCached, setCached } from '../utils/routeDataCache';
 import { DEFAULT_AVATAR_URL } from '../constants';
 import { useChat } from '../context/ChatContext';
 import FanNav from '../components/FanNav';
@@ -54,12 +55,21 @@ function FanChats({ embedded, user: userProp, onLogout: onLogoutProp }) {
       return;
     }
 
+    const cached = getCached('channels');
+    if (Array.isArray(cached)) {
+      setChannels(cached);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
     const fetchChannels = async () => {
       setLoading(true);
       setError(null);
       try {
         const res = await chatAPI.getIndividualChannels();
         if (res.StatusCode === 200 && res.data?.channels) {
+          setCached('channels', res.data.channels);
           setChannels(res.data.channels);
         } else {
           setChannels([]);

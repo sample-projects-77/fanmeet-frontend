@@ -44,11 +44,12 @@ function FanDashboard({ embedded, user: userProp, onLogout: onLogoutProp }) {
     if (cached) {
       setData(cached);
       setLoading(false);
+      return;
     }
 
-    const fetchDashboard = async (isBackgroundRefresh = false) => {
+    const fetchDashboard = async () => {
       try {
-        if (!isBackgroundRefresh) setLoading(true);
+        setLoading(true);
         setError(null);
         const res = await dashboardAPI.getFanDashboard();
         if (res.StatusCode === 200 && res.data) {
@@ -63,15 +64,15 @@ function FanDashboard({ embedded, user: userProp, onLogout: onLogoutProp }) {
           setCached(CACHE_KEY, dashboardData);
           setData(dashboardData);
         } else {
-          if (!isBackgroundRefresh) setError(res.error || t('dashboard.failedToLoad'));
+          setError(res.error || t('dashboard.failedToLoad'));
         }
       } catch (err) {
-        if (!isBackgroundRefresh) setError(err.response?.data?.error || err.message || t('common.errorGeneric'));
+        setError(err.response?.data?.error || err.message || t('common.errorGeneric'));
       } finally {
         setLoading(false);
       }
     };
-    fetchDashboard(!!cached);
+    fetchDashboard();
   }, [navigate]);
 
   const refetch = useCallback(async () => {

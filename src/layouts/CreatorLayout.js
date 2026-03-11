@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate, Outlet } from 'react-router-dom';
 import CreatorNav from '../components/CreatorNav';
 import { clearAllCached } from '../utils/routeDataCache';
+import { preloadCreatorData } from '../utils/prefetch';
 import CreatorHome from '../pages/CreatorHome';
 import CreatorSearch from '../pages/CreatorSearch';
 import CreatorDashboard from '../pages/CreatorDashboard';
@@ -63,6 +64,11 @@ export default function CreatorLayout() {
       navigate('/login', { replace: true });
     }
   }, [navigate]);
+
+  // Preload all tab data once after login; tabs then use cached data only (no refetch on tab switch)
+  useEffect(() => {
+    if (user) preloadCreatorData();
+  }, [user]);
 
   useEffect(() => {
     if (currentTabKey && !mountedTabs.includes(currentTabKey)) {

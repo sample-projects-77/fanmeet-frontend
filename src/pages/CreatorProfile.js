@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { authAPI, profileAPI } from '../services/api';
+import { getCached, setCached } from '../utils/routeDataCache';
 import { DEFAULT_AVATAR_URL } from '../constants';
 import CreatorNav from '../components/CreatorNav';
 import { SettingsIcon, KeyIcon, OutlinedUserIcon, OutgoingIcon, DeleteAccountIcon, BlockedIcon } from '../components/ProfileIcons';
@@ -38,10 +39,16 @@ function CreatorProfile({ embedded, user: userProp, onLogout: onLogoutProp }) {
 
   useEffect(() => {
     if (!user?.id) return;
+    const cached = getCached('creatorMyProfile');
+    if (cached) {
+      setProfile(cached);
+      return;
+    }
     const fetchProfile = async () => {
       try {
         const res = await profileAPI.getMyProfile();
         if (res.StatusCode === 200 && res.data) {
+          setCached('creatorMyProfile', res.data);
           setProfile(res.data);
         }
       } catch {

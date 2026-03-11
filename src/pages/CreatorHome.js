@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { profileAPI } from '../services/api';
+import { getCached, setCached } from '../utils/routeDataCache';
 import { DEFAULT_AVATAR_URL } from '../constants';
 import CreatorNav from '../components/CreatorNav';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -11,6 +12,7 @@ import './CreatorHome.css';
 import './CreatorSearch.css';
 
 const ITEMS_PER_PAGE = 20;
+const CACHE_KEY = 'homeCreators';
 
 function CreatorHome({ embedded, user: userProp, onLogout: onLogoutProp }) {
   const { t } = useTranslation();
@@ -44,10 +46,10 @@ function CreatorHome({ embedded, user: userProp, onLogout: onLogoutProp }) {
     }
   }, [navigate]);
 
-  const fetchCreators = useCallback(async (page = 1, append = false) => {
+  const fetchCreators = useCallback(async (page = 1, append = false, backgroundRefresh = false) => {
     if (append) {
       setLoadingMore(true);
-    } else {
+    } else if (!backgroundRefresh) {
       setLoading(true);
       setError(null);
     }
@@ -59,6 +61,7 @@ function CreatorHome({ embedded, user: userProp, onLogout: onLogoutProp }) {
         const pagination = res.data.pagination || {};
         setHasNextPage(!!pagination.hasNextPage);
         setCurrentPage(pagination.currentPage ?? page);
+        if (!append) setCached(CACHE_KEY, { creators: list, pagination });
       } else {
         if (!append) {
           setError(res.error || t('search.failedToLoad'));
@@ -77,10 +80,20 @@ function CreatorHome({ embedded, user: userProp, onLogout: onLogoutProp }) {
         setLoading(false);
       }
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
-    if (user) fetchCreators(1, false);
+    if (!user) return;
+    const cached = getCached(CACHE_KEY);
+    if (cached?.creators) {
+      setCreators(cached.creators);
+      setHasNextPage(!!cached.pagination?.hasNextPage);
+      setCurrentPage(cached.pagination?.currentPage ?? 1);
+      setLoading(false);
+      setError(null);
+    } else {
+      fetchCreators(1, false, false);
+    }
   }, [user, fetchCreators]);
 
   useEffect(() => {
