@@ -164,7 +164,9 @@ function CreatorSearch({ embedded, user: userProp, onLogout: onLogoutProp }) {
                 onRetry={() => fetchCreators(query.trim())}
               />
             ) : loading ? (
-              <LoadingSpinner />
+              <div className="creator-search-list-loading" aria-busy="true">
+                <LoadingSpinner inline />
+              </div>
             ) : creators.length === 0 ? (
               <EmptyWidget
                 text={query ? t('search.noMatch') : t('search.noCreators')}

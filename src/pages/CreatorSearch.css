@@ -76,6 +76,14 @@
   font-size: 1.25rem;
 }
 
+.creator-search-list-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  padding: 24px;
+}
+
 .creator-search-error {
   padding: 12px 16px;
   margin-bottom: 16px;
