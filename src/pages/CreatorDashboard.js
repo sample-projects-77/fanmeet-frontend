@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { dashboardAPI } from '../services/api';
+import { dashboardAPI, bookingAPI } from '../services/api';
 import { getCached, setCached, clearAllCached } from '../utils/routeDataCache';
+import { getSessionCountsFromBookings } from '../utils/sessionCounts';
 import CreatorNav from '../components/CreatorNav';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorWidget from '../components/ErrorWidget';
@@ -51,8 +52,16 @@ function CreatorDashboard({ embedded, user: userProp, onLogout: onLogoutProp }) 
         setError(null);
         const res = await dashboardAPI.getCreatorDashboard();
         if (res.StatusCode === 200 && res.data) {
-          setCached(CACHE_KEY, res.data);
-          setData(res.data);
+          let dashboardData = res.data;
+          try {
+            const bookRes = await bookingAPI.getCreatorBookings({ page: 1, itemsPerPage: 100 });
+            if (bookRes.StatusCode === 200 && bookRes.data?.bookings) {
+              const counts = getSessionCountsFromBookings(bookRes.data.bookings);
+              dashboardData = { ...dashboardData, totalSessions: counts.totalSessions, upcomingSessions: counts.upcomingSessions };
+            }
+          } catch (_) { /* keep API counts if bookings fetch fails */ }
+          setCached(CACHE_KEY, dashboardData);
+          setData(dashboardData);
         } else {
           if (!isBackgroundRefresh) setError(res.error || t('dashboard.failedToLoad'));
         }
@@ -74,8 +83,16 @@ function CreatorDashboard({ embedded, user: userProp, onLogout: onLogoutProp }) 
     try {
       const res = await dashboardAPI.getCreatorDashboard();
       if (res.StatusCode === 200 && res.data) {
-        setCached(CACHE_KEY, res.data);
-        setData(res.data);
+        let dashboardData = res.data;
+        try {
+          const bookRes = await bookingAPI.getCreatorBookings({ page: 1, itemsPerPage: 100 });
+          if (bookRes.StatusCode === 200 && bookRes.data?.bookings) {
+            const counts = getSessionCountsFromBookings(bookRes.data.bookings);
+            dashboardData = { ...dashboardData, totalSessions: counts.totalSessions, upcomingSessions: counts.upcomingSessions };
+          }
+        } catch (_) { /* keep API counts if bookings fetch fails */ }
+        setCached(CACHE_KEY, dashboardData);
+        setData(dashboardData);
       } else {
         setError(res.error || t('dashboard.failedToLoad'));
       }
