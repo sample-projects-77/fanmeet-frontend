@@ -267,10 +267,11 @@ function EditIcon() {
   );
 }
 
+/* Forward arrow – from arrow_forward_ios.svg */
 function ArrowIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M5 12h14M12 5l7 7-7 7" />
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="currentColor" aria-hidden>
+      <path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z" />
     </svg>
   );
 }

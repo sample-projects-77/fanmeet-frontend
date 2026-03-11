@@ -14,9 +14,13 @@ function FanProfileEdit() {
   const profilePath = isCreator ? '/creator/profile' : '/fan/profile';
 
   const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
   const [userName, setUserName] = useState('');
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
+  const [coverFile, setCoverFile] = useState(null);
+  const [coverPreview, setCoverPreview] = useState(null);
+  const [hourlyRateEur, setHourlyRateEur] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
@@ -37,6 +41,25 @@ function FanProfileEdit() {
     }
   }, [navigate]);
 
+  useEffect(() => {
+    if (!isCreator) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await profileAPI.getMyProfile();
+        if (cancelled || res.StatusCode !== 200 || !res.data) return;
+        setProfile(res.data);
+        setCoverPreview(res.data.coverPhoto || null);
+        setHourlyRateEur(
+          res.data.hourlyRateCents != null && res.data.hourlyRateCents !== ''
+            ? String(res.data.hourlyRateCents / 100)
+            : ''
+        );
+      } catch (_) {}
+    })();
+    return () => { cancelled = true; };
+  }, [isCreator]);
+
   const handleAvatarChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -47,6 +70,16 @@ function FanProfileEdit() {
     setAvatarFile(file);
   };
 
+  const handleCoverChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setCoverPreview((prev) => {
+      if (prev && prev.startsWith('blob:')) URL.revokeObjectURL(prev);
+      return URL.createObjectURL(file);
+    });
+    setCoverFile(file);
+  };
+
   useEffect(() => {
     return () => {
       if (avatarPreview && avatarPreview.startsWith('blob:')) {
@@ -54,6 +87,14 @@ function FanProfileEdit() {
       }
     };
   }, [avatarPreview]);
+
+  useEffect(() => {
+    return () => {
+      if (coverPreview && coverPreview.startsWith('blob:')) {
+        URL.revokeObjectURL(coverPreview);
+      }
+    };
+  }, [coverPreview]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -67,17 +108,32 @@ function FanProfileEdit() {
       const formData = new FormData();
       formData.append('userName', userName.trim());
       if (avatarFile) formData.append('avatarUrl', avatarFile);
+      if (isCreator) {
+        if (coverFile) formData.append('coverPhoto', coverFile);
+        const cents =
+          hourlyRateEur.trim() === ''
+            ? ''
+            : Math.round(parseFloat(hourlyRateEur.replace(',', '.')) * 100);
+        if (cents !== '' && !Number.isNaN(cents) && cents >= 0) {
+          formData.append('hourlyRateCents', String(cents));
+        }
+      }
 
       const updateProfile = isCreator ? profileAPI.updateCreatorProfile : profileAPI.updateFanProfile;
       const res = await updateProfile(formData);
       if (res.StatusCode === 200 && res.data) {
+        const d = res.data;
         const updated = {
           ...user,
-          userName: res.data.userName,
-          email: res.data.email,
-          avatarUrl: res.data.avatarUrl ?? user.avatarUrl,
+          userName: d.userName !== undefined && d.userName !== null ? d.userName : user.userName,
+          email: d.email !== undefined && d.email !== null ? d.email : user.email,
+          avatarUrl: d.avatarUrl ?? user.avatarUrl,
         };
         localStorage.setItem('user', JSON.stringify(updated));
+        if (isCreator && res.data.coverPhoto != null) {
+          setCoverPreview(res.data.coverPhoto);
+          setProfile((p) => (p ? { ...p, coverPhoto: res.data.coverPhoto } : null));
+        }
         navigate(profilePath, { replace: true });
       } else {
         setError(res.error || t('profileEdit.failedToSave'));
@@ -106,6 +162,24 @@ function FanProfileEdit() {
 
       <main className="fan-profile-edit-main">
         <form onSubmit={handleSubmit} className="fan-profile-edit-form">
+          {isCreator && (
+            <label className="fan-profile-edit-cover-wrap">
+              <input
+                type="file"
+                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                onChange={handleCoverChange}
+                className="fan-profile-edit-cover-input"
+              />
+              <div className="fan-profile-edit-cover-inner">
+                {coverPreview ? (
+                  <img src={coverPreview} alt="" className="fan-profile-edit-cover-img" />
+                ) : (
+                  <span className="fan-profile-edit-cover-placeholder">{t('profileEdit.uploadCoverPhoto')}</span>
+                )}
+              </div>
+            </label>
+          )}
+
           <div className="fan-profile-edit-avatar-wrap">
             <div className="fan-profile-edit-avatar-box">
               <img
@@ -155,13 +229,28 @@ function FanProfileEdit() {
             />
           </div>
 
+          {isCreator && (
+            <div className="fan-profile-edit-field">
+              <label htmlFor="hourlyRate">{t('profileEdit.hourlyRateEur')}</label>
+              <input
+                type="text"
+                id="hourlyRate"
+                value={hourlyRateEur}
+                onChange={(e) => setHourlyRateEur(e.target.value)}
+                placeholder={t('profileEdit.hourlyRatePlaceholder')}
+                disabled={saving}
+                inputMode="decimal"
+              />
+            </div>
+          )}
+
           <button
             type="submit"
             className="fan-profile-edit-submit"
             disabled={saving}
             aria-busy={saving}
           >
-            {saving ? <ButtonLoadingSpinner /> : t('profileEdit.saveProfile')}
+            {saving ? <ButtonLoadingSpinner /> : (isCreator ? t('profileEdit.saveChanges') : t('profileEdit.saveProfile'))}
           </button>
         </form>
       </main>

@@ -89,6 +89,10 @@
   "creatorEdit.failedToSave": "Speichern fehlgeschlagen.",
   "profileEdit.changePhoto": "Foto ändern",
   "profileEdit.saveProfile": "Profil speichern",
+  "profileEdit.saveChanges": "Änderungen speichern",
+  "profileEdit.uploadCoverPhoto": "Titelbild hochladen",
+  "profileEdit.hourlyRateEur": "Stundensatz (EUR)",
+  "profileEdit.hourlyRatePlaceholder": "z. B. 15",
   "profileEdit.usernameRequired": "Benutzername ist erforderlich.",
   "profileEdit.failedToSave": "Speichern fehlgeschlagen.",
 

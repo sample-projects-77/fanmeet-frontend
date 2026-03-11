@@ -282,8 +282,14 @@ a.fan-stat-card--blue:hover {
 }
 
 .fan-action-arrow {
+  display: flex;
+  align-items: center;
   color: var(--text-muted);
-  font-size: 1.5rem;
+}
+
+.fan-action-arrow svg {
+  width: 14px;
+  height: 14px;
 }
 
 .fan-action-card:hover .fan-action-arrow {

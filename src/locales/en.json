@@ -89,6 +89,10 @@
   "creatorEdit.failedToSave": "Failed to save.",
   "profileEdit.changePhoto": "Change photo",
   "profileEdit.saveProfile": "Save Profile",
+  "profileEdit.saveChanges": "Save Changes",
+  "profileEdit.uploadCoverPhoto": "Upload cover photo",
+  "profileEdit.hourlyRateEur": "Hourly rate (EUR)",
+  "profileEdit.hourlyRatePlaceholder": "e.g. 15",
   "profileEdit.usernameRequired": "Username is required.",
   "profileEdit.failedToSave": "Failed to save.",
 
