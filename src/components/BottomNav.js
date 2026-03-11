@@ -12,6 +12,7 @@ import {
   AccountCircle,
   AccountCircleOutlined,
 } from '@mui/icons-material';
+import { prefetchCreatorDashboard, prefetchCreatorOffers, prefetchFanDashboard } from '../utils/prefetch';
 import './BottomNav.css';
 
 /* Outlined chat bubble (stroke-only) so unselected state is clearly outline, not filled */
@@ -52,12 +53,18 @@ export default function BottomNav({ variant, active }) {
       <div className="bottom-nav-inner">
         {items.map(({ key, path, label, Icon }) => {
           const isActive = active === key;
+          const onPrefetch = (key === 'creator' || key === 'fan') ? () => {
+            if (key === 'creator') { prefetchCreatorDashboard(); prefetchCreatorOffers(); }
+            else prefetchFanDashboard();
+          } : undefined;
           return (
             <Link
               key={key}
               to={path}
               className={`bottom-nav-item ${isActive ? 'bottom-nav-item--active' : ''}`}
               aria-current={isActive ? 'page' : undefined}
+              onMouseEnter={onPrefetch}
+              onFocus={onPrefetch}
             >
               <span className="bottom-nav-icon">
                 <Icon active={isActive} />

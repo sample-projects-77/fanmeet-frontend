@@ -8,10 +8,16 @@ import { SettingsIcon, KeyIcon, OutlinedUserIcon, OutgoingIcon, DeleteAccountIco
 import DeleteAccountDialog from '../components/DeleteAccountDialog';
 import './FanProfile.css';
 
-function FanProfile() {
+function FanProfile({ embedded, user: userProp, onLogout: onLogoutProp }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const [userState, setUserState] = useState(null);
+  const user = embedded ? userProp : userState;
+  const handleLogout = embedded ? onLogoutProp : () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/', { replace: true });
+  };
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -23,17 +29,11 @@ function FanProfile() {
       return;
     }
     try {
-      setUser(JSON.parse(userJson));
+      setUserState(JSON.parse(userJson));
     } catch {
       navigate('/login', { replace: true });
     }
   }, [navigate]);
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/', { replace: true });
-  };
 
   const handleDeleteAccountClick = () => {
     setDeleteDialogOpen(true);
@@ -64,7 +64,7 @@ function FanProfile() {
 
   return (
     <div className="fan-profile-page">
-      <FanNav active="profile" user={user} onLogout={handleLogout} />
+      {!embedded && <FanNav active="profile" user={user} onLogout={handleLogout} />}
       <main className="fan-profile-main">
         <div className="fan-profile-container">
           <h1 className="fan-profile-title">{t('profile.title')}</h1>

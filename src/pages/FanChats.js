@@ -23,10 +23,17 @@ function formatChatTime(isoString) {
   return d.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' + timeStr;
 }
 
-function FanChats() {
+function FanChats({ embedded, user: userProp, onLogout: onLogoutProp }) {
   const navigate = useNavigate();
   const { client, connect, disconnect, connecting } = useChat();
-  const [user, setUser] = useState(null);
+  const [userState, setUserState] = useState(null);
+  const user = embedded ? userProp : userState;
+  const handleLogout = embedded ? onLogoutProp : () => {
+    disconnect?.();
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/', { replace: true });
+  };
   const [channels, setChannels] = useState([]);
   const [memberInfoMap, setMemberInfoMap] = useState({});
   const [loading, setLoading] = useState(true);
@@ -41,7 +48,7 @@ function FanChats() {
       return;
     }
     try {
-      setUser(JSON.parse(userJson));
+      setUserState(JSON.parse(userJson));
     } catch {
       navigate('/login', { replace: true });
       return;
@@ -117,20 +124,13 @@ function FanChats() {
       setLoading(false);
     }
   }, []);
-  const handleLogout = () => {
-    disconnect?.();
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/', { replace: true });
-  };
-
   if (!user) return null;
 
   const showLoading = loading || namesLoading;
 
   return (
     <div className="fan-chats-page">
-      <FanNav active="chats" user={user} onLogout={handleLogout} />
+      {!embedded && <FanNav active="chats" user={user} onLogout={handleLogout} />}
       <main className="fan-chats-main">
         <div className="fan-chats-container">
           <h1 className="fan-chats-title">Chats</h1>

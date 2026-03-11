@@ -11,10 +11,16 @@ import './CreatorHome.css';
 
 const ITEMS_PER_PAGE = 20;
 
-function CreatorHome() {
+function CreatorHome({ embedded, user: userProp, onLogout: onLogoutProp }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const [userState, setUserState] = useState(null);
+  const user = embedded ? userProp : userState;
+  const handleLogout = embedded ? onLogoutProp : () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/', { replace: true });
+  };
   const [creators, setCreators] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -31,7 +37,7 @@ function CreatorHome() {
       return;
     }
     try {
-      setUser(JSON.parse(userJson));
+      setUserState(JSON.parse(userJson));
     } catch {
       navigate('/login', { replace: true });
     }
@@ -92,12 +98,6 @@ function CreatorHome() {
     return () => observer.disconnect();
   }, [hasNextPage, loadingMore, loading, currentPage, fetchCreators]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/', { replace: true });
-  };
-
   if (!user) return null;
 
   const displayName = user?.userName ?? t('home.creator');
@@ -108,7 +108,7 @@ function CreatorHome() {
 
   return (
     <div className="creator-home-page">
-      <CreatorNav active="home" user={user} onLogout={handleLogout} />
+      {!embedded && <CreatorNav active="home" user={user} onLogout={handleLogout} />}
       <main className="creator-home-main">
         <div className="creator-home-container">
           <section className="creator-home-hero">

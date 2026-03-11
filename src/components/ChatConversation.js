@@ -333,6 +333,19 @@ import { useChat } from '../context/ChatContext';
 import LoadingSpinner from './LoadingSpinner';
 import './ChatConversation.css';
 
+const MOBILE_BREAKPOINT_PX = 1024;
+const KEYBOARD_SCROLL_DELAY_MS = 350;
+
+function scrollMessageInputIntoView() {
+  if (typeof window === 'undefined' || window.innerWidth > MOBILE_BREAKPOINT_PX) return;
+  const wrapper = document.querySelector('.chat-conversation-stream .str-chat__message-input-wrapper');
+  const textarea = document.querySelector('.chat-conversation-stream .str-chat__message-input textarea');
+  const el = textarea || wrapper;
+  if (el) {
+    el.scrollIntoView({ block: 'center', behavior: 'auto' });
+  }
+}
+
 function ChatContent({ channelId, backTo, backLabel, NavComponent }) {
   const { client } = useChatContext();
   const [channel, setChannel] = useState(null);
@@ -361,6 +374,21 @@ function ChatContent({ channelId, backTo, backLabel, NavComponent }) {
     );
   }
 
+  /* Mobile: when keyboard opens (visualViewport shrinks), keep input above keyboard */
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.visualViewport || window.innerWidth > MOBILE_BREAKPOINT_PX) return;
+    const vv = window.visualViewport;
+    const onResize = () => {
+      const active = document.activeElement;
+      const stream = document.querySelector('.chat-conversation-stream');
+      if (stream?.contains(active) && active?.matches?.('textarea')) {
+        scrollMessageInputIntoView();
+      }
+    };
+    vv.addEventListener('resize', onResize);
+    return () => vv.removeEventListener('resize', onResize);
+  }, []);
+
   return (
     <Channel
       channel={channel}
@@ -373,7 +401,14 @@ function ChatContent({ channelId, backTo, backLabel, NavComponent }) {
           customMessageActions={CUSTOM_MESSAGE_ACTIONS}
           messageActions={['edit', 'pin', 'delete', 'react']}
         />
-        <MessageInput additionalTextareaProps={{ placeholder: 'Type a message' }} />
+        <MessageInput
+          additionalTextareaProps={{
+            placeholder: 'Type a message',
+            onFocus: () => {
+              setTimeout(scrollMessageInputIntoView, KEYBOARD_SCROLL_DELAY_MS);
+            },
+          }}
+        />
       </Window>
     </Channel>
   );

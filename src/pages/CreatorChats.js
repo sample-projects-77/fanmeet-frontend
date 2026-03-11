@@ -23,10 +23,17 @@ function formatChatTime(isoString) {
   return d.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' + timeStr;
 }
 
-function CreatorChats() {
+function CreatorChats({ embedded, user: userProp, onLogout: onLogoutProp }) {
   const navigate = useNavigate();
   const { client, connect, disconnect, connecting } = useChat();
-  const [user, setUser] = useState(null);
+  const [userState, setUserState] = useState(null);
+  const user = embedded ? userProp : userState;
+  const handleLogout = embedded ? onLogoutProp : () => {
+    disconnect?.();
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/', { replace: true });
+  };
   const [channels, setChannels] = useState([]);
   const [memberInfoMap, setMemberInfoMap] = useState({});
   const [loading, setLoading] = useState(true);
@@ -41,7 +48,7 @@ function CreatorChats() {
       return;
     }
     try {
-      setUser(JSON.parse(userJson));
+      setUserState(JSON.parse(userJson));
     } catch {
       navigate('/login', { replace: true });
       return;
@@ -118,20 +125,13 @@ function CreatorChats() {
     }
   }, []);
 
-  const handleLogout = () => {
-    disconnect?.();
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/', { replace: true });
-  };
-
   if (!user) return null;
 
   const showLoading = loading || namesLoading;
 
   return (
     <div className="creator-chats-page">
-      <CreatorNav active="chats" user={user} onLogout={handleLogout} />
+      {!embedded && <CreatorNav active="chats" user={user} onLogout={handleLogout} />}
       <main className="creator-chats-main">
         <div className="creator-chats-container">
           <h1 className="creator-chats-title">Chats</h1>

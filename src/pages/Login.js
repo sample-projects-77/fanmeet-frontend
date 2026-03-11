@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { authAPI } from '../services/api';
 import { setAppLanguage, SUPPORTED } from '../i18n';
+import { clearAllCached } from '../utils/routeDataCache';
 import { ButtonLoadingSpinner } from '../components/LoadingSpinner';
 import './AuthForm.css';
 
@@ -11,6 +12,11 @@ let isSubmitting = false;
 const Login = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    clearAllCached();
+  }, []);
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',

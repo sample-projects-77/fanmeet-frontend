@@ -36,6 +36,8 @@ import CreatorChats from './pages/CreatorChats';
 import CreatorProfile from './pages/CreatorProfile';
 import CreatorEditProfile from './pages/CreatorEditProfile';
 import CreatorCreatorProfile from './pages/CreatorCreatorProfile';
+import CreatorLayout from './layouts/CreatorLayout';
+import FanLayout from './layouts/FanLayout';
 import './App.css';
 
 function App() {
@@ -48,46 +50,52 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup/fan" element={<FanSignup />} />
           <Route path="/signup/creator" element={<CreatorSignup />} />
-          <Route path="/fan/home" element={<FanHome />} />
-          <Route path="/fan/dashboard" element={<FanDashboard />} />
-          <Route path="/fan/reviews" element={<FanMyReviews />} />
-          <Route path="/fan/search" element={<FanSearch />} />
-          <Route path="/fan/creators" element={<FanCreators />} />
-          <Route path="/fan/creators/:creatorId" element={<FanCreatorProfile />} />
-          <Route path="/fan/creators/:creatorId/offers" element={<FanCreatorOffers />} />
-          <Route path="/fan/creators/:creatorId/reviews" element={<FanCreatorReviews />} />
-          <Route path="/fan/bookings" element={<FanAllSessions />} />
-          <Route path="/fan/bookings/payment-return" element={<FanBookingPaymentReturn />} />
-          <Route path="/fan/bookings/:bookingId/pay" element={<FanBookingPayment />} />
-          <Route path="/fan/bookings/:bookingId" element={<Navigate to="/fan/bookings" replace />} />
-          <Route path="/fan/bookings/:bookingId/call" element={<FanVideoCall />} />
-          <Route path="/fan/chats" element={<FanChats />} />
-          <Route path="/fan/chats/:channelId" element={<FanChatConversationWithProvider />} />
-          <Route path="/fan/profile" element={<FanProfile />} />
-          <Route path="/fan/profile/edit" element={<FanProfileEdit />} />
-          <Route path="/fan/profile/change-password" element={<FanProfileChangePassword />} />
-          <Route path="/fan/profile/language" element={<FanProfileLanguage />} />
-          <Route path="/fan/profile/blocked" element={<FanProfileBlocked />} />
-          <Route path="/creator/home" element={<CreatorHome />} />
-          <Route path="/creator/dashboard" element={<CreatorDashboard />} />
-          <Route path="/creator/offers" element={<CreatorOffers />} />
-          <Route path="/creator/offers/add-time-slot" element={<CreatorAddTimeSlot />} />
-          <Route path="/creator/search" element={<CreatorSearch />} />
-          <Route path="/creator/creators/:creatorId" element={<CreatorCreatorProfile />} />
-          <Route path="/creator/creators/:creatorId/offers" element={<CreatorCreatorOffers />} />
-          <Route path="/creator/creators/:creatorId/reviews" element={<CreatorCreatorReviews />} />
-          <Route path="/creator/chats" element={<CreatorChats />} />
-          <Route path="/creator/chats/:channelId" element={<CreatorChatConversationWithProvider />} />
-          <Route path="/creator/profile" element={<CreatorProfile />} />
-          <Route path="/creator/profile/edit" element={<FanProfileEdit />} />
-          <Route path="/creator/profile/edit-bio" element={<CreatorEditProfile />} />
-          <Route path="/creator/profile/change-password" element={<CreatorProfileChangePassword />} />
-          <Route path="/creator/profile/language" element={<CreatorProfileLanguage />} />
-          <Route path="/creator/profile/blocked" element={<CreatorProfileBlocked />} />
-          <Route path="/creator/reviews" element={<CreatorMyReviews />} />
-          <Route path="/creator/bookings" element={<CreatorAllSessions />} />
-          <Route path="/creator/bookings/:bookingId" element={<Navigate to="/creator/bookings" replace />} />
-          <Route path="/creator/bookings/:bookingId/call" element={<CreatorVideoCall />} />
+          <Route path="/fan" element={<FanLayout />}>
+            <Route index element={<Navigate to="/fan/home" replace />} />
+            <Route path="home" element={null} />
+            <Route path="search" element={null} />
+            <Route path="dashboard" element={null} />
+            <Route path="chats" element={null} />
+            <Route path="profile" element={null} />
+            <Route path="reviews" element={<FanMyReviews />} />
+            <Route path="creators" element={<FanCreators />} />
+            <Route path="creators/:creatorId" element={<FanCreatorProfile />} />
+            <Route path="creators/:creatorId/offers" element={<FanCreatorOffers />} />
+            <Route path="creators/:creatorId/reviews" element={<FanCreatorReviews />} />
+            <Route path="bookings" element={<FanAllSessions />} />
+            <Route path="bookings/payment-return" element={<FanBookingPaymentReturn />} />
+            <Route path="bookings/:bookingId/pay" element={<FanBookingPayment />} />
+            <Route path="bookings/:bookingId" element={<Navigate to="/fan/bookings" replace />} />
+            <Route path="bookings/:bookingId/call" element={<FanVideoCall />} />
+            <Route path="chats/:channelId" element={<FanChatConversationWithProvider />} />
+            <Route path="profile/edit" element={<FanProfileEdit />} />
+            <Route path="profile/change-password" element={<FanProfileChangePassword />} />
+            <Route path="profile/language" element={<FanProfileLanguage />} />
+            <Route path="profile/blocked" element={<FanProfileBlocked />} />
+          </Route>
+          <Route path="/creator" element={<CreatorLayout />}>
+            <Route index element={<Navigate to="/creator/home" replace />} />
+            <Route path="home" element={null} />
+            <Route path="search" element={null} />
+            <Route path="dashboard" element={null} />
+            <Route path="chats" element={null} />
+            <Route path="profile" element={null} />
+            <Route path="offers" element={<CreatorOffers />} />
+            <Route path="offers/add-time-slot" element={<CreatorAddTimeSlot />} />
+            <Route path="creators/:creatorId" element={<CreatorCreatorProfile />} />
+            <Route path="creators/:creatorId/offers" element={<CreatorCreatorOffers />} />
+            <Route path="creators/:creatorId/reviews" element={<CreatorCreatorReviews />} />
+            <Route path="chats/:channelId" element={<CreatorChatConversationWithProvider />} />
+            <Route path="profile/edit" element={<FanProfileEdit />} />
+            <Route path="profile/edit-bio" element={<CreatorEditProfile />} />
+            <Route path="profile/change-password" element={<CreatorProfileChangePassword />} />
+            <Route path="profile/language" element={<CreatorProfileLanguage />} />
+            <Route path="profile/blocked" element={<CreatorProfileBlocked />} />
+            <Route path="reviews" element={<CreatorMyReviews />} />
+            <Route path="bookings" element={<CreatorAllSessions />} />
+            <Route path="bookings/:bookingId" element={<Navigate to="/creator/bookings" replace />} />
+            <Route path="bookings/:bookingId/call" element={<CreatorVideoCall />} />
+          </Route>
           <Route path="/signup" element={<Navigate to="/" replace />} />
           </Routes>
         </div>

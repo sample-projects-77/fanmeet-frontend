@@ -2,15 +2,25 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { dashboardAPI } from '../services/api';
+import { getCached, setCached, clearAllCached } from '../utils/routeDataCache';
 import CreatorNav from '../components/CreatorNav';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorWidget from '../components/ErrorWidget';
 import './CreatorDashboard.css';
 
-function CreatorDashboard() {
+const CACHE_KEY = 'creatorDashboard';
+
+function CreatorDashboard({ embedded, user: userProp, onLogout: onLogoutProp }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const [userState, setUserState] = useState(null);
+  const user = embedded ? userProp : userState;
+  const handleLogout = embedded ? onLogoutProp : () => {
+    clearAllCached();
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/', { replace: true });
+  };
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -23,29 +33,36 @@ function CreatorDashboard() {
       return;
     }
     try {
-      setUser(JSON.parse(userJson));
+      setUserState(JSON.parse(userJson));
     } catch {
       navigate('/login', { replace: true });
       return;
     }
 
-    const fetchDashboard = async () => {
+    const cached = getCached(CACHE_KEY);
+    if (cached) {
+      setData(cached);
+      setLoading(false);
+    }
+
+    const fetchDashboard = async (isBackgroundRefresh = false) => {
       try {
-        setLoading(true);
+        if (!isBackgroundRefresh) setLoading(true);
         setError(null);
         const res = await dashboardAPI.getCreatorDashboard();
         if (res.StatusCode === 200 && res.data) {
+          setCached(CACHE_KEY, res.data);
           setData(res.data);
         } else {
-          setError(res.error || t('dashboard.failedToLoad'));
+          if (!isBackgroundRefresh) setError(res.error || t('dashboard.failedToLoad'));
         }
       } catch (err) {
-        setError(err.response?.data?.error || err.message || t('common.errorGeneric'));
+        if (!isBackgroundRefresh) setError(err.response?.data?.error || err.message || t('common.errorGeneric'));
       } finally {
         setLoading(false);
       }
     };
-    fetchDashboard();
+    fetchDashboard(!!cached);
   }, [navigate]);
 
   const refetch = useCallback(async () => {
@@ -57,6 +74,7 @@ function CreatorDashboard() {
     try {
       const res = await dashboardAPI.getCreatorDashboard();
       if (res.StatusCode === 200 && res.data) {
+        setCached(CACHE_KEY, res.data);
         setData(res.data);
       } else {
         setError(res.error || t('dashboard.failedToLoad'));
@@ -68,30 +86,24 @@ function CreatorDashboard() {
     }
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/', { replace: true });
-  };
-
   if (loading && !data && !error) {
+    const main = <main className="creator-dashboard-main"><LoadingSpinner /></main>;
+    if (embedded) return <div className="creator-dashboard">{main}</div>;
     return (
       <div className="creator-dashboard">
         <CreatorNav active="creator" user={user} onLogout={handleLogout} />
-        <main className="creator-dashboard-main">
-          <LoadingSpinner />
-        </main>
+        {main}
       </div>
     );
   }
 
   if (error && !data) {
+    const main = <main className="creator-dashboard-main"><ErrorWidget errorText={error} onRetry={refetch} /></main>;
+    if (embedded) return <div className="creator-dashboard">{main}</div>;
     return (
       <div className="creator-dashboard">
         <CreatorNav active="creator" user={user} onLogout={handleLogout} />
-        <main className="creator-dashboard-main">
-          <ErrorWidget errorText={error} onRetry={refetch} />
-        </main>
+        {main}
       </div>
     );
   }
@@ -100,9 +112,7 @@ function CreatorDashboard() {
   const sessions = data?.totalSessions ?? 0;
   const rating = data?.rating ?? 0;
 
-  return (
-    <div className="creator-dashboard">
-      <CreatorNav active="creator" user={user} onLogout={handleLogout} />
+  const main = (
       <main className="creator-dashboard-main">
         <div className="creator-dashboard-container">
           <header className="creator-dashboard-welcome">
@@ -170,6 +180,11 @@ function CreatorDashboard() {
           </section>
         </div>
       </main>
+    );
+  return (
+    <div className="creator-dashboard">
+      {embedded ? null : <CreatorNav active="creator" user={user} onLogout={handleLogout} />}
+      {main}
     </div>
   );
 }

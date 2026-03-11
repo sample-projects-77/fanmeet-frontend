@@ -11,10 +11,16 @@ import './FanHome.css';
 
 const ITEMS_PER_PAGE = 20;
 
-function FanHome() {
+function FanHome({ embedded, user: userProp, onLogout: onLogoutProp }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const [userState, setUserState] = useState(null);
+  const user = embedded ? userProp : userState;
+  const handleLogout = embedded ? onLogoutProp : () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/', { replace: true });
+  };
   const [creators, setCreators] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -31,7 +37,7 @@ function FanHome() {
       return;
     }
     try {
-      setUser(JSON.parse(userJson));
+      setUserState(JSON.parse(userJson));
     } catch {
       navigate('/login', { replace: true });
     }
@@ -92,12 +98,6 @@ function FanHome() {
     return () => observer.disconnect();
   }, [hasNextPage, loadingMore, loading, currentPage, fetchCreators]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/', { replace: true });
-  };
-
   if (!user) return null;
 
   const displayName = user?.userName ?? t('home.fan');
@@ -108,7 +108,7 @@ function FanHome() {
 
   return (
     <div className="fan-home-page">
-      <FanNav active="home" user={user} onLogout={handleLogout} />
+      {!embedded && <FanNav active="home" user={user} onLogout={handleLogout} />}
       <main className="fan-home-main">
         <div className="fan-home-container">
           <section className="fan-home-hero">

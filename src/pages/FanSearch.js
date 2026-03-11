@@ -11,10 +11,16 @@ import './FanSearch.css';
 
 const SEARCH_DEBOUNCE_MS = 350;
 
-function FanSearch() {
+function FanSearch({ embedded, user: userProp, onLogout: onLogoutProp }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const [userState, setUserState] = useState(null);
+  const user = embedded ? userProp : userState;
+  const handleLogout = embedded ? onLogoutProp : () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/', { replace: true });
+  };
   const [query, setQuery] = useState('');
   const [creators, setCreators] = useState([]);
   const [pagination, setPagination] = useState(null);
@@ -29,7 +35,7 @@ function FanSearch() {
       return;
     }
     try {
-      setUser(JSON.parse(userJson));
+      setUserState(JSON.parse(userJson));
     } catch {
       navigate('/login', { replace: true });
     }
@@ -78,12 +84,6 @@ function FanSearch() {
     setQuery(e.target.value);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/', { replace: true });
-  };
-
   if (!user) return null;
 
   const priceStr = (cents) =>
@@ -93,7 +93,7 @@ function FanSearch() {
 
   return (
     <div className="fan-search-page">
-      <FanNav active="search" user={user} onLogout={handleLogout} />
+      {!embedded && <FanNav active="search" user={user} onLogout={handleLogout} />}
       <main className="fan-search-main">
         <div className="fan-search-container">
           <h1 className="fan-search-title">{t('search.title')}</h1>

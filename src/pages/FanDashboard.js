@@ -2,15 +2,25 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { dashboardAPI } from '../services/api';
+import { getCached, setCached, clearAllCached } from '../utils/routeDataCache';
 import FanNav from '../components/FanNav';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorWidget from '../components/ErrorWidget';
 import './FanDashboard.css';
 
-function FanDashboard() {
+const CACHE_KEY = 'fanDashboard';
+
+function FanDashboard({ embedded, user: userProp, onLogout: onLogoutProp }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const [userState, setUserState] = useState(null);
+  const user = embedded ? userProp : userState;
+  const handleLogout = embedded ? onLogoutProp : () => {
+    clearAllCached();
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/', { replace: true });
+  };
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -23,29 +33,36 @@ function FanDashboard() {
       return;
     }
     try {
-      setUser(JSON.parse(userJson));
+      setUserState(JSON.parse(userJson));
     } catch {
       navigate('/login', { replace: true });
       return;
     }
 
-    const fetchDashboard = async () => {
+    const cached = getCached(CACHE_KEY);
+    if (cached) {
+      setData(cached);
+      setLoading(false);
+    }
+
+    const fetchDashboard = async (isBackgroundRefresh = false) => {
       try {
-        setLoading(true);
+        if (!isBackgroundRefresh) setLoading(true);
         setError(null);
         const res = await dashboardAPI.getFanDashboard();
         if (res.StatusCode === 200 && res.data) {
+          setCached(CACHE_KEY, res.data);
           setData(res.data);
         } else {
-          setError(res.error || t('dashboard.failedToLoad'));
+          if (!isBackgroundRefresh) setError(res.error || t('dashboard.failedToLoad'));
         }
       } catch (err) {
-        setError(err.response?.data?.error || err.message || t('common.errorGeneric'));
+        if (!isBackgroundRefresh) setError(err.response?.data?.error || err.message || t('common.errorGeneric'));
       } finally {
         setLoading(false);
       }
     };
-    fetchDashboard();
+    fetchDashboard(!!cached);
   }, [navigate]);
 
   const refetch = useCallback(async () => {
@@ -57,6 +74,7 @@ function FanDashboard() {
     try {
       const res = await dashboardAPI.getFanDashboard();
       if (res.StatusCode === 200 && res.data) {
+        setCached(CACHE_KEY, res.data);
         setData(res.data);
       } else {
         setError(res.error || t('dashboard.failedToLoad'));
@@ -68,30 +86,24 @@ function FanDashboard() {
     }
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/', { replace: true });
-  };
-
   if (loading && !data && !error) {
+    const main = <main className="fan-dashboard-main"><LoadingSpinner /></main>;
+    if (embedded) return <div className="fan-dashboard">{main}</div>;
     return (
       <div className="fan-dashboard">
         <FanNav active="fan" user={user} onLogout={handleLogout} />
-        <main className="fan-dashboard-main">
-          <LoadingSpinner />
-        </main>
+        {main}
       </div>
     );
   }
 
   if (error && !data) {
+    const main = <main className="fan-dashboard-main"><ErrorWidget errorText={error} onRetry={refetch} /></main>;
+    if (embedded) return <div className="fan-dashboard">{main}</div>;
     return (
       <div className="fan-dashboard">
         <FanNav active="fan" user={user} onLogout={handleLogout} />
-        <main className="fan-dashboard-main">
-          <ErrorWidget errorText={error} onRetry={refetch} />
-        </main>
+        {main}
       </div>
     );
   }
@@ -103,9 +115,7 @@ function FanDashboard() {
     upcoming: data?.upcomingSessions ?? 0,
   };
 
-  return (
-    <div className="fan-dashboard">
-      <FanNav active="fan" user={user} onLogout={handleLogout} />
+  const main = (
       <main className="fan-dashboard-main">
         <div className="fan-dashboard-container">
           {error && (
@@ -158,6 +168,11 @@ function FanDashboard() {
           </section>
         </div>
       </main>
+    );
+  return (
+    <div className="fan-dashboard">
+      {embedded ? null : <FanNav active="fan" user={user} onLogout={handleLogout} />}
+      {main}
     </div>
   );
 }

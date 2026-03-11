@@ -1,0 +1,8 @@
+.fan-layout-content {
+  flex: 1;
+  min-height: 0;
+}
+
+.fan-layout-tab {
+  min-height: 100%;
+}

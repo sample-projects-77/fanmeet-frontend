@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { offerAPI } from '../services/api';
+import { getCached, setCached, clearAllCached } from '../utils/routeDataCache';
 import CreatorNav from '../components/CreatorNav';
 import LoadingSpinner from '../components/LoadingSpinner';
 import EmptyWidget from '../components/EmptyWidget';
@@ -70,33 +71,52 @@ function CreatorOffers() {
     }
   }, [navigate]);
 
-  const fetchOffers = useCallback(async () => {
+  const CACHE_KEY = 'creatorOffers';
+
+  const fetchOffers = useCallback(async (isBackgroundRefresh = false) => {
     if (!user?.id) return;
-    setLoading(true);
-    setError(null);
+    if (!isBackgroundRefresh) {
+      setLoading(true);
+      setError(null);
+    }
     try {
       const creatorId = user.id?.toString?.().replace(/^creator_/, '') || user.id;
       const res = await offerAPI.getCreatorScheduledOffers(creatorId, { page: 1, itemsPerPage: 100, status: 'available' });
       if (res.StatusCode === 200 && res.data) {
-        setOffers(res.data.offers || []);
-        setPagination(res.data.pagination || null);
+        const list = res.data.offers || [];
+        const pag = res.data.pagination || null;
+        setCached(CACHE_KEY, { offers: list, pagination: pag });
+        setOffers(list);
+        setPagination(pag);
       } else {
-        setError(res.error || t('offers.failedToLoad'));
-        setOffers([]);
+        if (!isBackgroundRefresh) {
+          setError(res.error || t('offers.failedToLoad'));
+          setOffers([]);
+        }
       }
     } catch (err) {
-      setError(err.response?.data?.error || err.message || t('common.errorGeneric'));
-      setOffers([]);
+      if (!isBackgroundRefresh) {
+        setError(err.response?.data?.error || err.message || t('common.errorGeneric'));
+        setOffers([]);
+      }
     } finally {
       setLoading(false);
     }
   }, [user?.id, t]);
 
   useEffect(() => {
-    fetchOffers();
-  }, [fetchOffers]);
+    if (!user?.id) return;
+    const cached = getCached(CACHE_KEY);
+    if (cached?.offers) {
+      setOffers(cached.offers);
+      setPagination(cached.pagination || null);
+      setLoading(false);
+    }
+    fetchOffers(!!cached?.offers);
+  }, [user?.id, fetchOffers]);
 
   const handleLogout = () => {
+    clearAllCached();
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     navigate('/', { replace: true });

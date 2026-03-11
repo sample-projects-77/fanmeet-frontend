@@ -8,10 +8,16 @@ import { SettingsIcon, KeyIcon, OutlinedUserIcon, OutgoingIcon, DeleteAccountIco
 import DeleteAccountDialog from '../components/DeleteAccountDialog';
 import './FanProfile.css';
 
-function CreatorProfile() {
+function CreatorProfile({ embedded, user: userProp, onLogout: onLogoutProp }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const [userState, setUserState] = useState(null);
+  const user = embedded ? userProp : userState;
+  const handleLogout = embedded ? onLogoutProp : () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/', { replace: true });
+  };
   const [profile, setProfile] = useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -24,7 +30,7 @@ function CreatorProfile() {
       return;
     }
     try {
-      setUser(JSON.parse(userJson));
+      setUserState(JSON.parse(userJson));
     } catch {
       navigate('/login', { replace: true });
     }
@@ -44,12 +50,6 @@ function CreatorProfile() {
     };
     fetchProfile();
   }, [user?.id]);
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/', { replace: true });
-  };
 
   const handleDeleteAccountClick = () => {
     setDeleteDialogOpen(true);
@@ -83,7 +83,7 @@ function CreatorProfile() {
 
   return (
     <div className="fan-profile-page">
-      <CreatorNav active="profile" user={user} onLogout={handleLogout} />
+      {!embedded && <CreatorNav active="profile" user={user} onLogout={handleLogout} />}
       <main className="fan-profile-main">
         <div className="fan-profile-container">
           <h1 className="fan-profile-title">{t('profile.title')}</h1>
