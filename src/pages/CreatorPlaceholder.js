@@ -173,10 +173,10 @@ export function CreatorProfileChangePassword() {
 }
 
 export function CreatorProfileLanguage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const [locale, setLocale] = useState('en');
+  const [locale, setLocale] = useState(() => i18n.language || 'de');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -197,11 +197,13 @@ export function CreatorProfileLanguage() {
       setUser(u);
       if (u.language && SUPPORTED.includes(u.language)) {
         setLocale(u.language);
+      } else {
+        setLocale(i18n.language || 'de');
       }
     } catch {
       navigate('/login', { replace: true });
     }
-  }, [navigate]);
+  }, [navigate, i18n.language]);
 
   useEffect(() => {
     if (!languageDropdownOpen) return;
@@ -274,7 +276,7 @@ export function CreatorProfileLanguage() {
                 aria-haspopup="listbox"
                 aria-label={t('language.select')}
               >
-                <span>{languageLabels[locale] ?? languageLabels.en}</span>
+                <span>{languageLabels[locale] ?? languageLabels.de}</span>
                 <span className="fan-profile-edit-language-chevron" aria-hidden>▼</span>
               </button>
               {languageDropdownOpen && (

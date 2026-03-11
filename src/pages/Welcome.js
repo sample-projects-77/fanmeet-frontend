@@ -5,9 +5,9 @@ import { LOCALE_STORAGE_KEY, setAppLanguage, SUPPORTED } from '../i18n';
 import './Welcome.css';
 
 function Welcome() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [languagePopupOpen, setLanguagePopupOpen] = useState(false);
-  const [locale, setLocale] = useState('en');
+  const [locale, setLocale] = useState(() => i18n.language || 'de');
   const popupRef = useRef(null);
   const triggerRef = useRef(null);
 
@@ -17,8 +17,10 @@ function Welcome() {
     const stored = localStorage.getItem(LOCALE_STORAGE_KEY);
     if (stored && SUPPORTED.includes(stored)) {
       setLocale(stored);
+    } else {
+      setLocale(i18n.language || 'de');
     }
-  }, []);
+  }, [i18n.language]);
 
   useEffect(() => {
     if (!languagePopupOpen) return;
@@ -60,7 +62,7 @@ function Welcome() {
             <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
           </svg>
         </span>
-        <span className="welcome-language-trigger-label">{languageLabels[locale] ?? languageLabels.en}</span>
+        <span className="welcome-language-trigger-label">{languageLabels[locale] ?? languageLabels.de}</span>
         <span className="welcome-language-trigger-chevron" aria-hidden>▼</span>
       </button>
 

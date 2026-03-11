@@ -16,7 +16,7 @@ function getInitialLanguage() {
       if (user?.language && SUPPORTED.includes(user.language)) return user.language;
     }
   } catch (_) {}
-  return 'en';
+  return 'de';
 }
 
 i18n
