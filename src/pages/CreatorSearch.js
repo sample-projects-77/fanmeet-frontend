@@ -186,7 +186,7 @@ function CreatorSearch({ embedded, user: userProp, onLogout: onLogoutProp }) {
                 ))}
               </div>
             )}
-            {pagination?.hasNextPage && creators.length > 0 && (
+            {pagination?.hasNextPage && creators.length > 0 && !loading && (
               <div ref={loadMoreRef} className="creator-search-load-more-sentinel" aria-hidden>
                 {loadingMore && <LoadingSpinner inline />}
               </div>

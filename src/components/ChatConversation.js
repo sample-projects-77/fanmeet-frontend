@@ -358,6 +358,21 @@ function ChatContent({ channelId, backTo, backLabel, NavComponent }) {
     setLoadError(null);
   }, [client, channelId]);
 
+  /* Mobile: when keyboard opens (visualViewport shrinks), keep input above keyboard. Must be before any early return so hook count is stable. */
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.visualViewport || window.innerWidth > MOBILE_BREAKPOINT_PX) return;
+    const vv = window.visualViewport;
+    const onResize = () => {
+      const active = document.activeElement;
+      const stream = document.querySelector('.chat-conversation-stream');
+      if (stream?.contains(active) && active?.matches?.('textarea')) {
+        scrollMessageInputIntoView();
+      }
+    };
+    vv.addEventListener('resize', onResize);
+    return () => vv.removeEventListener('resize', onResize);
+  }, []);
+
   if (!channel) {
     if (loadError) {
       return (
@@ -373,21 +388,6 @@ function ChatContent({ channelId, backTo, backLabel, NavComponent }) {
       </div>
     );
   }
-
-  /* Mobile: when keyboard opens (visualViewport shrinks), keep input above keyboard */
-  useEffect(() => {
-    if (typeof window === 'undefined' || !window.visualViewport || window.innerWidth > MOBILE_BREAKPOINT_PX) return;
-    const vv = window.visualViewport;
-    const onResize = () => {
-      const active = document.activeElement;
-      const stream = document.querySelector('.chat-conversation-stream');
-      if (stream?.contains(active) && active?.matches?.('textarea')) {
-        scrollMessageInputIntoView();
-      }
-    };
-    vv.addEventListener('resize', onResize);
-    return () => vv.removeEventListener('resize', onResize);
-  }, []);
 
   return (
     <Channel
