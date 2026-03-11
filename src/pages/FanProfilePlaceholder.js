@@ -279,6 +279,26 @@ export function FanProfileLanguage() {
   );
 }
 
+function CalendarIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="14" height="14" aria-hidden>
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+      <line x1="16" y1="2" x2="16" y2="6" />
+      <line x1="8" y1="2" x2="8" y2="6" />
+      <line x1="3" y1="10" x2="21" y2="10" />
+    </svg>
+  );
+}
+
+function UnblockIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18" aria-hidden>
+      <circle cx="12" cy="12" r="10" />
+      <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+    </svg>
+  );
+}
+
 export function FanProfileBlocked() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -338,24 +358,19 @@ export function FanProfileBlocked() {
   }, [user, fetchBlocked]);
 
   const handleUnblock = async (blockedUser) => {
-    const name = blockedUser.displayName || blockedUser.userName || t('profileBlocked.thisUser');
-    if (!window.confirm(t('profileBlocked.unblockConfirm', { name }))) {
-      return;
-    }
     try {
       const res = await userAPI.unblockUser(blockedUser.userId);
       if (res.StatusCode === 200) {
-        setBlocked((prev) => prev.filter((b) => b.userId !== blockedUser.userId));
-      } else {
-        alert(res.error || t('profileBlocked.couldNotUnblock'));
+        fetchBlocked(1, false);
       }
-    } catch (err) {
-      alert(
-        err.response?.data?.error ||
-          err.message ||
-          t('common.errorGeneric')
-      );
-    }
+    } catch (_) {}
+  };
+
+  const formatBlockedDate = (dateVal) => {
+    if (!dateVal) return '';
+    const d = typeof dateVal === 'string' ? new Date(dateVal) : dateVal;
+    if (Number.isNaN(d.getTime())) return '';
+    return d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
   };
 
   if (!user) return null;
@@ -381,33 +396,35 @@ export function FanProfileBlocked() {
           ) : blocked.length === 0 ? (
             <EmptyWidget text={t('profileBlocked.empty')} />
           ) : (
-            <div className="fan-search-grid">
+            <div className="profile-blocked-list">
               {blocked.map((b) => (
-                <div key={b.id} className="fan-creator-card">
-                  <div className="fan-creator-avatar-wrap">
-                    <img
-                      src={b.avatarUrl || DEFAULT_AVATAR_URL}
-                      alt=""
-                      className="fan-creator-avatar-img"
-                    />
+                <div key={b.id} className="profile-blocked-card">
+                  <div className="profile-blocked-card-top">
+                    <div className="profile-blocked-card-avatar">
+                      <img
+                        src={b.avatarUrl || DEFAULT_AVATAR_URL}
+                        alt=""
+                        className="profile-blocked-card-avatar-img"
+                      />
+                    </div>
+                    <div className="profile-blocked-card-body">
+                      <span className="profile-blocked-card-name">
+                        {b.displayName || b.userName || t('profileBlocked.thisUser')}
+                      </span>
+                      <span className="profile-blocked-card-date">
+                        <CalendarIcon />
+                        {formatBlockedDate(b.blockedAt)}
+                      </span>
+                    </div>
                   </div>
-                  <div className="fan-creator-info">
-                    <span className="fan-creator-name">
-                      {b.displayName || b.userName || 'User'}
-                    </span>
-                    <span className="fan-creator-category">
-                      {b.reason || t('profileBlocked.blockedUser')}
-                    </span>
-                  </div>
-                  <div className="fan-creator-meta">
-                    <button
-                      type="button"
-                      className="fan-search-load-more"
-                      onClick={() => handleUnblock(b)}
-                    >
-                      {t('profileBlocked.unblock')}
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    className="profile-blocked-card-unblock"
+                    onClick={() => handleUnblock(b)}
+                  >
+                    <UnblockIcon />
+                    <span>{t('profileBlocked.unblock')}</span>
+                  </button>
                 </div>
               ))}
             </div>

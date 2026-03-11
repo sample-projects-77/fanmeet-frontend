@@ -7,6 +7,7 @@ import FanNav from '../components/FanNav';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorWidget from '../components/ErrorWidget';
 import DeleteAccountDialog from '../components/DeleteAccountDialog';
+import { clearCached } from '../utils/routeDataCache';
 import './FanCreatorProfile.css';
 
 const COVER_HEIGHT = 180;
@@ -98,6 +99,7 @@ function FanCreatorProfile() {
       const res = await userAPI.blockUser(userIdToBlock);
       if (res.StatusCode === 201) {
         setBlockDialogOpen(false);
+        clearCached('searchDefault');
         navigate('/fan/search', { replace: true });
       } else {
         setError(res.error || t('creatorProfile.couldNotBlock'));
