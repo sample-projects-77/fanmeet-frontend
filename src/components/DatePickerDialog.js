@@ -46,6 +46,16 @@ export function DatePickerDialog({ value, onConfirm, onCancel }) {
 
   const isSameDay = (a, b) => a && b && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 
+  const startOfDay = (d) => {
+    if (!d) return null;
+    const t = new Date(d);
+    t.setHours(0, 0, 0, 0);
+    return t;
+  };
+
+  const todayStart = useMemo(() => startOfDay(new Date()), []);
+  const isPastDate = (cell) => cell && startOfDay(cell).getTime() < todayStart.getTime();
+
   const handleOk = () => {
     onConfirm(selected || displayDate);
   };
@@ -77,17 +87,20 @@ export function DatePickerDialog({ value, onConfirm, onCancel }) {
         </div>
 
         <div className="date-picker-dialog-grid">
-          {calendar.map((cell, i) => (
-            <button
-              key={i}
-              type="button"
-              className={`date-picker-dialog-cell ${cell ? 'date-picker-dialog-cell--day' : ''} ${cell && isSameDay(cell, selected) ? 'date-picker-dialog-cell--selected' : ''}`}
-              onClick={() => cell && setSelected(cell)}
-              disabled={!cell}
-            >
-              {cell ? cell.getDate() : ''}
-            </button>
-          ))}
+          {calendar.map((cell, i) => {
+            const past = cell && isPastDate(cell);
+            return (
+              <button
+                key={i}
+                type="button"
+                className={`date-picker-dialog-cell ${cell ? 'date-picker-dialog-cell--day' : ''} ${cell && isSameDay(cell, selected) ? 'date-picker-dialog-cell--selected' : ''} ${past ? 'date-picker-dialog-cell--disabled' : ''}`}
+                onClick={() => cell && !past && setSelected(cell)}
+                disabled={!cell || past}
+              >
+                {cell ? cell.getDate() : ''}
+              </button>
+            );
+          })}
         </div>
 
         <div className="date-picker-dialog-actions">
