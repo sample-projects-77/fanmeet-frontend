@@ -15,8 +15,8 @@ import {
   useDialogOnNearestManager,
   useDialogIsOpen,
   useMessageContext,
-  useTranslationContext,
 } from 'stream-chat-react';
+import { useTranslation as useAppTranslation } from 'react-i18next';
 import 'stream-chat-react/dist/css/v2/index.css';
 
 function ThreeDotsIcon({ className = '' }) {
@@ -126,7 +126,7 @@ function CombinedMessageOptions() {
     customMessageActions,
     initialMessage,
   } = useMessageContext('CombinedMessageOptions');
-  const { t } = useTranslationContext('CombinedMessageOptions');
+  const { t: tApp } = useAppTranslation();
   const buttonRef = useRef(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [placement, setPlacement] = useState('top-end');
@@ -249,17 +249,17 @@ function CombinedMessageOptions() {
                       close();
                     }}
                   >
-                    {t('Copy Message') || 'Copy Message'}
+                    {tApp('chat.copyMessage')}
                   </button>
                 )}
                 {hasEdit && (
                   <button type="button" className="fanmeet-message-action" onClick={() => { setEditingState?.(); close(); }}>
-                    {t('Edit Message') || 'Edit Message'}
+                    {tApp('chat.editMessage')}
                   </button>
                 )}
                 {hasPin && !message.parent_id && (
                   <button type="button" className="fanmeet-message-action" onClick={(e) => { handlePin?.(e); close(); }}>
-                    {message.pinned ? (t('Unpin') || 'Unpin') : (t('Pin to Conversation') || 'Pin to Conversation')}
+                    {message.pinned ? tApp('chat.unpin') : tApp('chat.pinToConversation')}
                   </button>
                 )}
                 {hasDelete && (
@@ -268,7 +268,7 @@ function CombinedMessageOptions() {
                     className="fanmeet-message-action fanmeet-message-action--delete"
                     onClick={(e) => { handleDelete?.(e); close(); }}
                   >
-                    {t('Delete Message') || 'Delete Message'}
+                    {tApp('chat.deleteMessage')}
                   </button>
                 )}
               </div>
@@ -317,17 +317,17 @@ function CombinedMessageOptions() {
                       close();
                     }}
                   >
-                    {t('Copy Message') || 'Copy Message'}
+                    {tApp('chat.copyMessage')}
                   </button>
                 )}
                 {hasEdit && (
                   <button type="button" className="fanmeet-message-action" onClick={() => { setEditingState?.(); close(); }}>
-                    {t('Edit Message') || 'Edit Message'}
+                    {tApp('chat.editMessage')}
                   </button>
                 )}
                 {hasPin && !message.parent_id && (
                   <button type="button" className="fanmeet-message-action" onClick={(e) => { handlePin?.(e); close(); }}>
-                    {message.pinned ? (t('Unpin') || 'Unpin') : (t('Pin to Conversation') || 'Pin to Conversation')}
+                    {message.pinned ? tApp('chat.unpin') : tApp('chat.pinToConversation')}
                   </button>
                 )}
                 {hasDelete && (
@@ -336,7 +336,7 @@ function CombinedMessageOptions() {
                     className="fanmeet-message-action fanmeet-message-action--delete"
                     onClick={(e) => { handleDelete?.(e); close(); }}
                   >
-                    {t('Delete Message') || 'Delete Message'}
+                    {tApp('chat.deleteMessage')}
                   </button>
                 )}
               </div>
@@ -351,7 +351,7 @@ function CombinedMessageOptions() {
           ref={buttonRef}
           aria-expanded={isOpen}
           aria-haspopup="true"
-          aria-label={t('aria/Open Message Actions Menu') || 'Message options'}
+          aria-label={tApp('chat.openActionsMenu')}
           className="str-chat__message-actions-box-button"
           data-testid="message-actions-toggle-button"
           onClick={() => dialog?.toggle()}
@@ -384,6 +384,7 @@ function ChatContent({ channelId, backTo, backLabel, NavComponent }) {
   const { client } = useChatContext();
   const [channel, setChannel] = useState(null);
   const [loadError, setLoadError] = useState(null);
+  const { t: tApp } = useAppTranslation();
 
   useEffect(() => {
     if (!client || !channelId) return;
@@ -439,7 +440,7 @@ function ChatContent({ channelId, backTo, backLabel, NavComponent }) {
         />
         <MessageInput
           additionalTextareaProps={{
-            placeholder: 'Type a message',
+            placeholder: tApp('chat.typeMessage'),
             onFocus: () => {
               setTimeout(scrollMessageInputIntoView, KEYBOARD_SCROLL_DELAY_MS);
             },

@@ -308,5 +308,13 @@
   "timePicker.ok": "OK",
   "timePicker.cancel": "Cancel",
   "timePicker.hour": "Hour",
-  "timePicker.minute": "Minute"
+  "timePicker.minute": "Minute",
+
+  "chat.copyMessage": "Copy message",
+  "chat.editMessage": "Edit message",
+  "chat.pinToConversation": "Pin to conversation",
+  "chat.unpin": "Unpin",
+  "chat.deleteMessage": "Delete message",
+  "chat.openActionsMenu": "Open message actions",
+  "chat.typeMessage": "Type a message"
 }
