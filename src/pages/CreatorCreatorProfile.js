@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { profileAPI, userAPI } from '../services/api';
+import { profileAPI, chatAPI, userAPI } from '../services/api';
 import { DEFAULT_AVATAR_URL } from '../constants';
 import CreatorNav from '../components/CreatorNav';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -18,6 +18,7 @@ function CreatorCreatorProfile() {
   const [creator, setCreator] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [startingChat, setStartingChat] = useState(false);
   const [blocking, setBlocking] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [blockDialogOpen, setBlockDialogOpen] = useState(false);
@@ -84,6 +85,25 @@ function CreatorCreatorProfile() {
       setError(err.response?.data?.error || err.message || t('creatorProfile.couldNotBlock'));
     } finally {
       setBlocking(false);
+    }
+  }, [creator, creatorId, navigate, t]);
+
+  const handleMessageClick = useCallback(async () => {
+    if (!creator) return;
+    const otherUserId = creator._id || creator.id || creatorId;
+    if (!otherUserId) return;
+    setStartingChat(true);
+    try {
+      const res = await chatAPI.createOrGetIndividualChannel(otherUserId);
+      if (res.StatusCode === 200 && res.data?.channel?.id) {
+        navigate(`/creator/chats/${res.data.channel.id}`);
+      } else {
+        setError(res.error || t('creatorProfile.couldNotStartChat'));
+      }
+    } catch (err) {
+      setError(err.response?.data?.error || err.message || t('creatorProfile.couldNotStartChat'));
+    } finally {
+      setStartingChat(false);
     }
   }, [creator, creatorId, navigate, t]);
 
@@ -180,15 +200,22 @@ function CreatorCreatorProfile() {
             </div>
 
             <nav className="fan-creator-details-actions">
-              <Link to="/creator/chats" className="fan-creator-details-action-btn">
+              <button
+                type="button"
+                className="fan-creator-details-action-btn fan-creator-details-action-btn--message"
+                onClick={handleMessageClick}
+                disabled={startingChat}
+              >
                 <span className="fan-creator-details-action-icon-wrap">
                   <MessageIcon />
                 </span>
-                <span className="fan-creator-details-action-label">{t('creatorProfile.message')}</span>
+                <span className="fan-creator-details-action-label">
+                  {startingChat ? t('creatorProfile.starting') : t('creatorProfile.message')}
+                </span>
                 <span className="fan-creator-details-action-arrow-wrap">
                   <ArrowIcon />
                 </span>
-              </Link>
+              </button>
               <Link to={`/creator/creators/${creatorId}/offers`} className="fan-creator-details-action-btn">
                 <span className="fan-creator-details-action-icon-wrap">
                   <OffersIcon />
