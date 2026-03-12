@@ -199,6 +199,11 @@ export const chatAPI = {
     const response = await api.post('/chat/individual', { otherUserId });
     return response.data;
   },
+  deleteIndividualChannel: async (channelId) => {
+    const safeId = String(channelId);
+    const response = await api.delete(`/chat/individual/${encodeURIComponent(safeId)}`);
+    return response.data;
+  },
 };
 
 // Offers (creator: my offers + scheduled)

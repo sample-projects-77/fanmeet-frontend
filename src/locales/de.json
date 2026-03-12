@@ -267,6 +267,8 @@
   "chats.yesterday": "Gestern",
   "chats.noMessagesYet": "Noch keine Nachrichten.",
   "chats.photo": "Foto",
+  "chats.deleteChat": "Chat löschen",
+  "chats.deleteChatConfirm": "Diesen Chat löschen? Er wird nur für dich entfernt.",
 
   "datePicker.selectDate": "Datum wählen",
   "datePicker.selectADate": "Datum auswählen",

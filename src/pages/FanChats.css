@@ -82,6 +82,7 @@
   margin: 0;
   padding: 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
 }
 
 .fan-chats-row {
@@ -161,6 +162,7 @@
   align-self: flex-start;
   gap: 4px;
   margin-top: 2px;
+  position: relative;
 }
 
 .fan-chats-time {
@@ -183,6 +185,61 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
+}
+
+.fan-chats-menu-toggle {
+  margin-top: 4px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.fan-chats-menu-chevron {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 0;
+  background: transparent;
+  position: relative;
+}
+
+.fan-chats-menu-chevron::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  border-left: 2px solid rgba(255, 255, 255, 0.75);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.75);
+  transform: translate(-50%, -55%) rotate(-45deg);
+}
+
+.fan-chats-menu {
+  position: absolute;
+  right: 0;
+  bottom: 20px;
+  transform: translateY(100%);
+  z-index: 2;
+}
+
+.fan-chats-menu-item {
+  min-width: 160px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: none;
+  background: #202228;
+  color: #ff5c5c;
+  font-size: 0.9rem;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+.fan-chats-menu-item--danger {
+  color: #ff5c5c;
 }
 
 /* Mobile: chat list rows full width, room for bottom nav */

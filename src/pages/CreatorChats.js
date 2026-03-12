@@ -2,13 +2,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { chatAPI } from '../services/api';
-import { getCached, setCached } from '../utils/routeDataCache';
+import { getCached, setCached, clearCached } from '../utils/routeDataCache';
 import { DEFAULT_AVATAR_URL } from '../constants';
 import { useChat } from '../context/ChatContext';
 import CreatorNav from '../components/CreatorNav';
 import LoadingSpinner from '../components/LoadingSpinner';
 import EmptyWidget from '../components/EmptyWidget';
 import ErrorWidget from '../components/ErrorWidget';
+import DeleteAccountDialog from '../components/DeleteAccountDialog';
 import './CreatorChats.css';
 
 function formatChatTime(isoString) {
@@ -44,6 +45,10 @@ function CreatorChats({ embedded, user: userProp, onLogout: onLogoutProp }) {
   const [loading, setLoading] = useState(true);
    const [namesLoading, setNamesLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [menuOpenFor, setMenuOpenFor] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [channelToDelete, setChannelToDelete] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -139,6 +144,52 @@ function CreatorChats({ embedded, user: userProp, onLogout: onLogoutProp }) {
     }
   }, []);
 
+  // Close inline delete menu when clicking anywhere else
+  useEffect(() => {
+    const handleDocumentClick = (e) => {
+      if (!menuOpenFor) return;
+      const target = e.target;
+      if (
+        target.closest('.creator-chats-menu') ||
+        target.closest('.creator-chats-menu-toggle')
+      ) {
+        return;
+      }
+      setMenuOpenFor(null);
+    };
+    document.addEventListener('click', handleDocumentClick);
+    return () => document.removeEventListener('click', handleDocumentClick);
+  }, [menuOpenFor]);
+
+  const handleOpenMenu = (e, channelId) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setMenuOpenFor((prev) => (prev === channelId ? null : channelId));
+  };
+
+  const handleRequestDeleteChat = (channelId) => {
+    setChannelToDelete(channelId);
+    setMenuOpenFor(null);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteChatConfirm = async () => {
+    if (!channelToDelete) return;
+    setDeletingId(channelToDelete);
+    try {
+      await chatAPI.deleteIndividualChannel(channelToDelete);
+      setChannels((prev) => prev.filter((ch) => ch.id !== channelToDelete));
+      clearCached('channels');
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+    } finally {
+      setDeletingId(null);
+      setDeleteDialogOpen(false);
+      setChannelToDelete(null);
+    }
+  };
+
   if (!user) return null;
 
   const showLoading = loading || namesLoading;
@@ -161,9 +212,15 @@ function CreatorChats({ embedded, user: userProp, onLogout: onLogoutProp }) {
               {channels.map((ch) => {
                 const displayName = (memberInfoMap[ch.otherMemberId]?.name || ch.otherMemberDisplayName) || 'User';
                 const avatarUrl = memberInfoMap[ch.otherMemberId]?.image || ch.otherMemberAvatarUrl;
+                const isMenuOpen = menuOpenFor === ch.id;
+                const isDeleting = deletingId === ch.id;
                 return (
                 <li key={ch.id}>
-                  <Link to={`/creator/chats/${ch.id}`} className="creator-chats-row">
+                  <Link
+                    to={`/creator/chats/${ch.id}`}
+                    className="creator-chats-row"
+                    onContextMenu={(e) => handleOpenMenu(e, ch.id)}
+                  >
                     <div className="creator-chats-avatar-wrap">
                       <img
                         src={avatarUrl || DEFAULT_AVATAR_URL}
@@ -191,8 +248,28 @@ function CreatorChats({ embedded, user: userProp, onLogout: onLogoutProp }) {
                       {ch.unreadCount > 0 && (
                         <span className="creator-chats-unread">{ch.unreadCount}</span>
                       )}
+                      <button
+                        type="button"
+                        className="creator-chats-menu-toggle"
+                        aria-label={t('chats.deleteChat')}
+                        onClick={(e) => handleOpenMenu(e, ch.id)}
+                      >
+                        <span className="creator-chats-menu-chevron" />
+                      </button>
                     </div>
                   </Link>
+                  {isMenuOpen && (
+                    <div className="creator-chats-menu">
+                      <button
+                        type="button"
+                        className="creator-chats-menu-item creator-chats-menu-item--danger"
+                        onClick={() => handleRequestDeleteChat(ch.id)}
+                        disabled={isDeleting}
+                      >
+                        {isDeleting ? t('common.deleting') || 'Deleting…' : t('chats.deleteChat')}
+                      </button>
+                    </div>
+                  )}
                 </li>
               );
               })}
@@ -200,6 +277,20 @@ function CreatorChats({ embedded, user: userProp, onLogout: onLogoutProp }) {
           )}
         </div>
       </main>
+      <DeleteAccountDialog
+        open={deleteDialogOpen}
+        onClose={() => {
+          setDeleteDialogOpen(false);
+          setChannelToDelete(null);
+        }}
+        onConfirm={handleDeleteChatConfirm}
+        deleting={!!deletingId}
+        title={t('deleteAccount.title')}
+        message={t('deleteAccount.message')}
+        cancelLabel={t('common.cancel')}
+        confirmLabel={t('chats.deleteChat')}
+        deletingLabel={t('deleteAccount.deleting')}
+      />
     </div>
   );
 }
