@@ -270,14 +270,25 @@ export function FanAllSessions() {
                             <span>{countdown.text}</span>
                           </button>
                         )}
-                        {activeTab === 'completed' && !session.reviewed && (
-                          <button
-                            type="button"
-                            className="all-sessions-give-review-btn"
-                            onClick={() => setReviewDialogBookingId(session.id)}
-                          >
-                            {t('sessions.giveReview')}
-                          </button>
+                        {activeTab === 'completed' && (
+                          session.reviewed ? (
+                            <button
+                              type="button"
+                              className="all-sessions-reviewed-btn"
+                              disabled
+                              aria-disabled="true"
+                            >
+                              {t('sessions.reviewed')}
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              className="all-sessions-give-review-btn"
+                              onClick={() => setReviewDialogBookingId(session.id)}
+                            >
+                              {t('sessions.giveReview')}
+                            </button>
+                          )
                         )}
                       </div>
                     </div>
@@ -463,14 +474,25 @@ export function CreatorAllSessions() {
                             <span>{countdown.text}</span>
                           </button>
                         )}
-                        {activeTab === 'completed' && !session.reviewed && (
-                          <button
-                            type="button"
-                            className="all-sessions-give-review-btn"
-                            onClick={() => setReviewDialogBookingId(session.id)}
-                          >
-                            {t('sessions.giveReview')}
-                          </button>
+                        {activeTab === 'completed' && (
+                          session.reviewed ? (
+                            <button
+                              type="button"
+                              className="all-sessions-reviewed-btn"
+                              disabled
+                              aria-disabled="true"
+                            >
+                              {t('sessions.reviewed')}
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              className="all-sessions-give-review-btn"
+                              onClick={() => setReviewDialogBookingId(session.id)}
+                            >
+                              {t('sessions.giveReview')}
+                            </button>
+                          )
                         )}
                       </div>
                     </div>

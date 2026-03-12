@@ -161,6 +161,7 @@
   "sessions.joinInHours": "Beitreten in {{hours}}h {{mins}}",
   "sessions.joinInDays": "Beitreten in {{days}}d {{hours}}h",
   "sessions.giveReview": "Bewertung abgeben",
+  "sessions.reviewed": "Bewertet",
   "sessions.failedToLoad": "Sessions konnten nicht geladen werden",
   "sessions.ariaSessions": "Sessions",
 
