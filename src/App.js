@@ -26,6 +26,7 @@ import CreatorHome from './pages/CreatorHome';
 import CreatorDashboard from './pages/CreatorDashboard';
 import CreatorOffers from './pages/CreatorOffers';
 import CreatorAddTimeSlot from './pages/CreatorAddTimeSlot';
+import CreatorEditTimeSlot from './pages/CreatorEditTimeSlot';
 import CreatorMyReviews from './pages/CreatorMyReviews';
 import CreatorCreatorOffers from './pages/CreatorCreatorOffers';
 import CreatorCreatorReviews from './pages/CreatorCreatorReviews';
@@ -82,6 +83,7 @@ function App() {
             <Route path="profile" element={null} />
             <Route path="offers" element={<CreatorOffers />} />
             <Route path="offers/add-time-slot" element={<CreatorAddTimeSlot />} />
+            <Route path="offers/edit/:offerId" element={<CreatorEditTimeSlot />} />
             <Route path="creators/:creatorId" element={<CreatorCreatorProfile />} />
             <Route path="creators/:creatorId/offers" element={<CreatorCreatorOffers />} />
             <Route path="creators/:creatorId/reviews" element={<CreatorCreatorReviews />} />

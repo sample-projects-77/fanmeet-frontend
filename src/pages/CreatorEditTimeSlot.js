@@ -1,22 +1,42 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { offerAPI } from '../services/api';
 import CreatorNav from '../components/CreatorNav';
-import LoadingSpinner, { ButtonLoadingSpinner } from '../components/LoadingSpinner';
+import LoadingSpinner from '../components/LoadingSpinner';
+import DeleteAccountDialog from '../components/DeleteAccountDialog';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
 import { DatePickerDialog } from '../components/DatePickerDialog';
 import { TimePickerDialog } from '../components/TimePickerDialog';
 import { localDateToOfferDateIso, formatTimeToAMPM, getEndTimeFromStartAndDuration } from '../utils/dateTimeUtils';
+import { clearCached } from '../utils/routeDataCache';
 import './CreatorAddTimeSlot.css';
 
-function CreatorAddTimeSlot() {
+/**
+ * Parse offer date string (YYYY-MM-DD from API) into a local Date for the date picker.
+ */
+function offerDateToLocalDate(dateStr) {
+  if (!dateStr || typeof dateStr !== 'string') return null;
+  const part = dateStr.split('T')[0].split(' ')[0].substring(0, 10);
+  const [y, m, d] = part.split('-').map((n) => parseInt(n, 10));
+  if (Number.isNaN(y) || Number.isNaN(m) || Number.isNaN(d)) return null;
+  return new Date(y, m - 1, d);
+}
+
+function CreatorEditTimeSlot() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const { offerId } = useParams();
+  const location = useLocation();
+  const offer = location.state?.offer;
+
   const [user, setUser] = useState(null);
   const dateLocale = i18n.language === 'de' ? 'de-DE' : 'en-US';
   const [submitting, setSubmitting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const [date, setDate] = useState(null);
   const [startTime, setStartTime] = useState('');
@@ -44,6 +64,21 @@ function CreatorAddTimeSlot() {
     }
   }, [navigate]);
 
+  // Redirect if no offer in state (e.g. direct URL)
+  useEffect(() => {
+    if (!user) return;
+    if (!offerId || !offer) {
+      navigate('/creator/offers', { replace: true });
+      return;
+    }
+    const localDate = offerDateToLocalDate(offer.date);
+    setDate(localDate || null);
+    setStartTime((offer.startTime || '').trim());
+    setDuration(Number(offer.duration ?? offer.durationMinutes ?? 30));
+    const cents = offer.priceCents;
+    setPrice(cents != null ? (cents / 100).toFixed(2).replace('.', ',') : '');
+  }, [user, offerId, offer, navigate]);
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -59,25 +94,19 @@ function CreatorAddTimeSlot() {
       return;
     }
 
-    const parsedPrice = parseFloat(
-      String(price).replace(',', '.').trim()
-    );
+    const parsedPrice = parseFloat(String(price).replace(',', '.').trim());
     if (Number.isNaN(parsedPrice) || parsedPrice <= 0) {
       setError(t('availability.validPrice'));
       return;
     }
 
-    // Convert to cents
     const priceCents = Math.round(parsedPrice * 100);
-
-    // Send date as local midnight with user's timezone offset so backend stores UTC correctly.
     const dateIso = localDateToOfferDateIso(date);
     if (!dateIso) {
       setError(t('availability.validDate'));
       return;
     }
 
-    // Compute end time from start time and duration in minutes
     const [startH, startM] = startTime.split(':').map((v) => parseInt(v, 10));
     if (
       Number.isNaN(startH) ||
@@ -98,7 +127,7 @@ function CreatorAddTimeSlot() {
 
     setSubmitting(true);
     try {
-      const res = await offerAPI.createScheduledOffer({
+      const res = await offerAPI.updateScheduledOffer(offerId, {
         dateIso,
         startTime,
         endTime,
@@ -106,9 +135,10 @@ function CreatorAddTimeSlot() {
         priceCents,
       });
       if (res.StatusCode === 200 && res.data) {
+        clearCached('creatorOffers');
         navigate('/creator/offers', { replace: true });
       } else {
-        setError(res.error || t('availability.failedToAdd'));
+        setError(res.error || t('availability.failedToUpdate'));
       }
     } catch (err) {
       setError(
@@ -118,6 +148,32 @@ function CreatorAddTimeSlot() {
       );
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleDeleteClick = () => setShowDeleteConfirm(true);
+  const handleDeleteCancel = () => setShowDeleteConfirm(false);
+
+  const handleDeleteConfirm = async () => {
+    setShowDeleteConfirm(false);
+    setDeleting(true);
+    setError('');
+    try {
+      const res = await offerAPI.deleteOffer(offerId);
+      if (res.StatusCode === 200) {
+        clearCached('creatorOffers');
+        navigate('/creator/offers', { replace: true });
+      } else {
+        setError(res.error || t('availability.failedToDelete'));
+      }
+    } catch (err) {
+      setError(
+        err.response?.data?.error ||
+          err.message ||
+          t('availability.failedToDelete')
+      );
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -132,20 +188,46 @@ function CreatorAddTimeSlot() {
     );
   }
 
+  if (!offer) {
+    return null;
+  }
+
   return (
     <div className="creator-add-slot-page">
       <CreatorNav active="creator" user={user} onLogout={handleLogout} />
       <main className="creator-add-slot-main">
         <div className="creator-add-slot-container">
-          <header className="creator-add-slot-header">
+          <header className="creator-add-slot-header creator-add-slot-header--edit">
             <Link to="/creator/offers" className="creator-add-slot-back" aria-label={t('common.back')}>
               ←
             </Link>
-            <h1 className="creator-add-slot-title">{t('availability.addTimeSlot')}</h1>
+            <h1 className="creator-add-slot-title">{t('availability.editTimeSlot')}</h1>
+            <button
+              type="button"
+              className="creator-add-slot-delete"
+              onClick={handleDeleteClick}
+              disabled={deleting}
+              aria-label={t('availability.deleteTimeSlot')}
+              title={t('availability.deleteTimeSlot')}
+            >
+              <DeleteOutlineIcon className="creator-add-slot-delete-icon" fontSize="medium" aria-hidden />
+            </button>
           </header>
 
+          <DeleteAccountDialog
+            open={showDeleteConfirm}
+            onClose={handleDeleteCancel}
+            onConfirm={handleDeleteConfirm}
+            deleting={deleting}
+            title={t('availability.deleteTimeSlotTitle')}
+            message={t('availability.deleteTimeSlotMessage')}
+            cancelLabel={t('common.cancel')}
+            confirmLabel={t('availability.deleteTimeSlot')}
+            deletingLabel={t('availability.deletingTimeSlot')}
+          />
+
           <p className="creator-add-slot-subtitle">
-            {t('availability.addSlotSubtitle')}
+            {t('availability.editSlotSubtitle')}
           </p>
 
           <form className="creator-add-slot-form" onSubmit={handleSubmit}>
@@ -274,7 +356,7 @@ function CreatorAddTimeSlot() {
                 disabled={submitting}
                 aria-busy={submitting}
               >
-                {submitting ? <ButtonLoadingSpinner /> : t('availability.addTimeSlot')}
+                {submitting ? <ButtonLoadingSpinner /> : t('availability.saveChanges')}
               </button>
             </div>
           </form>
@@ -284,5 +366,4 @@ function CreatorAddTimeSlot() {
   );
 }
 
-export default CreatorAddTimeSlot;
-
+export default CreatorEditTimeSlot;

@@ -142,6 +142,39 @@ export function localDateToOfferDateIso(localDate) {
 }
 
 /**
+ * Format HH:mm (24h) to "9:00 AM" / "9:30 PM" for display.
+ * @param {string} hhmm - e.g. "09:00", "21:30"
+ * @returns {string}
+ */
+export function formatTimeToAMPM(hhmm) {
+  if (!hhmm || typeof hhmm !== 'string') return '--:--';
+  const parts = hhmm.trim().match(/^(\d{1,2}):(\d{2})$/);
+  if (!parts) return hhmm;
+  const hour = parseInt(parts[1], 10) % 24;
+  const minute = parseInt(parts[2], 10) % 60;
+  const isPm = hour >= 12;
+  const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+  return `${hour12}:${String(minute).padStart(2, '0')} ${isPm ? 'PM' : 'AM'}`;
+}
+
+/**
+ * Compute end time as HH:mm from start time (HH:mm) and duration in minutes.
+ * @param {string} startHHmm - e.g. "09:00"
+ * @param {number} durationMinutes
+ * @returns {string} e.g. "09:30"
+ */
+export function getEndTimeFromStartAndDuration(startHHmm, durationMinutes) {
+  if (!startHHmm || typeof startHHmm !== 'string') return '';
+  const [h, m] = startHHmm.split(':').map((n) => parseInt(n, 10));
+  if (Number.isNaN(h) || Number.isNaN(m)) return '';
+  const startTotal = h * 60 + m;
+  const endTotal = startTotal + Number(durationMinutes);
+  const endH = Math.floor(endTotal / 60) % 24;
+  const endM = endTotal % 60;
+  return `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`;
+}
+
+/**
  * Build startTime ISO for createBooking from an offer.
  * Offer has date (YYYY-MM-DD), startTime (HH:mm), creatorTimezone (e.g. "UTC+01:00").
  * We need the slot start instant in UTC and send it as ISO with Z (backend accepts ISO).

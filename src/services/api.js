@@ -228,6 +228,27 @@ export const offerAPI = {
     const response = await api.post('/creators/me/offers/scheduled', payload);
     return response.data;
   },
+
+  // Update a scheduled offer (PATCH /api/creators/me/offers/scheduled/:offerId)
+  updateScheduledOffer: async (offerId, { dateIso, startTime, endTime, duration, priceCents }) => {
+    const rawId = String(offerId).replace(/^offer_/, '');
+    const payload = {
+      date: dateIso,
+      startTime,
+      endTime,
+      duration,
+      priceCents,
+    };
+    const response = await api.patch(`/creators/me/offers/scheduled/${encodeURIComponent(rawId)}`, payload);
+    return response.data;
+  },
+
+  // Delete an offer (DELETE /api/creators/me/offers/:offerId)
+  deleteOffer: async (offerId) => {
+    const rawId = String(offerId).replace(/^offer_/, '');
+    const response = await api.delete(`/creators/me/offers/${encodeURIComponent(rawId)}`);
+    return response.data;
+  },
 };
 
 // Reviews (get reviews for a user; create review for completed booking)

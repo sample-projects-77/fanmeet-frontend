@@ -525,6 +525,19 @@
   border-bottom: none;
 }
 
+.creator-offers-row-clickable {
+  cursor: pointer;
+}
+
+.creator-offers-row-clickable:hover {
+  background: rgba(244, 192, 70, 0.08) !important;
+}
+
+.creator-offers-row-clickable:focus-visible {
+  outline: 2px solid var(--accent-yellow);
+  outline-offset: -2px;
+}
+
 /* Base td styles for desktop only; mobile/tablet use media queries above */
 @media (min-width: 768px) {
   .creator-offers-table td {

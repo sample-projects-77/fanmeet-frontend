@@ -158,7 +158,14 @@ function CreatorOffers() {
                 </thead>
                 <tbody>
                   {offers.map((offer) => (
-                    <tr key={offer.id}>
+                    <tr
+                      key={offer.id}
+                      className="creator-offers-row-clickable"
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => navigate(`/creator/offers/edit/${offer.id}`, { state: { offer } })}
+                      onKeyDown={(e) => e.key === 'Enter' && navigate(`/creator/offers/edit/${offer.id}`, { state: { offer } })}
+                    >
                       <td>{formatOfferDay(offer, locale)}</td>
                       <td>{formatOfferTimeRange(offer)}</td>
                       <td>{(offer.duration ?? offer.durationMinutes) != null ? `${offer.duration ?? offer.durationMinutes} ${t('availability.minAbbr')}` : '—'}</td>
