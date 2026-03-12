@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { chatAPI } from '../services/api';
 import { getCached, setCached } from '../utils/routeDataCache';
 import { DEFAULT_AVATAR_URL } from '../constants';
@@ -24,8 +25,11 @@ function formatChatTime(isoString) {
   return d.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' + timeStr;
 }
 
+const PHOTO_PLACEHOLDER_KEYS = ['photo', 'foto', 'image', 'bild'];
+
 function FanChats({ embedded, user: userProp, onLogout: onLogoutProp }) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { client, connect, disconnect, connecting } = useChat();
   const [userState, setUserState] = useState(null);
   const user = embedded ? userProp : userState;
@@ -57,10 +61,10 @@ function FanChats({ embedded, user: userProp, onLogout: onLogoutProp }) {
 
     const cached = getCached('channels');
     if (Array.isArray(cached)) {
+      // Show cached list immediately so screen feels instant, but still refetch below.
       setChannels(cached);
       setLoading(false);
       setError(null);
-      return;
     }
 
     const fetchChannels = async () => {
@@ -171,7 +175,12 @@ function FanChats({ embedded, user: userProp, onLogout: onLogoutProp }) {
                         {displayName}
                       </span>
                       <span className="fan-chats-preview">
-                        {ch.lastMessage?.text || 'No messages yet'}
+                        {(() => {
+                          if (!ch.lastMessage) return t('chats.noMessagesYet');
+                          const text = ch.lastMessage?.text?.trim();
+                          if (!text || PHOTO_PLACEHOLDER_KEYS.includes(text.toLowerCase())) return t('chats.photo');
+                          return text;
+                        })()}
                       </span>
                     </div>
                     <div className="fan-chats-right">

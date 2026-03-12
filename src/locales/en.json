@@ -265,6 +265,8 @@
   "chats.noChats": "No chats yet.",
   "chats.failedToLoad": "Failed to load chats",
   "chats.yesterday": "Yesterday",
+  "chats.noMessagesYet": "No messages yet",
+  "chats.photo": "Photo",
 
   "datePicker.selectDate": "Select date",
   "datePicker.selectADate": "Select a date",
