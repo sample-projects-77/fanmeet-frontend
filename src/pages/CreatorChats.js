@@ -94,6 +94,19 @@ function CreatorChats({ embedded, user: userProp, onLogout: onLogoutProp }) {
         setMemberInfoMap(memberCached);
         hasEnrichedNamesOnce.current = true;
       }
+      // Refresh channel list in background so new messages / new chats show without full reload
+      const refreshInBackground = async () => {
+        try {
+          const res = await chatAPI.getIndividualChannels();
+          if (res.StatusCode === 200 && res.data?.channels) {
+            setCached('channels', res.data.channels);
+            setChannels(res.data.channels);
+          }
+        } catch {
+          // keep existing list on error
+        }
+      };
+      refreshInBackground();
       return;
     }
 
