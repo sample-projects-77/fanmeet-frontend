@@ -7,6 +7,8 @@ import {
   ChannelHeader,
   MessageList,
   MessageInput,
+  DateSeparator,
+  MessageTimestamp,
   useChatContext,
   StreamEmoji,
   DialogAnchor,
@@ -43,6 +45,38 @@ const CHAT_REACTION_OPTIONS = [
   { type: 'haha', Component: () => <ReactionEmoji fallback="😂" type="haha" />, name: 'LOL' },
   { type: 'wow', Component: () => <ReactionEmoji fallback="⁉️" type="wow" />, name: '?!' },
 ];
+
+/** Format date for separator: "Today", "Yesterday", "Friday", or "Feb 16" (Flutter-style) */
+function formatDateForSeparator(date) {
+  if (!date || !(date instanceof Date)) return '';
+  const d = new Date(date);
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const startOfYesterday = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate());
+  const startOfD = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const diffDays = Math.floor((startOfToday - startOfD) / (24 * 60 * 60 * 1000));
+
+  if (diffDays === 0) return 'Today';
+  if (diffDays === 1) return 'Yesterday';
+  if (diffDays >= 2 && diffDays < 7) return d.toLocaleDateString(undefined, { weekday: 'long' });
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+}
+
+/** Date separator: Flutter-style pill – "Feb 16", "Feb 18", "Today", "Friday" */
+function CustomDateSeparator(props) {
+  return (
+    <div className="fanmeet-date-separator-pill">
+      <DateSeparator {...props} formatDate={formatDateForSeparator} position="center" />
+    </div>
+  );
+}
+
+/** Message timestamp: time only below bubble, e.g. "12:38 AM", "7:00 PM" (Flutter-style) */
+function CustomMessageTimestamp(props) {
+  return <MessageTimestamp {...props} calendar={false} format="h:mm A" />;
+}
 
 /** Copy text to clipboard; works on mobile (Clipboard API + execCommand fallback) */
 function copyToClipboard(text) {
@@ -394,6 +428,8 @@ function ChatContent({ channelId, backTo, backLabel, NavComponent }) {
       channel={channel}
       MessageOptions={CombinedMessageOptions}
       reactionOptions={CHAT_REACTION_OPTIONS}
+      DateSeparator={CustomDateSeparator}
+      MessageTimestamp={CustomMessageTimestamp}
     >
       <Window>
         <ChannelHeader />

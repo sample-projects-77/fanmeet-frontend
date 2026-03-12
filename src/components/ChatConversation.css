@@ -192,6 +192,29 @@ body.fanmeet-chat-keyboard-open .bottom-nav {
   font-weight: 500 !important;
   white-space: nowrap !important;
 }
+/* Flutter-style date separator pill: dark gray text on lighter gray rounded pill, centered */
+.chat-conversation-stream .fanmeet-date-separator-pill {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  padding: 10px 0 14px !important;
+  background: transparent !important;
+}
+.chat-conversation-stream .fanmeet-date-separator-pill .str-chat__date-separator {
+  padding: 8px 0 !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  font-size: 0.8125rem !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;
+}
+.chat-conversation-stream .fanmeet-date-separator-pill .str-chat__date-separator-date {
+  padding: 0 !important;
+  background: transparent !important;
+  color: inherit !important;
+}
 /* Remove gray from any wrapper containing the date separator (e.g. Virtuoso item) */
 .chat-conversation-stream [class*="date-separator"],
 .chat-conversation-stream [data-testid="date-separator"] {
@@ -225,13 +248,24 @@ body.fanmeet-chat-keyboard-open .bottom-nav {
   margin-inline-end: 0 !important;
 }
 
-/* Mobile/tablet: message margins (must come after base rules above so they take effect) */
+/* Mobile/tablet: message margins and list padding (must come after base rules above so they take effect) */
 @media (max-width: 1024px) {
+  /* Right padding on list/scroll so sent bubbles don't touch the screen edge */
+  .chat-conversation-stream .str-chat__list,
+  .chat-conversation-stream .str-chat__message-list-scroll,
+  .chat-conversation-stream .str-chat__ul,
+  .chat-conversation-stream .str-chat__virtual-list,
+  .chat-conversation-stream .str-chat__main-panel,
+  .chat-conversation-stream [data-virtuoso-scroller] {
+    padding-right: 4px !important;
+    padding-inline-end: 4px !important;
+  }
+
   .chat-conversation-stream .str-chat__message.str-chat__message--me,
   .chat-conversation-stream .str-chat__li.str-chat__message--me,
   .chat-conversation-stream [class*="virtual-list-message"] .str-chat__message--me {
-    margin-right: 16px !important;
-    margin-inline-end: 16px !important;
+    margin-right: 0 !important;
+    margin-inline-end: 0 !important;
     margin-left: 0 !important;
     margin-inline-start: 0 !important;
   }
