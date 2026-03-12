@@ -130,9 +130,11 @@ export function FanSessionDetail() {
                   <span className="session-detail-label">Duration</span>
                   <span className="session-detail-value">{booking.offer.durationMinutes} min</span>
                 </div>
-                <div className="session-detail-row">
+                <div className="session-detail-row session-detail-row--price">
                   <span className="session-detail-label">Price</span>
-                  <span className="session-detail-value">{formatPrice(booking.offer.priceCents, booking.offer.currency)}</span>
+                  <span className="session-detail-price-pill" aria-hidden>
+                    {formatPrice(booking.offer.priceCents, booking.offer.currency)} &gt;
+                  </span>
                 </div>
               </>
             )}
@@ -262,9 +264,11 @@ export function CreatorSessionDetail() {
                   <span className="session-detail-label">Duration</span>
                   <span className="session-detail-value">{booking.offer.durationMinutes} min</span>
                 </div>
-                <div className="session-detail-row">
+                <div className="session-detail-row session-detail-row--price">
                   <span className="session-detail-label">Price</span>
-                  <span className="session-detail-value">{formatPrice(booking.offer.priceCents, booking.offer.currency)}</span>
+                  <span className="session-detail-price-pill" aria-hidden>
+                    {formatPrice(booking.offer.priceCents, booking.offer.currency)} &gt;
+                  </span>
                 </div>
               </>
             )}

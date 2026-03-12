@@ -87,6 +87,11 @@
   -webkit-overflow-scrolling: touch;
 }
 
+/* Set your availability: no horizontal scroll; table fits viewport */
+.creator-offers-table-wrap:has(.creator-offers-table--availability) {
+  overflow-x: hidden;
+}
+
 .creator-offers-table {
   width: 100%;
   min-width: 480px;
@@ -169,15 +174,31 @@
   }
   .creator-offers-table--availability .creator-offers-th-price,
   .creator-offers-table--availability td.creator-offers-price {
-    width: 22%;
+    width: 25%; /* enough for "6000,00 EUR >" on mobile */
+  }
+  .creator-offers-table--availability .creator-offers-th-day,
+  .creator-offers-table--availability td:first-child {
+    width: 26%;
+  }
+  .creator-offers-table--availability th:nth-child(2),
+  .creator-offers-table--availability td:nth-child(2) {
+    width: 25%;
+  }
+  .creator-offers-table--availability th:nth-child(3),
+  .creator-offers-table--availability td:nth-child(3) {
+    width: 24%;
   }
 
-  /* Set Your Availability page only: more padding in table columns */
+  /* Set Your Availability: minimal padding so price pill fits */
   .creator-offers-table--availability th {
-    padding: 8px 6px;
+    padding: 8px 4px;
   }
   .creator-offers-table--availability td {
-    padding: 8px 6px;
+    padding: 8px 4px;
+  }
+  .creator-offers-table--availability td.creator-offers-price {
+    padding-left: 2px;
+    padding-right: 4px;
   }
 
   /* Table headers: center align for mobile */
@@ -235,6 +256,12 @@
     text-align: right;
   }
 
+  /* Availability: Price column right-aligned on mobile (767px) */
+  .creator-offers-table--availability .creator-offers-th-price,
+  .creator-offers-table--availability td.creator-offers-price {
+    text-align: right !important;
+  }
+
   /* Book now button: larger, text centered in bubble */
   .creator-offers-book-btn {
     padding: 6px 10px;
@@ -257,7 +284,7 @@
 /* Extra small screens (375px): smaller font, less padding, lighter weight – less odd wrapping */
 @media (max-width: 375px) {
   .creator-offers-main {
-    padding: 10px 4px 96px;
+    padding: 10px 2px 96px 6px; /* less right padding so price column isn’t cut off */
   }
 
   .creator-offers-header {
@@ -289,14 +316,14 @@
     padding-left: 1px;
   }
 
-  /* 4-column availability table: column widths sum to 100% */
+  /* 4-column availability table: price gets 26% so full pill fits (375px) */
   .creator-offers-table--availability .creator-offers-th-day,
   .creator-offers-table--availability td:first-child {
-    width: 28%;
+    width: 25%;
   }
   .creator-offers-table--availability th:nth-child(2),
   .creator-offers-table--availability td:nth-child(2) {
-    width: 26%;
+    width: 25%;
   }
   .creator-offers-table--availability th:nth-child(3),
   .creator-offers-table--availability td:nth-child(3) {
@@ -304,7 +331,11 @@
   }
   .creator-offers-table--availability .creator-offers-th-price,
   .creator-offers-table--availability td.creator-offers-price {
-    width: 22%;
+    width: 26%;
+  }
+  .creator-offers-table--availability td.creator-offers-price {
+    padding-left: 2px;
+    padding-right: 4px;
   }
 
   .creator-offers-table td {
@@ -340,12 +371,22 @@
     white-space: normal;
   }
 
-  /* Set Your Availability page only: more padding in table columns (375px) */
+  /* Set Your Availability: minimal padding so price pill fits (375px) */
   .creator-offers-table--availability th {
     padding: 6px 4px;
   }
   .creator-offers-table--availability td {
     padding: 6px 4px;
+  }
+  .creator-offers-table--availability td.creator-offers-price {
+    padding-left: 2px;
+    padding-right: 4px;
+  }
+
+  /* Availability: Price column right-aligned on small mobile (375px) */
+  .creator-offers-table--availability .creator-offers-th-price,
+  .creator-offers-table--availability td.creator-offers-price {
+    text-align: right !important;
   }
 
   /* Book now: text centered in bubble */
@@ -419,6 +460,61 @@
   text-align: left;
 }
 
+/* Set your availability page only: golden Price header + green pill */
+.creator-offers-table--availability .creator-offers-th-price {
+  color: #d4af37 !important;
+  font-weight: 600;
+  text-align: right;
+}
+
+/* Price column: right-aligned; overflow visible so full pill shows (column width + padding sized to fit) */
+.creator-offers-table--availability td.creator-offers-price {
+  text-align: right;
+  overflow: visible;
+  min-width: 0;
+}
+
+.creator-offers-table--availability .creator-offers-price-pill {
+  display: inline-block;
+  padding: 8px 14px;
+  background: rgba(46, 204, 113, 0.2); /* 0xFF2ECC71 alpha 0.2 */
+  color: #2ECC71; /* 0xFF2ECC71 */
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 999px;
+  white-space: nowrap;
+  min-width: min-content;
+  box-sizing: border-box;
+  direction: ltr;
+}
+
+/* Mobile: minimal padding so full pill fits; no RTL (avoid left clip) */
+@media (max-width: 767px) {
+  .creator-offers-table--availability td.creator-offers-price {
+    padding-left: 2px;
+    padding-right: 4px;
+  }
+  .creator-offers-table--availability .creator-offers-price-pill {
+    padding: 5px 6px;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 375px) {
+  .creator-offers-table--availability .creator-offers-price-pill {
+    padding: 4px 2px 4px 6px; /* minimal right padding so pill and ">" don’t hide */
+    font-size: 9px;
+  }
+
+  .creator-offers-table--availability td.creator-offers-price {
+    padding-right: 2px;
+    padding-left: 2px;
+  }
+  .creator-offers-table--availability .creator-offers-price-pill {
+    padding: 3px 4px 3px 5px;
+  }
+}
+
 /* Data rows – separator line between rows */
 .creator-offers-table tbody tr {
   border-bottom: 1px solid rgba(244, 192, 70, 0.2);
@@ -446,6 +542,12 @@
   font-size: 9px;
   font-weight: 400;
   color: #4e9d75;
+}
+
+/* Availability table: price column right-aligned at all viewports (overrides general rule above) */
+.creator-offers-table--availability .creator-offers-th-price,
+.creator-offers-table--availability td.creator-offers-price {
+  text-align: right !important;
 }
 
 /* Book now button – pill shape, text centered in bubble */

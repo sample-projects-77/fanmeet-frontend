@@ -80,6 +80,40 @@
   color: var(--tertiary-color);
 }
 
+/* Price field: golden label + green pill input (Flutter mobile) */
+.creator-add-slot-field--price label {
+  color: #d4af37;
+}
+
+.creator-add-slot-field--price .creator-add-slot-price-wrap {
+  background: #3A7F3D;
+  border-color: rgba(146, 237, 103, 0.25);
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  padding: 10px 18px;
+  gap: 6px;
+}
+
+.creator-add-slot-field--price .creator-add-slot-price-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  color: #92ED67;
+  font-weight: 500;
+}
+
+.creator-add-slot-field--price .creator-add-slot-price-input::placeholder {
+  color: rgba(146, 237, 103, 0.5);
+}
+
+.creator-add-slot-field--price .creator-add-slot-price-suffix {
+  color: #92ED67;
+  font-size: 15px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
 .creator-add-slot-input-wrap {
   border-radius: 16px;
   border: 1px solid var(--outline-input-border);

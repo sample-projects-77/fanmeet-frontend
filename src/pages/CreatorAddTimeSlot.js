@@ -234,9 +234,9 @@ function CreatorAddTimeSlot() {
               </div>
             </div>
 
-            <div className="creator-add-slot-field">
+            <div className="creator-add-slot-field creator-add-slot-field--price">
               <label htmlFor="price">{t('availability.priceEur')} <span className="required">*</span></label>
-              <div className="creator-add-slot-input-wrap">
+              <div className="creator-add-slot-input-wrap creator-add-slot-price-wrap">
                 <input
                   id="price"
                   type="text"
@@ -245,7 +245,9 @@ function CreatorAddTimeSlot() {
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
                   required
+                  className="creator-add-slot-price-input"
                 />
+                <span className="creator-add-slot-price-suffix" aria-hidden> EUR</span>
               </div>
             </div>
 

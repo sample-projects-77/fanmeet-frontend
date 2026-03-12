@@ -163,7 +163,7 @@ function CreatorOffers() {
                       <td>{formatOfferTimeRange(offer)}</td>
                       <td>{(offer.duration ?? offer.durationMinutes) != null ? `${offer.duration ?? offer.durationMinutes} ${t('availability.minAbbr')}` : '—'}</td>
                       <td className="creator-offers-price">
-                        {formatPrice(offer.priceCents, offer.currency)}
+                        <span className="creator-offers-price-pill">{formatPrice(offer.priceCents, offer.currency)} &gt;</span>
                       </td>
                     </tr>
                   ))}
