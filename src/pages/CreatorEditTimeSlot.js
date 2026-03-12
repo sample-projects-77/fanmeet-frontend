@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { offerAPI } from '../services/api';
 import CreatorNav from '../components/CreatorNav';
-import LoadingSpinner from '../components/LoadingSpinner';
+import LoadingSpinner, { ButtonLoadingSpinner } from '../components/LoadingSpinner';
 import DeleteAccountDialog from '../components/DeleteAccountDialog';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';

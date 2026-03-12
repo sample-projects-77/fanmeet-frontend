@@ -394,7 +394,9 @@ export function FanProfileBlocked() {
               <LoadingSpinner />
             </div>
           ) : blocked.length === 0 ? (
-            <EmptyWidget text={t('profileBlocked.empty')} />
+            <div className="fan-search-empty-centered">
+              <EmptyWidget text={t('profileBlocked.empty')} />
+            </div>
           ) : (
             <div className="profile-blocked-list">
               {blocked.map((b) => (

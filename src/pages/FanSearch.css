@@ -4,10 +4,13 @@
   min-height: 100vh;
   background: var(--bg-primary);
   color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
 }
 
 .fan-search-main {
   padding: 24px 20px 48px;
+  flex: 1;
 }
 
 .fan-search-container {
@@ -99,6 +102,14 @@
   text-align: center;
   color: var(--text-secondary);
   font-size: 0.9375rem;
+}
+
+/* Centered empty state for Blocked Users screen */
+.fan-search-empty-centered {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .fan-search-grid {

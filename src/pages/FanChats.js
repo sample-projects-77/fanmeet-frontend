@@ -64,14 +64,6 @@ function FanChats({ embedded, user: userProp, onLogout: onLogoutProp }) {
       return;
     }
 
-    const cached = getCached('channels');
-    if (Array.isArray(cached)) {
-      // Show cached list immediately so screen feels instant, but still refetch below.
-      setChannels(cached);
-      setLoading(false);
-      setError(null);
-    }
-
     const fetchChannels = async () => {
       setLoading(true);
       setError(null);
@@ -90,6 +82,15 @@ function FanChats({ embedded, user: userProp, onLogout: onLogoutProp }) {
         setLoading(false);
       }
     };
+
+    const cached = getCached('channels');
+    if (Array.isArray(cached)) {
+      setChannels(cached);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
     fetchChannels();
   }, [navigate]);
 
@@ -178,8 +179,11 @@ function FanChats({ embedded, user: userProp, onLogout: onLogoutProp }) {
     setDeletingId(channelToDelete);
     try {
       await chatAPI.deleteIndividualChannel(channelToDelete);
-      setChannels((prev) => prev.filter((ch) => ch.id !== channelToDelete));
-      clearCached('channels');
+      setChannels((prev) => {
+        const next = prev.filter((ch) => ch.id !== channelToDelete);
+        setCached('channels', next);
+        return next;
+      });
     } catch (err) {
       // keep list unchanged on error; optional: surface error widget
       // eslint-disable-next-line no-console
