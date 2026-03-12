@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { chatAPI } from '../services/api';
@@ -49,6 +49,7 @@ function FanChats({ embedded, user: userProp, onLogout: onLogoutProp }) {
   const [deletingId, setDeletingId] = useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [channelToDelete, setChannelToDelete] = useState(null);
+  const hasEnrichedNamesOnce = useRef(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -88,6 +89,11 @@ function FanChats({ embedded, user: userProp, onLogout: onLogoutProp }) {
       setChannels(cached);
       setLoading(false);
       setError(null);
+      const memberCached = getCached('fanChatMemberInfo');
+      if (memberCached && typeof memberCached === 'object' && !Array.isArray(memberCached)) {
+        setMemberInfoMap(memberCached);
+        hasEnrichedNamesOnce.current = true;
+      }
       return;
     }
 
@@ -99,7 +105,9 @@ function FanChats({ embedded, user: userProp, onLogout: onLogoutProp }) {
     if (!client && !connecting) connect();
   }, [client, connecting, connect]);
 
-  // Enrich channel list with usernames and avatars from Stream (same source as conversation header)
+  // Enrich channel list with usernames and avatars from Stream (same source as conversation header).
+  // Only run when client is ready so we don't show "User" for every row due to race (channels from cache, client not connected yet).
+  // Only show names-loading spinner on initial enrich; after delete we update local state and don't re-show loader.
   useEffect(() => {
     if (!client || channels.length === 0) {
       setNamesLoading(false);
@@ -110,7 +118,8 @@ function FanChats({ embedded, user: userProp, onLogout: onLogoutProp }) {
       setNamesLoading(false);
       return;
     }
-    setNamesLoading(true);
+    const isInitialEnrich = !hasEnrichedNamesOnce.current;
+    if (isInitialEnrich) setNamesLoading(true);
     client
       .queryUsers({ id: { $in: otherIds } })
       .then((res) => {
@@ -119,6 +128,8 @@ function FanChats({ embedded, user: userProp, onLogout: onLogoutProp }) {
           map[u.id] = { name: u.name || 'User', image: u.image || null };
         });
         setMemberInfoMap(map);
+        setCached('fanChatMemberInfo', map);
+        hasEnrichedNamesOnce.current = true;
       })
       .catch(() => {})
       .finally(() => {
@@ -130,6 +141,8 @@ function FanChats({ embedded, user: userProp, onLogout: onLogoutProp }) {
     setLoading(true);
     setError(null);
     setMemberInfoMap({});
+    clearCached('fanChatMemberInfo');
+    hasEnrichedNamesOnce.current = false;
     try {
       const res = await chatAPI.getIndividualChannels();
       if (res.StatusCode === 200 && res.data?.channels) {
@@ -196,7 +209,12 @@ function FanChats({ embedded, user: userProp, onLogout: onLogoutProp }) {
   };
   if (!user) return null;
 
-  const showLoading = loading || namesLoading;
+  // Show full-page loader when: fetching channels, waiting for client, or loading names with nothing to show yet.
+  // On refresh (no cache) we have channels + client but empty memberInfoMap → show loader until names load.
+  // When coming back from conversation we restore memberInfoMap from cache → show list immediately.
+  const waitingForNames = channels.length > 0 && !client;
+  const loadingNamesWithNoDisplay = channels.length > 0 && namesLoading && Object.keys(memberInfoMap).length === 0;
+  const showLoading = loading || waitingForNames || loadingNamesWithNoDisplay;
 
   return (
     <div className="fan-chats-page">
