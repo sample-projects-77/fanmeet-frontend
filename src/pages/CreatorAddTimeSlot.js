@@ -9,6 +9,7 @@ import { DatePickerDialog } from '../components/DatePickerDialog';
 import { TimePickerDialog } from '../components/TimePickerDialog';
 import { localSlotToUtcPayload, formatTimeToAMPM, getEndTimeFromStartAndDuration } from '../utils/dateTimeUtils';
 import { clearCached } from '../utils/routeDataCache';
+import { toast } from 'react-toastify';
 import './CreatorAddTimeSlot.css';
 
 function CreatorAddTimeSlot() {
@@ -102,6 +103,7 @@ function CreatorAddTimeSlot() {
       });
       if (res.StatusCode === 200 && res.data) {
         clearCached('creatorOffers');
+        toast.success(t('availability.slotAdded'));
         navigate('/creator/offers', { replace: true });
       } else {
         setError(res.error || t('availability.failedToAdd'));

@@ -239,6 +239,7 @@
   "availability.validDate": "Bitte wähle ein gültiges Datum.",
   "availability.validStartTime": "Bitte gib eine gültige Startzeit ein.",
   "availability.failedToAdd": "Zeitfenster konnte nicht hinzugefügt werden.",
+  "availability.slotAdded": "Zeitfenster wurde erstellt.",
   "availability.editTimeSlot": "Zeitfenster bearbeiten",
   "availability.editSlotSubtitle": "Datum, Uhrzeit, Dauer oder Preis für dieses Zeitfenster anpassen.",
   "availability.saveChanges": "Änderungen speichern",
@@ -248,6 +249,8 @@
   "availability.failedToUpdate": "Zeitfenster konnte nicht aktualisiert werden.",
   "availability.failedToDelete": "Zeitfenster konnte nicht gelöscht werden.",
   "availability.deletingTimeSlot": "Wird gelöscht…",
+  "availability.slotUpdated": "Zeitfenster wurde aktualisiert.",
+  "availability.slotDeleted": "Zeitfenster wurde gelöscht.",
 
   "reviews.title": "Bewertungen",
   "reviews.noReviews": "Noch keine Bewertungen.",

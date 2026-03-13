@@ -8,8 +8,8 @@
 
   /* ========== Accents ========== */
   --secondary-color: #F4C046;        /* brand accent / buttons */
-  --amber: #F4C046;                  /* toast/info accent match */
-  --green-success: #2ECC71;
+  --amber: #FFBF00;                  /* toast/info accent match (AppColors.amber) */
+  --green-success: #14B82C;          /* success (AppColors.greenSuccess) */
   --red: #FF5C5C;
   --blue-accent: #5B9FFF;            /* sessions / info blue */
   --icon-blue: #4A90E2;              /* key icon / password icon background */

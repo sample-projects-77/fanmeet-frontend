@@ -15,9 +15,47 @@ body {
   color: var(--text-primary);
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+/* Position toast container below top nav (matches Set Your Availability header) */
+.Toastify__toast-container--top-right {
+  top: 72px; /* adjust if nav height changes */
 }
 
+/* Toastify – match Flutter ToastHelper (colors + pill style) */
+.Toastify__toast {
+  border-radius: 50px;
+  padding: 12px 20px;
+  font-family: var(--font-sans);
+  font-size: 17px;
+  font-weight: 800;
+  position: relative;
+}
 
+.Toastify__toast--success {
+  background: #14B82C; /* AppColors.greenSuccess */
+  color: #F1F0F1;      /* AppColors.offWhite */
+}
+
+.Toastify__toast--error {
+  background: #EB4132; /* AppColors.red */
+  color: #F1F0F1;      /* AppColors.offWhite */
+}
+
+.Toastify__toast--info {
+  background: #FFBF00; /* AppColors.amber */
+  color: #F1F0F1;      /* AppColors.offWhite */
+}
+
+.Toastify__close-button {
+  position: absolute;
+  top: 8px;
+  right: 16px;
+  padding: 0;
+  margin: 0;
+  color: #F1F0F1;
+  opacity: 0.9;
+}
+
+.Toastify__close-button > svg {
+  width: 16px;
+  height: 16px;
+}

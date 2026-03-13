@@ -85,7 +85,17 @@ function CreatorOffers() {
       const creatorId = user.id?.toString?.().replace(/^creator_/, '') || user.id;
       const res = await offerAPI.getCreatorScheduledOffers(creatorId, { page: 1, itemsPerPage: 100, status: 'available' });
       if (res.StatusCode === 200 && res.data) {
-        const list = res.data.offers || [];
+        const list = (res.data.offers || []).slice().sort((a, b) => {
+          const normalizeDate = (offer) => {
+            if (!offer?.date || !offer?.startTime) return 0;
+            const raw = (offer.date || '').toString().split('T')[0].split(' ')[0].substring(0, 10);
+            const utc = parseOfferSlotToUTC(raw, offer.startTime || '00:00', OFFER_TIMES_ARE_UTC);
+            const time = utc.getTime();
+            return Number.isNaN(time) ? 0 : time;
+          };
+          // Newest / most recently created slot first
+          return normalizeDate(b) - normalizeDate(a);
+        });
         const pag = res.data.pagination || null;
         setCached(CACHE_KEY, { offers: list, pagination: pag });
         setOffers(list);
@@ -110,7 +120,18 @@ function CreatorOffers() {
     if (!user?.id) return;
     const cached = getCached(CACHE_KEY);
     if (cached?.offers) {
-      setOffers(cached.offers);
+      const sortedCached = cached.offers.slice().sort((a, b) => {
+        const normalizeDate = (offer) => {
+          if (!offer?.date || !offer?.startTime) return 0;
+          const raw = (offer.date || '').toString().split('T')[0].split(' ')[0].substring(0, 10);
+          const utc = parseOfferSlotToUTC(raw, offer.startTime || '00:00', OFFER_TIMES_ARE_UTC);
+          const time = utc.getTime();
+          return Number.isNaN(time) ? 0 : time;
+        };
+        // Newest / most recently created slot first
+        return normalizeDate(b) - normalizeDate(a);
+      });
+      setOffers(sortedCached);
       setPagination(cached.pagination || null);
       setLoading(false);
       return;

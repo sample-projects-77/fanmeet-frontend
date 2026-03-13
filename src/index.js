@@ -1,5 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './i18n';
 import './index.css';
 import App from './App';
@@ -7,7 +9,19 @@ import App from './App';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <>
+      <App />
+      <ToastContainer
+        position="top-right"
+        autoClose={4000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick={false}
+        pauseOnHover
+        draggable
+        theme="dark"
+      />
+    </>
   </React.StrictMode>
 );
 

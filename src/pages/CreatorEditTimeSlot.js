@@ -17,6 +17,7 @@ import {
   localSlotToUtcPayload,
 } from '../utils/dateTimeUtils';
 import { clearCached } from '../utils/routeDataCache';
+import { toast } from 'react-toastify';
 import './CreatorAddTimeSlot.css';
 
 /**
@@ -146,6 +147,7 @@ function CreatorEditTimeSlot() {
       });
       if (res.StatusCode === 200 && res.data) {
         clearCached('creatorOffers');
+        toast.success(t('availability.slotUpdated'));
         navigate('/creator/offers', { replace: true });
       } else {
         setError(res.error || t('availability.failedToUpdate'));
@@ -172,6 +174,7 @@ function CreatorEditTimeSlot() {
       const res = await offerAPI.deleteOffer(offerId);
       if (res.StatusCode === 200) {
         clearCached('creatorOffers');
+        toast.success(t('availability.slotDeleted'));
         navigate('/creator/offers', { replace: true });
       } else {
         setError(res.error || t('availability.failedToDelete'));
