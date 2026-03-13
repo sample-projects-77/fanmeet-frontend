@@ -4,14 +4,20 @@ body.fanmeet-chat-keyboard-open .bottom-nav {
 }
 
 .chat-conversation-page {
-  min-height: 100vh;
-  min-height: 100dvh; /* iOS: use dynamic viewport so layout fits when browser UI is visible */
+  height: 100vh;
+  height: 100dvh; /* iOS: use dynamic viewport so layout fits when browser UI is visible */
   background: var(--bg-primary, #0f0f0f);
   color: var(--text-primary, #e0e0e0);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .chat-conversation-main {
   padding: 16px 20px 0px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .chat-conversation-wrap {
@@ -19,22 +25,20 @@ body.fanmeet-chat-keyboard-open .bottom-nav {
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 120px);
-  min-height: 400px;
+  height: 100%;
+  min-height: 0;
 }
 
 /* Mobile/tablet: full-width header and input (no side gaps), room for bottom nav */
 @media (max-width: 1024px) {
   .chat-conversation-main {
     padding: 16px 0 0 0;
-    padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: 0;
   }
 
   .chat-conversation-wrap {
-    /* Use dvh on iOS so layout uses visible viewport when browser UI is shown */
-    height: calc(100vh - 56px - 16px - 64px - env(safe-area-inset-bottom, 0px));
-    height: calc(100dvh - 56px - 16px - 64px - env(safe-area-inset-bottom, 0px));
-    min-height: 300px;
+    height: 100%;
+    min-height: 0;
     max-width: 100%;
   }
 
@@ -106,6 +110,26 @@ body.fanmeet-chat-keyboard-open .bottom-nav {
   min-height: 200px;
 }
 
+/* Channel-level loading spinner (replaces Stream's skeleton bubbles) */
+.chat-conversation-channel-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 200px;
+}
+
+/* Empty state when no messages in channel */
+.chat-conversation-empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 200px;
+  color: var(--text-secondary, #888);
+  font-size: 0.9375rem;
+}
+
 .chat-conversation-error p {
   margin: 0 0 16px 0;
   color: var(--text-secondary, #888);
@@ -119,12 +143,30 @@ body.fanmeet-chat-keyboard-open .bottom-nav {
 /* Scope Stream Chat theme to our container */
 .chat-conversation-stream .str-chat {
   height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-conversation-stream .str-chat__channel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .chat-conversation-stream .str-chat__main-panel {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Message list fills remaining space and scrolls; input stays pinned at bottom */
+.chat-conversation-stream .str-chat__message-list {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* ========== Chat conversation – match Flutter / web theme ========== */
@@ -359,7 +401,7 @@ body.fanmeet-chat-keyboard-open .bottom-nav {
 .chat-conversation-stream .str-chat__message-simple .str-chat__message-inner {
   margin: 0 !important;
   min-width: 0 !important;
-  max-width: 360px !important;
+  max-width: min(65%, 600px) !important;
   width: fit-content !important;
   display: grid !important;
   grid-template-columns: 1fr !important;
@@ -801,7 +843,7 @@ body.fanmeet-message-menu-open .chat-conversation-stream [class*="virtual-list-m
   position: relative;
   box-shadow: -1px -1px 0 0 rgba(255, 255, 255, 0.12) !important;
   border: 2px solid rgba(255, 255, 255, 0.6) !important;
-  max-width: min(80%, 320px) !important;
+  max-width: min(65%, 600px) !important;
   width: max-content;
   min-width: 5em !important;
   padding: 0.5rem 1rem 0.5rem 0.5rem !important;
@@ -831,7 +873,7 @@ body.fanmeet-message-menu-open .chat-conversation-stream [class*="virtual-list-m
 .chat-conversation-stream .str-chat__message-inner .str-chat__message-bubble {
   min-width: 5em !important;
   min-height: 2.6em !important;
-  max-width: min(80%, 320px) !important;
+  max-width: min(65%, 600px) !important;
   width: max-content !important;
   padding: 0.5rem 0.5rem 0.5rem 0.5rem !important;
   border: none !important;
@@ -860,7 +902,7 @@ body.fanmeet-message-menu-open .chat-conversation-stream [class*="virtual-list-m
   position: relative;
   box-shadow: none !important;
   border: 1px solid rgba(255, 255, 255, 0.6) !important;
-  max-width: min(80%, 320px) !important;
+  max-width: min(65%, 600px) !important;
   width: max-content;
   min-width: 5em !important;
   min-height: 2.6em !important;

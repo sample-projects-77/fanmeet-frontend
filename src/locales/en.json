@@ -323,5 +323,33 @@
   "chat.unpin": "Unpin",
   "chat.deleteMessage": "Delete message",
   "chat.openActionsMenu": "Open message actions",
-  "chat.typeMessage": "Type a message"
+  "chat.typeMessage": "Type a message",
+
+  "forgotPassword.screenTitle": "Forgot Password",
+  "forgotPassword.title": "Forgot Password?",
+  "forgotPassword.subtitle": "Enter your email address and we'll send you a code to reset your password.",
+  "forgotPassword.emailLabel": "Email",
+  "forgotPassword.emailPlaceholder": "Enter your email",
+  "forgotPassword.sendCode": "Send Code",
+  "forgotPassword.successToast": "Password reset code sent!",
+  "forgotPassword.link": "Forgot password?",
+
+  "resetCode.screenTitle": "Enter Code",
+  "resetCode.title": "Enter the Code",
+  "resetCode.subtitle": "Enter the 6-digit code we sent to:",
+  "resetCode.next": "Next",
+  "resetCode.successToast": "Code verified successfully!",
+  "resetCode.incompleteCode": "Please enter the full 6-digit code.",
+
+  "resetPassword.screenTitle": "Reset Password",
+  "resetPassword.title": "Reset Password",
+  "resetPassword.subtitle": "Enter your new password below.",
+  "resetPassword.newPasswordLabel": "New Password",
+  "resetPassword.newPasswordPlaceholder": "Enter new password",
+  "resetPassword.confirmPasswordLabel": "Confirm Password",
+  "resetPassword.confirmPasswordPlaceholder": "Confirm new password",
+  "resetPassword.submit": "Reset Password",
+  "resetPassword.successToast": "Password reset successfully!",
+  "resetPassword.confirmRequired": "Please confirm your password.",
+  "resetPassword.mismatch": "Passwords do not match."
 }

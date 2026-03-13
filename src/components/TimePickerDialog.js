@@ -2,7 +2,7 @@ import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import './TimePickerDialog.css';
 
-const HOUR_ACCENT = '#FFC107';
+const HOUR_ACCENT = '#F4C046';
 
 function parseTime(value) {
   if (!value || typeof value !== 'string') return { hour24: 9, minute: 0 };
@@ -130,11 +130,19 @@ export function TimePickerDialog({ value, onConfirm, onCancel }) {
   const handleClockClick = (e) => {
     e.preventDefault();
     handleClockPointer(e);
+    // Auto-switch to minute view after selecting an hour (matching mobile app behavior)
+    if (mode === 'hour') {
+      setTimeout(() => setMode('minute'), 200);
+    }
   };
 
   const handleClockTouchEnd = (e) => {
     if (e.changedTouches && e.changedTouches[0]) {
       handleClockPointer({ clientX: e.changedTouches[0].clientX, clientY: e.changedTouches[0].clientY });
+      // Auto-switch to minute view after touch-selecting an hour
+      if (mode === 'hour') {
+        setTimeout(() => setMode('minute'), 200);
+      }
     }
   };
 
@@ -155,6 +163,10 @@ export function TimePickerDialog({ value, onConfirm, onCancel }) {
     const handlePointerUp = () => {
       isDraggingRef.current = false;
       setIsDragging(false);
+      // Auto-switch to minute view after dragging hour handle (matching mobile app behavior)
+      if (mode === 'hour') {
+        setTimeout(() => setMode('minute'), 200);
+      }
     };
     document.addEventListener('pointermove', handlePointerMove, { passive: false });
     document.addEventListener('pointerup', handlePointerUp);

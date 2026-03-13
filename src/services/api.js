@@ -83,6 +83,24 @@ export const authAPI = {
     const response = await api.delete('/auth/delete-account');
     return response.data;
   },
+
+  // Forgot password: send reset code to email
+  forgotPassword: async (email) => {
+    const response = await api.post('/auth/forgot-password', { email });
+    return response.data;
+  },
+
+  // Verify password reset code
+  verifyResetCode: async (email, code) => {
+    const response = await api.post('/auth/verify-code', { email, code });
+    return response.data;
+  },
+
+  // Reset password with verified code
+  resetPassword: async (email, code, newPassword) => {
+    const response = await api.post('/auth/reset-password', { email, code, newPassword });
+    return response.data;
+  },
 };
 
 // User preferences (requires auth)
