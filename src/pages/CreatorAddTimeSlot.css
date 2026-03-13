@@ -219,6 +219,7 @@
 
 .creator-add-slot-submit-wrap {
   margin-top: 8px;
+  margin-bottom: 35px; /* gap above bottom navbar for save/add button */
 }
 
 .creator-add-slot-submit {
