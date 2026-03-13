@@ -168,16 +168,6 @@ function CreatorEditProfile() {
                 <WorkspacePremiumIcon />
               </span>
               <span className="creator-edit-profile-meta-label">{t('creatorEdit.category')}</span>
-              {!isEditing && (
-                <button
-                  type="button"
-                  className="creator-edit-profile-pill-btn"
-                  onClick={handleEnterEdit}
-                >
-                  <EditOutlinedIcon />
-                  <span>{t('profile.editProfile')}</span>
-                </button>
-              )}
             </div>
 
             <div className="creator-edit-profile-gap" />
@@ -243,11 +233,25 @@ function CreatorEditProfile() {
               </>
             ) : (
               <>
-                {category ? (
-                  <span className="creator-edit-profile-pill">{category}</span>
-                ) : (
-                  <span className="creator-edit-profile-placeholder">{t('creatorEdit.selectCategoryPlaceholder')}</span>
-                )}
+                <div className="creator-edit-profile-pill-column">
+                  {!isEditing && (
+                    <button
+                      type="button"
+                      className="creator-edit-profile-pill-btn"
+                      onClick={handleEnterEdit}
+                    >
+                      <EditOutlinedIcon />
+                      <span>{t('profile.editProfile')}</span>
+                    </button>
+                  )}
+                  {category ? (
+                    <span className="creator-edit-profile-pill">{category}</span>
+                  ) : (
+                    <span className="creator-edit-profile-placeholder">
+                      {t('creatorEdit.selectCategoryPlaceholder')}
+                    </span>
+                  )}
+                </div>
                 {bio != null && bio !== '' && (
                   <>
                     <div className="creator-edit-profile-gap" />

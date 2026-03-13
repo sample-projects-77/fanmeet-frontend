@@ -97,8 +97,15 @@
   color: var(--dark-grey-text);
 }
 
+.creator-edit-profile-pill-column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
 .creator-edit-profile-pill-btn {
-  margin-left: auto;
+  margin-left: 0;
   display: inline-flex;
   align-items: center;
   gap: 4px;
