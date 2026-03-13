@@ -10,6 +10,7 @@ import {
   formatUTCDateToLocalDay,
   formatUTCDateToLocalTime,
   offerSlotStartToUTCISO,
+  isOfferInFuture,
 } from '../utils/dateTimeUtils';
 
 function formatPrice(priceCents, currency = 'EUR') {
@@ -37,15 +38,6 @@ function formatOfferTimeRange(offer) {
   if (Number.isNaN(startUtc.getTime()) || Number.isNaN(endUtc.getTime()))
     return [offer.startTime, offer.endTime].filter(Boolean).join(' - ') || '—';
   return `${formatUTCDateToLocalTime(startUtc)} - ${formatUTCDateToLocalTime(endUtc)}`;
-}
-
-function isOfferInFuture(offer) {
-  if (!offer?.date || !offer?.startTime) return true;
-  const dateStr = (offer.date || '').toString().split('T')[0].split(' ')[0].substring(0, 10);
-  const startUtc = parseOfferSlotToUTC(dateStr, offer.startTime || '00:00', OFFER_TIMES_ARE_UTC);
-  const time = startUtc.getTime();
-  if (Number.isNaN(time)) return true;
-  return time >= Date.now();
 }
 
 /**

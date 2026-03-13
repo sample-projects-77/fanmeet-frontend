@@ -213,6 +213,30 @@ export function getEndTimeFromStartAndDuration(startHHmm, durationMinutes) {
 }
 
 /**
+ * Check if an offer's start time is in the future (not expired).
+ * Offers with invalid/missing dates are kept visible (fail safe).
+ * @param {{ date?: string, startTime?: string }} offer
+ * @returns {boolean}
+ */
+export function isOfferInFuture(offer) {
+  if (!offer?.date || !offer?.startTime) return true;
+  const dateStr = (offer.date || '').toString().split('T')[0].split(' ')[0].substring(0, 10);
+  const startUtc = parseOfferSlotToUTC(dateStr, offer.startTime || '00:00', 'UTC');
+  const time = startUtc.getTime();
+  if (Number.isNaN(time)) return true;
+  return time >= Date.now();
+}
+
+/**
+ * Filter a list of offers to only include future (non-expired) ones.
+ * @param {Array} offers
+ * @returns {Array}
+ */
+export function filterActiveOffers(offers) {
+  return (offers || []).filter(isOfferInFuture);
+}
+
+/**
  * Build startTime ISO for createBooking from an offer.
  * API returns date + startTime in UTC; we parse as UTC and return the same instant as ISO.
  * @param {{ date?: string, startTime?: string }} offer
