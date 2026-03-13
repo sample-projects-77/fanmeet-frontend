@@ -235,6 +235,7 @@ function CreatorCreatorProfile() {
                 </span>
               </Link>
             </nav>
+            <div className="fan-creator-details-bottom-spacer" aria-hidden />
           </div>
         ) : null}
       </main>

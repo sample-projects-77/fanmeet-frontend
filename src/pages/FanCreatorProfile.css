@@ -265,6 +265,10 @@
   margin: 0 24px;
 }
 
+.fan-creator-details-bottom-spacer {
+  height: 40px;
+}
+
 .fan-creator-details-action-btn {
   display: flex;
   align-items: center;
