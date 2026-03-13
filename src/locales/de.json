@@ -251,6 +251,9 @@
   "availability.deletingTimeSlot": "Wird gelöscht…",
   "availability.slotUpdated": "Zeitfenster wurde aktualisiert.",
   "availability.slotDeleted": "Zeitfenster wurde gelöscht.",
+  "availability.endTime": "Endzeit",
+  "availability.selectEndTime": "Endzeit wählen",
+  "availability.invalidEndTime": "Die Endzeit muss nach der Startzeit liegen.",
 
   "reviews.title": "Bewertungen",
   "reviews.noReviews": "Noch keine Bewertungen.",

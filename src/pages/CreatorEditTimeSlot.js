@@ -30,7 +30,8 @@ function offerToLocalDateAndTime(offer) {
   const utcDate = parseOfferSlotToUTC(dateStr, (offer.startTime || '').trim(), 'UTC');
   if (Number.isNaN(utcDate.getTime())) {
     const [y, m, d] = dateStr.split('-').map((n) => parseInt(n, 10));
-    if (Number.isNaN(y) || Number.isNaN(m) || Number.isNaN(d)) return { localDate: null, startTime: (offer.startTime || '').trim() };
+    if (Number.isNaN(y) || Number.isNaN(m) || Number.isNaN(d))
+      return { localDate: null, startTime: (offer.startTime || '').trim() };
     return { localDate: new Date(y, m - 1, d), startTime: (offer.startTime || '').trim() };
   }
   const localDate = new Date(utcDate.getFullYear(), utcDate.getMonth(), utcDate.getDate());
@@ -54,10 +55,34 @@ function CreatorEditTimeSlot() {
 
   const [date, setDate] = useState(null);
   const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
+  const [isEndTimeManual, setIsEndTimeManual] = useState(false);
   const [duration, setDuration] = useState(30);
   const [price, setPrice] = useState('');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [showEndTimePicker, setShowEndTimePicker] = useState(false);
+
+  const computeDurationFromTimes = (start, end) => {
+    if (!start || !end) return null;
+    const [sh, sm] = start.split(':').map((v) => parseInt(v, 10));
+    const [eh, em] = end.split(':').map((v) => parseInt(v, 10));
+    if (
+      Number.isNaN(sh) ||
+      Number.isNaN(sm) ||
+      Number.isNaN(eh) ||
+      Number.isNaN(em)
+    ) {
+      return null;
+    }
+    const startMinutes = sh * 60 + sm;
+    const endMinutes = eh * 60 + em;
+    const diff = endMinutes - startMinutes;
+    if (diff <= 0) {
+      return null;
+    }
+    return diff;
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -88,7 +113,12 @@ function CreatorEditTimeSlot() {
     const { localDate, startTime: localStartTime } = offerToLocalDateAndTime(offer);
     setDate(localDate || null);
     setStartTime(localStartTime);
-    setDuration(Number(offer.duration ?? offer.durationMinutes ?? 30));
+    const initialDuration = Number(offer.duration ?? offer.durationMinutes ?? 30);
+    setDuration(initialDuration);
+    if (localStartTime && initialDuration) {
+      const autoEnd = getEndTimeFromStartAndDuration(localStartTime, initialDuration);
+      setEndTime(autoEnd);
+    }
     const cents = offer.priceCents;
     setPrice(cents != null ? (cents / 100).toFixed(2).replace('.', ',') : '');
   }, [user, offerId, offer, navigate]);
@@ -130,7 +160,11 @@ function CreatorEditTimeSlot() {
     }
 
     // Send slot in UTC so the backend stores the correct instant (avoids date/time shifting after save)
-    const { dateIsoUtc, startTimeUtc, endTimeUtc } = localSlotToUtcPayload(date, startTime, duration);
+    const { dateIsoUtc, startTimeUtc, endTimeUtc } = localSlotToUtcPayload(
+      date,
+      startTime,
+      duration
+    );
     if (!dateIsoUtc) {
       setError(t('availability.validDate'));
       return;
@@ -307,9 +341,65 @@ function CreatorEditTimeSlot() {
                   value={startTime}
                   onConfirm={(timeStr) => {
                     setStartTime(timeStr);
+                    if (!isEndTimeManual && duration) {
+                      const autoEnd = getEndTimeFromStartAndDuration(timeStr, duration);
+                      setEndTime(autoEnd);
+                    }
                     setShowTimePicker(false);
                   }}
                   onCancel={() => setShowTimePicker(false)}
+                />
+              )}
+            </div>
+
+            <div className="creator-add-slot-field">
+              <label htmlFor="endTime">{t('availability.endTime')}</label>
+              <div
+                className="creator-add-slot-input-wrap creator-add-slot-trigger creator-add-slot-time-wrap"
+                onClick={() => {
+                  setError('');
+                  setShowEndTimePicker(true);
+                }}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    setError('');
+                    setShowEndTimePicker(true);
+                  }
+                }}
+                id="endTime"
+                aria-label={t('availability.selectEndTime')}
+              >
+                <span className={endTime ? '' : 'creator-add-slot-placeholder'}>
+                  {formatTimeToAMPM(endTime)}
+                </span>
+                <span className="creator-add-slot-time-icon" aria-hidden>
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                    <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
+                  </svg>
+                </span>
+              </div>
+              {showEndTimePicker && (
+                <TimePickerDialog
+                  value={endTime}
+                  onConfirm={(timeStr) => {
+                    if (startTime) {
+                      const diff = computeDurationFromTimes(startTime, timeStr);
+                      if (diff != null) {
+                        setEndTime(timeStr);
+                        setIsEndTimeManual(true);
+                        setDuration(diff);
+                      } else {
+                        setError(t('availability.invalidEndTime'));
+                      }
+                    } else {
+                      setEndTime(timeStr);
+                      setIsEndTimeManual(true);
+                    }
+                    setShowEndTimePicker(false);
+                  }}
+                  onCancel={() => setShowEndTimePicker(false)}
                 />
               )}
             </div>
@@ -325,7 +415,15 @@ function CreatorEditTimeSlot() {
                       'creator-add-slot-duration-pill' +
                       (Number(duration) === min ? ' creator-add-slot-duration-pill--active' : '')
                     }
-                    onClick={() => setDuration(min)}
+                    onClick={() => {
+                      setIsEndTimeManual(false);
+                      setDuration(min);
+                      if (startTime) {
+                        const autoEnd = getEndTimeFromStartAndDuration(startTime, min);
+                        setEndTime(autoEnd);
+                      }
+                    }}
+                    disabled={isEndTimeManual}
                   >
                     {min} {t('common.min')}
                   </button>
@@ -339,7 +437,11 @@ function CreatorEditTimeSlot() {
                     </svg>
                   </span>
                   <span className="creator-add-slot-time-banner-text">
-                    {formatTimeToAMPM(startTime)} → {formatTimeToAMPM(getEndTimeFromStartAndDuration(startTime, duration))} ({duration} {t('common.min')})
+                    {formatTimeToAMPM(startTime)} →{' '}
+                    {formatTimeToAMPM(
+                      endTime || getEndTimeFromStartAndDuration(startTime, duration)
+                    )}{' '}
+                    ({duration} {t('common.min')})
                   </span>
                 </div>
               )}

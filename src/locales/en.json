@@ -251,6 +251,9 @@
   "availability.deletingTimeSlot": "Deleting…",
   "availability.slotUpdated": "Time slot updated.",
   "availability.slotDeleted": "Time slot deleted.",
+  "availability.endTime": "End Time",
+  "availability.selectEndTime": "Select end time",
+  "availability.invalidEndTime": "End time must be after start time.",
 
   "reviews.title": "Reviews",
   "reviews.noReviews": "No reviews yet.",
