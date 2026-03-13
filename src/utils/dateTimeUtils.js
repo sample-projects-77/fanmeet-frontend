@@ -192,9 +192,7 @@ export function formatTimeToAMPM(hhmm) {
   if (!parts) return hhmm;
   const hour = parseInt(parts[1], 10) % 24;
   const minute = parseInt(parts[2], 10) % 60;
-  const isPm = hour >= 12;
-  const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-  return `${hour12}:${String(minute).padStart(2, '0')} ${isPm ? 'PM' : 'AM'}`;
+  return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
 }
 
 /**
