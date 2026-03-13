@@ -86,15 +86,19 @@ function CreatorOffers() {
       const res = await offerAPI.getCreatorScheduledOffers(creatorId, { page: 1, itemsPerPage: 100, status: 'available' });
       if (res.StatusCode === 200 && res.data) {
         const list = (res.data.offers || []).slice().sort((a, b) => {
-          const normalizeDate = (offer) => {
+          const normalizeSortKey = (offer) => {
+            if (offer?.createdAt) {
+              const created = new Date(offer.createdAt).getTime();
+              if (!Number.isNaN(created)) return created;
+            }
             if (!offer?.date || !offer?.startTime) return 0;
             const raw = (offer.date || '').toString().split('T')[0].split(' ')[0].substring(0, 10);
             const utc = parseOfferSlotToUTC(raw, offer.startTime || '00:00', OFFER_TIMES_ARE_UTC);
             const time = utc.getTime();
             return Number.isNaN(time) ? 0 : time;
           };
-          // Newest / most recently created slot first (by slot instant)
-          return normalizeDate(b) - normalizeDate(a);
+          // Newest / most recently created slot first (by createdAt, fallback to slot instant)
+          return normalizeSortKey(b) - normalizeSortKey(a);
         });
         const pag = res.data.pagination || null;
         setCached(CACHE_KEY, { offers: list, pagination: pag });
@@ -121,15 +125,19 @@ function CreatorOffers() {
     const cached = getCached(CACHE_KEY);
     if (cached?.offers) {
       const sortedCached = cached.offers.slice().sort((a, b) => {
-        const normalizeDate = (offer) => {
+        const normalizeSortKey = (offer) => {
+          if (offer?.createdAt) {
+            const created = new Date(offer.createdAt).getTime();
+            if (!Number.isNaN(created)) return created;
+          }
           if (!offer?.date || !offer?.startTime) return 0;
           const raw = (offer.date || '').toString().split('T')[0].split(' ')[0].substring(0, 10);
           const utc = parseOfferSlotToUTC(raw, offer.startTime || '00:00', OFFER_TIMES_ARE_UTC);
           const time = utc.getTime();
           return Number.isNaN(time) ? 0 : time;
         };
-        // Newest / most recently created slot first (by slot instant)
-        return normalizeDate(b) - normalizeDate(a);
+        // Newest / most recently created slot first (by createdAt, fallback to slot instant)
+        return normalizeSortKey(b) - normalizeSortKey(a);
       });
       setOffers(sortedCached);
       setPagination(cached.pagination || null);
