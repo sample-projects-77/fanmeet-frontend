@@ -10,7 +10,7 @@
 }
 
 .creator-offers-main {
-  padding: 24px 20px 96px; /* extra bottom space for fixed button */
+  padding: 24px 20px 40px; /* main content; extra scroll space handled by spacer */
   flex: 1;
   display: flex;
 }
@@ -102,7 +102,7 @@
 /* Mobile: reduced padding and font size so content fits in viewport */
 @media (max-width: 767px) {
   .creator-offers-main {
-    padding: 16px 6px 96px;
+    padding: 16px 6px 40px;
   }
 
   .creator-offers-header {
@@ -284,7 +284,7 @@
 /* Extra small screens (375px): smaller font, less padding, lighter weight – less odd wrapping */
 @media (max-width: 375px) {
   .creator-offers-main {
-    padding: 10px 2px 96px 6px; /* less right padding so price column isn’t cut off */
+    padding: 10px 2px 40px 6px;
   }
 
   .creator-offers-header {
@@ -596,16 +596,20 @@
   position: fixed;
   left: 0;
   right: 0;
-  bottom: 24px;
+  bottom: 0;
   display: flex;
   justify-content: center;
   pointer-events: none; /* allow underlying page clicks except button */
+  background: var(--bg-primary);
+  padding: 8px 16px 72px; /* 8px gap above button + ~64px bottom nav height */
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.35);
 }
 
 /* Mobile/tablet: sit above bottom nav so button is not hidden */
 @media (max-width: 1024px) {
   .creator-offers-add-slot-wrap {
-    bottom: calc(64px + 24px + env(safe-area-inset-bottom, 0px));
+    bottom: 0;
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); /* match nav height on smaller screens */
   }
 }
 
@@ -623,6 +627,12 @@
   cursor: pointer;
   transition: background 0.15s, transform 0.1s;
   pointer-events: auto;
+}
+
+/* Spacer so offers scroll under the fixed Add Time Slot button instead of stopping above it */
+.creator-offers-bottom-spacer {
+  height: 180px; /* tall enough so last row fully scrolls behind button */
+  width: 100%;
 }
 
 .creator-offers-add-slot-button:hover {

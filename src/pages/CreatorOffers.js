@@ -93,7 +93,7 @@ function CreatorOffers() {
             const time = utc.getTime();
             return Number.isNaN(time) ? 0 : time;
           };
-          // Newest / most recently created slot first
+          // Newest / most recently created slot first (by slot instant)
           return normalizeDate(b) - normalizeDate(a);
         });
         const pag = res.data.pagination || null;
@@ -128,7 +128,7 @@ function CreatorOffers() {
           const time = utc.getTime();
           return Number.isNaN(time) ? 0 : time;
         };
-        // Newest / most recently created slot first
+        // Newest / most recently created slot first (by slot instant)
         return normalizeDate(b) - normalizeDate(a);
       });
       setOffers(sortedCached);
@@ -169,37 +169,40 @@ function CreatorOffers() {
           ) : offers.length === 0 ? (
             <EmptyWidget text={t('availability.noSlots')} />
           ) : (
-            <div className="creator-offers-table-wrap">
-              <table className="creator-offers-table creator-offers-table--availability">
-                <thead>
-                  <tr>
-                    <th className="creator-offers-th-day">{t('availability.day')}</th>
-                    <th>{t('offers.time')}</th>
-                    <th>{t('offers.duration')}</th>
-                    <th className="creator-offers-th-price">{t('offers.price')}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {offers.map((offer) => (
-                    <tr
-                      key={offer.id}
-                      className="creator-offers-row-clickable"
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => navigate(`/creator/offers/edit/${offer.id}`, { state: { offer } })}
-                      onKeyDown={(e) => e.key === 'Enter' && navigate(`/creator/offers/edit/${offer.id}`, { state: { offer } })}
-                    >
-                      <td>{formatOfferDay(offer, locale)}</td>
-                      <td>{formatOfferTimeRange(offer)}</td>
-                      <td>{(offer.duration ?? offer.durationMinutes) != null ? `${offer.duration ?? offer.durationMinutes} ${t('availability.minAbbr')}` : '—'}</td>
-                      <td className="creator-offers-price">
-                        <span className="creator-offers-price-pill">{formatPrice(offer.priceCents, offer.currency)} &gt;</span>
-                      </td>
+            <>
+              <div className="creator-offers-table-wrap">
+                <table className="creator-offers-table creator-offers-table--availability">
+                  <thead>
+                    <tr>
+                      <th className="creator-offers-th-day">{t('availability.day')}</th>
+                      <th>{t('offers.time')}</th>
+                      <th>{t('offers.duration')}</th>
+                      <th className="creator-offers-th-price">{t('offers.price')}</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {offers.map((offer) => (
+                      <tr
+                        key={offer.id}
+                        className="creator-offers-row-clickable"
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => navigate(`/creator/offers/edit/${offer.id}`, { state: { offer } })}
+                        onKeyDown={(e) => e.key === 'Enter' && navigate(`/creator/offers/edit/${offer.id}`, { state: { offer } })}
+                      >
+                        <td>{formatOfferDay(offer, locale)}</td>
+                        <td>{formatOfferTimeRange(offer)}</td>
+                        <td>{(offer.duration ?? offer.durationMinutes) != null ? `${offer.duration ?? offer.durationMinutes} ${t('availability.minAbbr')}` : '—'}</td>
+                        <td className="creator-offers-price">
+                          <span className="creator-offers-price-pill">{formatPrice(offer.priceCents, offer.currency)} &gt;</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="creator-offers-bottom-spacer" aria-hidden />
+            </>
           )}
 
           <div className="creator-offers-add-slot-wrap">
