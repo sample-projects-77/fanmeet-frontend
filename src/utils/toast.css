@@ -1,3 +1,8 @@
+/* Position toast container below the header / safe area */
+.Toastify__toast-container--top-center {
+  top: calc(env(safe-area-inset-top, 0px) + 60px) !important;
+}
+
 /* App toast – pill-shaped, matching Flutter mobile app */
 
 .app-toast {

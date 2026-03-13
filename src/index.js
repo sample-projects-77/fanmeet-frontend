@@ -20,7 +20,9 @@ root.render(
         closeOnClick={false}
         closeButton={false}
         pauseOnHover
-        draggable="y"
+        draggable
+        draggableDirection="y"
+        draggablePercent={30}
         theme="dark"
       />
     </>
