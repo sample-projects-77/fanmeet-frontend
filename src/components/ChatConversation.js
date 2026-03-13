@@ -367,6 +367,24 @@ import { useChat } from '../context/ChatContext';
 import LoadingSpinner from './LoadingSpinner';
 import './ChatConversation.css';
 
+/** Replace Stream's skeleton/placeholder loading indicator with our app's spinner */
+function ChannelLoadingIndicator() {
+  return (
+    <div className="chat-conversation-channel-loading">
+      <LoadingSpinner />
+    </div>
+  );
+}
+
+/** Empty state when a channel has no messages yet */
+function EmptyStateIndicator() {
+  return (
+    <div className="chat-conversation-empty-state">
+      <p>No messages yet</p>
+    </div>
+  );
+}
+
 const MOBILE_BREAKPOINT_PX = 1024;
 const KEYBOARD_SCROLL_DELAY_MS = 350;
 
@@ -431,6 +449,8 @@ function ChatContent({ channelId, backTo, backLabel, NavComponent }) {
       reactionOptions={CHAT_REACTION_OPTIONS}
       DateSeparator={CustomDateSeparator}
       MessageTimestamp={CustomMessageTimestamp}
+      LoadingIndicator={ChannelLoadingIndicator}
+      EmptyStateIndicator={EmptyStateIndicator}
     >
       <Window>
         <ChannelHeader />

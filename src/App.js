@@ -5,6 +5,9 @@ import Welcome from './pages/Welcome';
 import Login from './pages/Login';
 import FanSignup from './pages/FanSignup';
 import CreatorSignup from './pages/CreatorSignup';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetCode from './pages/ResetCode';
+import ResetPassword from './pages/ResetPassword';
 import FanHome from './pages/FanHome';
 import FanDashboard from './pages/FanDashboard';
 import FanSearch from './pages/FanSearch';
@@ -51,6 +54,9 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup/fan" element={<FanSignup />} />
           <Route path="/signup/creator" element={<CreatorSignup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-code" element={<ResetCode />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/fan" element={<FanLayout />}>
             <Route index element={<Navigate to="/fan/home" replace />} />
             <Route path="home" element={null} />

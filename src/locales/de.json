@@ -323,5 +323,33 @@
   "chat.unpin": "Lösen",
   "chat.deleteMessage": "Nachricht löschen",
   "chat.openActionsMenu": "Nachrichtenaktionen öffnen",
-  "chat.typeMessage": "Nachricht eingeben"
+  "chat.typeMessage": "Nachricht eingeben",
+
+  "forgotPassword.screenTitle": "Passwort vergessen",
+  "forgotPassword.title": "Passwort vergessen?",
+  "forgotPassword.subtitle": "Gib deine E-Mail-Adresse ein und wir senden dir einen Code zum Zurücksetzen deines Passworts.",
+  "forgotPassword.emailLabel": "E-Mail",
+  "forgotPassword.emailPlaceholder": "E-Mail eingeben",
+  "forgotPassword.sendCode": "Code senden",
+  "forgotPassword.successToast": "Code zum Zurücksetzen des Passworts gesendet!",
+  "forgotPassword.link": "Passwort vergessen?",
+
+  "resetCode.screenTitle": "Code eingeben",
+  "resetCode.title": "Code eingeben",
+  "resetCode.subtitle": "Gib den 6-stelligen Code ein, den wir gesendet haben an:",
+  "resetCode.next": "Weiter",
+  "resetCode.successToast": "Code erfolgreich verifiziert!",
+  "resetCode.incompleteCode": "Bitte gib den vollständigen 6-stelligen Code ein.",
+
+  "resetPassword.screenTitle": "Passwort zurücksetzen",
+  "resetPassword.title": "Passwort zurücksetzen",
+  "resetPassword.subtitle": "Gib dein neues Passwort unten ein.",
+  "resetPassword.newPasswordLabel": "Neues Passwort",
+  "resetPassword.newPasswordPlaceholder": "Neues Passwort eingeben",
+  "resetPassword.confirmPasswordLabel": "Passwort bestätigen",
+  "resetPassword.confirmPasswordPlaceholder": "Neues Passwort bestätigen",
+  "resetPassword.submit": "Passwort zurücksetzen",
+  "resetPassword.successToast": "Passwort erfolgreich zurückgesetzt!",
+  "resetPassword.confirmRequired": "Bitte bestätige dein Passwort.",
+  "resetPassword.mismatch": "Die Passwörter stimmen nicht überein."
 }

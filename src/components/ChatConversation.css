@@ -110,6 +110,26 @@ body.fanmeet-chat-keyboard-open .bottom-nav {
   min-height: 200px;
 }
 
+/* Channel-level loading spinner (replaces Stream's skeleton bubbles) */
+.chat-conversation-channel-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 200px;
+}
+
+/* Empty state when no messages in channel */
+.chat-conversation-empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-height: 200px;
+  color: var(--text-secondary, #888);
+  font-size: 0.9375rem;
+}
+
 .chat-conversation-error p {
   margin: 0 0 16px 0;
   color: var(--text-secondary, #888);
