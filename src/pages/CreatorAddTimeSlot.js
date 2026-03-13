@@ -7,7 +7,8 @@ import LoadingSpinner, { ButtonLoadingSpinner } from '../components/LoadingSpinn
 import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
 import { DatePickerDialog } from '../components/DatePickerDialog';
 import { TimePickerDialog } from '../components/TimePickerDialog';
-import { localDateToOfferDateIso, formatTimeToAMPM, getEndTimeFromStartAndDuration } from '../utils/dateTimeUtils';
+import { localSlotToUtcPayload, formatTimeToAMPM, getEndTimeFromStartAndDuration } from '../utils/dateTimeUtils';
+import { clearCached } from '../utils/routeDataCache';
 import './CreatorAddTimeSlot.css';
 
 function CreatorAddTimeSlot() {
@@ -70,14 +71,6 @@ function CreatorAddTimeSlot() {
     // Convert to cents
     const priceCents = Math.round(parsedPrice * 100);
 
-    // Send date as local midnight with user's timezone offset so backend stores UTC correctly.
-    const dateIso = localDateToOfferDateIso(date);
-    if (!dateIso) {
-      setError(t('availability.validDate'));
-      return;
-    }
-
-    // Compute end time from start time and duration in minutes
     const [startH, startM] = startTime.split(':').map((v) => parseInt(v, 10));
     if (
       Number.isNaN(startH) ||
@@ -90,22 +83,25 @@ function CreatorAddTimeSlot() {
       setError(t('availability.validStartTime'));
       return;
     }
-    const startTotal = startH * 60 + startM;
-    const endTotal = startTotal + Number(duration);
-    const endH = Math.floor(endTotal / 60) % 24;
-    const endM = endTotal % 60;
-    const endTime = `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`;
+
+    // Backend stores UTC: send slot in UTC so date/time display correctly on the list
+    const { dateIsoUtc, startTimeUtc, endTimeUtc } = localSlotToUtcPayload(date, startTime, duration);
+    if (!dateIsoUtc) {
+      setError(t('availability.validDate'));
+      return;
+    }
 
     setSubmitting(true);
     try {
       const res = await offerAPI.createScheduledOffer({
-        dateIso,
-        startTime,
-        endTime,
+        dateIso: dateIsoUtc,
+        startTime: startTimeUtc,
+        endTime: endTimeUtc,
         duration: Number(duration),
         priceCents,
       });
       if (res.StatusCode === 200 && res.data) {
+        clearCached('creatorOffers');
         navigate('/creator/offers', { replace: true });
       } else {
         setError(res.error || t('availability.failedToAdd'));

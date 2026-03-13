@@ -9,19 +9,32 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
 import { DatePickerDialog } from '../components/DatePickerDialog';
 import { TimePickerDialog } from '../components/TimePickerDialog';
-import { localDateToOfferDateIso, formatTimeToAMPM, getEndTimeFromStartAndDuration } from '../utils/dateTimeUtils';
+import {
+  formatTimeToAMPM,
+  getEndTimeFromStartAndDuration,
+  parseOfferSlotToUTC,
+  formatUTCDateToLocalTime,
+  localSlotToUtcPayload,
+} from '../utils/dateTimeUtils';
 import { clearCached } from '../utils/routeDataCache';
 import './CreatorAddTimeSlot.css';
 
 /**
- * Parse offer date string (YYYY-MM-DD from API) into a local Date for the date picker.
+ * API returns date + startTime in UTC. Parse as UTC then convert to local for the edit form.
+ * Matches list display so the form shows what the list shows.
  */
-function offerDateToLocalDate(dateStr) {
-  if (!dateStr || typeof dateStr !== 'string') return null;
-  const part = dateStr.split('T')[0].split(' ')[0].substring(0, 10);
-  const [y, m, d] = part.split('-').map((n) => parseInt(n, 10));
-  if (Number.isNaN(y) || Number.isNaN(m) || Number.isNaN(d)) return null;
-  return new Date(y, m - 1, d);
+function offerToLocalDateAndTime(offer) {
+  if (!offer?.date || !offer?.startTime) return { localDate: null, startTime: '' };
+  const dateStr = (offer.date || '').toString().split('T')[0].split(' ')[0].substring(0, 10);
+  const utcDate = parseOfferSlotToUTC(dateStr, (offer.startTime || '').trim(), 'UTC');
+  if (Number.isNaN(utcDate.getTime())) {
+    const [y, m, d] = dateStr.split('-').map((n) => parseInt(n, 10));
+    if (Number.isNaN(y) || Number.isNaN(m) || Number.isNaN(d)) return { localDate: null, startTime: (offer.startTime || '').trim() };
+    return { localDate: new Date(y, m - 1, d), startTime: (offer.startTime || '').trim() };
+  }
+  const localDate = new Date(utcDate.getFullYear(), utcDate.getMonth(), utcDate.getDate());
+  const startTime = formatUTCDateToLocalTime(utcDate);
+  return { localDate, startTime };
 }
 
 function CreatorEditTimeSlot() {
@@ -64,16 +77,16 @@ function CreatorEditTimeSlot() {
     }
   }, [navigate]);
 
-  // Redirect if no offer in state (e.g. direct URL)
+  // Redirect if no offer in state (e.g. direct URL). Pre-fill form in local time (same as list display).
   useEffect(() => {
     if (!user) return;
     if (!offerId || !offer) {
       navigate('/creator/offers', { replace: true });
       return;
     }
-    const localDate = offerDateToLocalDate(offer.date);
+    const { localDate, startTime: localStartTime } = offerToLocalDateAndTime(offer);
     setDate(localDate || null);
-    setStartTime((offer.startTime || '').trim());
+    setStartTime(localStartTime);
     setDuration(Number(offer.duration ?? offer.durationMinutes ?? 30));
     const cents = offer.priceCents;
     setPrice(cents != null ? (cents / 100).toFixed(2).replace('.', ',') : '');
@@ -101,11 +114,6 @@ function CreatorEditTimeSlot() {
     }
 
     const priceCents = Math.round(parsedPrice * 100);
-    const dateIso = localDateToOfferDateIso(date);
-    if (!dateIso) {
-      setError(t('availability.validDate'));
-      return;
-    }
 
     const [startH, startM] = startTime.split(':').map((v) => parseInt(v, 10));
     if (
@@ -119,18 +127,20 @@ function CreatorEditTimeSlot() {
       setError(t('availability.validStartTime'));
       return;
     }
-    const startTotal = startH * 60 + startM;
-    const endTotal = startTotal + Number(duration);
-    const endH = Math.floor(endTotal / 60) % 24;
-    const endM = endTotal % 60;
-    const endTime = `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`;
+
+    // Send slot in UTC so the backend stores the correct instant (avoids date/time shifting after save)
+    const { dateIsoUtc, startTimeUtc, endTimeUtc } = localSlotToUtcPayload(date, startTime, duration);
+    if (!dateIsoUtc) {
+      setError(t('availability.validDate'));
+      return;
+    }
 
     setSubmitting(true);
     try {
       const res = await offerAPI.updateScheduledOffer(offerId, {
-        dateIso,
-        startTime,
-        endTime,
+        dateIso: dateIsoUtc,
+        startTime: startTimeUtc,
+        endTime: endTimeUtc,
         duration: Number(duration),
         priceCents,
       });

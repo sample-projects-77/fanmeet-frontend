@@ -120,6 +120,46 @@ export function formatUTCDateToLocalDateTime(utcDate) {
 }
 
 /**
+ * Convert local date + start time + duration to UTC for updateScheduledOffer.
+ * Use this when the backend stores/returns times in UTC so the slot displays correctly after save.
+ * @param {Date} localDate - User's selected date (local calendar date)
+ * @param {string} startTimeStr - HH:mm in local time
+ * @param {number} durationMinutes
+ * @returns {{ dateIsoUtc: string, startTimeUtc: string, endTimeUtc: string }}
+ */
+export function localSlotToUtcPayload(localDate, startTimeStr, durationMinutes) {
+  const pad = (n) => String(n).padStart(2, '0');
+  if (!localDate || !(localDate instanceof Date) || Number.isNaN(localDate.getTime()) || !startTimeStr) {
+    return { dateIsoUtc: '', startTimeUtc: '00:00', endTimeUtc: '00:00' };
+  }
+  const [h, m] = startTimeStr.split(':').map((v) => parseInt(v, 10));
+  if (Number.isNaN(h) || Number.isNaN(m)) {
+    return { dateIsoUtc: '', startTimeUtc: '00:00', endTimeUtc: '00:00' };
+  }
+  const localStart = new Date(
+    localDate.getFullYear(),
+    localDate.getMonth(),
+    localDate.getDate(),
+    h || 0,
+    m || 0,
+    0
+  );
+  const utcY = localStart.getUTCFullYear();
+  const utcMo = localStart.getUTCMonth();
+  const utcD = localStart.getUTCDate();
+  const utcStartH = localStart.getUTCHours();
+  const utcStartM = localStart.getUTCMinutes();
+  const startTotalMin = utcStartH * 60 + utcStartM;
+  const endTotalMin = startTotalMin + Number(durationMinutes);
+  const endH = Math.floor(endTotalMin / 60) % 24;
+  const endM = endTotalMin % 60;
+  const dateIsoUtc = `${utcY}-${pad(utcMo + 1)}-${pad(utcD)}T00:00:00.000Z`;
+  const startTimeUtc = `${pad(utcStartH)}:${pad(utcStartM)}`;
+  const endTimeUtc = `${pad(endH)}:${pad(endM)}`;
+  return { dateIsoUtc, startTimeUtc, endTimeUtc };
+}
+
+/**
  * Build the date ISO string to send to createScheduledOffer.
  * User picks a local date (Date) and we send midnight on that date in the user's timezone
  * so the backend can infer timezone and store UTC correctly.
@@ -176,9 +216,8 @@ export function getEndTimeFromStartAndDuration(startHHmm, durationMinutes) {
 
 /**
  * Build startTime ISO for createBooking from an offer.
- * Offer has date (YYYY-MM-DD), startTime (HH:mm), creatorTimezone (e.g. "UTC+01:00").
- * We need the slot start instant in UTC and send it as ISO with Z (backend accepts ISO).
- * @param {{ date?: string, startTime?: string, creatorTimezone?: string, timezone?: string }} offer
+ * API returns date + startTime in UTC; we parse as UTC and return the same instant as ISO.
+ * @param {{ date?: string, startTime?: string }} offer
  * @returns {string} ISO 8601 UTC e.g. "2026-03-08T13:00:00.000Z"
  */
 export function offerSlotStartToUTCISO(offer) {
@@ -187,14 +226,6 @@ export function offerSlotStartToUTCISO(offer) {
   if (dateStr.includes(' ')) dateStr = dateStr.split(' ')[0];
   dateStr = dateStr.substring(0, 10) || (offer.title || '').match(/Meeting on (\d{4}-\d{2}-\d{2}) at/)?.[1] || '';
   const timeStr = (offer.startTime || '00:00').trim();
-  const tz = (offer.creatorTimezone || offer.timezone || '').toString().trim();
-  const offsetMinutes = parseTimezoneOffset(tz);
-  if (offsetMinutes === null) {
-    const [y, mo, d] = (dateStr || '1970-01-01').split('-').map(Number);
-    const [h, min] = timeStr.split(':').map(Number);
-    const d2 = new Date(Date.UTC(y || 0, (mo || 1) - 1, d || 1, h || 0, min || 0, 0));
-    return d2.toISOString();
-  }
-  const utcDate = parseOfferSlotToUTC(dateStr, timeStr, tz);
+  const utcDate = parseOfferSlotToUTC(dateStr, timeStr, 'UTC');
   return utcDate.toISOString();
 }

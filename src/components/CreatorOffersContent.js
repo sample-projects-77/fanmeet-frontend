@@ -18,20 +18,22 @@ function formatPrice(priceCents, currency = 'EUR') {
   return `${value} ${currency}`;
 }
 
+/** API returns date + startTime/endTime in UTC. Parse as UTC then display in user's local timezone. */
+const OFFER_TIMES_ARE_UTC = 'UTC';
+
 function formatOfferDay(offer, locale) {
   if (!offer?.date || !offer?.startTime) return '—';
-  const tz = (offer.creatorTimezone || offer.timezone || 'UTC').toString().trim();
-  const utcDate = parseOfferSlotToUTC(offer.date, offer.startTime, tz);
+  const dateStr = (offer.date || '').toString().split('T')[0].split(' ')[0].substring(0, 10);
+  const utcDate = parseOfferSlotToUTC(dateStr, offer.startTime, OFFER_TIMES_ARE_UTC);
   if (Number.isNaN(utcDate.getTime())) return (offer.date || '').toString();
   return formatUTCDateToLocalDay(utcDate, locale);
 }
 
 function formatOfferTimeRange(offer) {
   if (!offer?.startTime && !offer?.endTime) return '—';
-  const tz = (offer.creatorTimezone || offer.timezone || 'UTC').toString().trim();
   const dateStr = (offer.date || '').toString().split('T')[0].split(' ')[0].substring(0, 10);
-  const startUtc = parseOfferSlotToUTC(dateStr, offer.startTime || '00:00', tz);
-  const endUtc = parseOfferSlotToUTC(dateStr, offer.endTime || '00:00', tz);
+  const startUtc = parseOfferSlotToUTC(dateStr, offer.startTime || '00:00', OFFER_TIMES_ARE_UTC);
+  const endUtc = parseOfferSlotToUTC(dateStr, offer.endTime || '00:00', OFFER_TIMES_ARE_UTC);
   if (Number.isNaN(startUtc.getTime()) || Number.isNaN(endUtc.getTime()))
     return [offer.startTime, offer.endTime].filter(Boolean).join(' - ') || '—';
   return `${formatUTCDateToLocalTime(startUtc)} - ${formatUTCDateToLocalTime(endUtc)}`;
