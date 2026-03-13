@@ -39,6 +39,15 @@ function formatOfferTimeRange(offer) {
   return `${formatUTCDateToLocalTime(startUtc)} - ${formatUTCDateToLocalTime(endUtc)}`;
 }
 
+function isOfferInFuture(offer) {
+  if (!offer?.date || !offer?.startTime) return true;
+  const dateStr = (offer.date || '').toString().split('T')[0].split(' ')[0].substring(0, 10);
+  const startUtc = parseOfferSlotToUTC(dateStr, offer.startTime || '00:00', OFFER_TIMES_ARE_UTC);
+  const time = startUtc.getTime();
+  if (Number.isNaN(time)) return true;
+  return time >= Date.now();
+}
+
 /**
  * Shared offers list for a creator. Used by both fan and creator (viewing another creator).
  * @param {{ backTo: string }} props - backTo: URL for the back link
@@ -102,7 +111,9 @@ function CreatorOffersContent({ backTo }) {
     }
   };
 
-  const bookableOffers = (offers || []).filter((offer) => offer.status === 'available');
+  const bookableOffers = (offers || []).filter(
+    (offer) => offer.status === 'available' && isOfferInFuture(offer)
+  );
 
   return (
     <main className="creator-offers-main">
