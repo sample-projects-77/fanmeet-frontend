@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ChatProvider } from './context/ChatContext';
 import Welcome from './pages/Welcome';
 import Login from './pages/Login';
@@ -44,9 +44,18 @@ import CreatorLayout from './layouts/CreatorLayout';
 import FanLayout from './layouts/FanLayout';
 import './App.css';
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <ChatProvider>
         <div className="App">
           <Routes>
