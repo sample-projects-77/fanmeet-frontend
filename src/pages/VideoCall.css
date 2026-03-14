@@ -126,3 +126,12 @@
   --str-video-background-color: var(--bg-primary);
   --str-video-text-color: var(--text-primary);
 }
+
+@media (max-width: 767px) {
+  .video-call-layout {
+    padding-top: 48px;
+  }
+  .video-call-content {
+    padding: 16px;
+  }
+}

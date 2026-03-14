@@ -141,3 +141,22 @@
   padding: 12px 24px !important;
   min-width: auto;
 }
+
+@media (max-width: 767px) {
+  .shared-empty-wrap {
+    min-height: 160px;
+    padding: 20px 16px;
+  }
+  .shared-error-wrap {
+    min-height: 160px;
+    padding: 20px 16px;
+  }
+  .shared-error-icon-wrap {
+    width: 72px;
+    height: 72px;
+  }
+  .shared-error-icon-wrap svg {
+    width: 40px;
+    height: 40px;
+  }
+}

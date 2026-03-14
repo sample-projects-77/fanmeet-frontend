@@ -50,3 +50,9 @@
 .fan-placeholder-back:hover {
   background: #FFC933;
 }
+
+@media (max-width: 767px) {
+  .fan-placeholder-main {
+    padding: 32px 16px;
+  }
+}

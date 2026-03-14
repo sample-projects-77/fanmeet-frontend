@@ -15,6 +15,7 @@ export default function CreatorNav({ active, userName, user, avatarUrl, onLogout
     <header className="creator-nav">
       <div className="creator-nav-inner">
         <Link to="/creator/home" className="creator-nav-logo">
+          <img src="/logo.png" alt="" className="creator-nav-logo-icon" />
           {t('nav.fanSession')}
         </Link>
         <nav className="creator-nav-links">

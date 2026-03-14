@@ -141,4 +141,14 @@
   color: #764ba2;
 }
 
-
+@media (max-width: 480px) {
+  .login-card {
+    padding: 24px 20px;
+  }
+  .login-header h1 {
+    font-size: 24px;
+  }
+  .login-header {
+    margin-bottom: 24px;
+  }
+}

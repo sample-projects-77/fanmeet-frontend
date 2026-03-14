@@ -41,8 +41,8 @@
 }
 
 .creator-edit-profile-main {
-  padding: 20px;
-  max-width: 560px;
+  padding: 24px 20px;
+  max-width: 640px;
   margin: 0 auto;
 }
 
@@ -64,12 +64,15 @@
 /* ProfileDetailsCard – darkBlueShade3, border lightGreyShade3 0.5, generous padding for clean fit */
 .creator-edit-profile-card {
   width: 100%;
-  padding: 16px;
+  padding: 20px 24px;
   min-height: 120px;
   background: var(--dark-blue-shade-3);
   border-radius: 16px;
   border: 1px solid rgba(42, 46, 54, 0.5);
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .creator-edit-profile-row {
@@ -102,6 +105,7 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 8px;
+  width: 100%;
 }
 
 .creator-edit-profile-pill-btn {
@@ -128,6 +132,7 @@
 
 .creator-edit-profile-gap {
   height: 20px;
+  width: 100%;
 }
 
 .creator-edit-profile-gap--small {
@@ -167,6 +172,7 @@
   font-weight: 600;
   color: var(--dark-grey-text);
   margin-bottom: 6px;
+  width: 100%;
 }
 
 /* Custom arrow so we can position it with space from the right border */
@@ -192,6 +198,7 @@
   display: flex;
   gap: 12px;
   margin-top: 16px;
+  width: 100%;
 }
 
 .creator-edit-profile-btn {

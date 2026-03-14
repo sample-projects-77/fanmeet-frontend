@@ -89,7 +89,7 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 14px 0;
+  padding: 14px 16px;
   color: var(--text-primary);
   text-decoration: none;
   transition: background 0.15s;
@@ -254,5 +254,10 @@
 
   .fan-chats-row {
     padding: 14px 16px;
+  }
+
+  .fan-chats-empty {
+    min-height: 200px;
+    padding: 24px 16px;
   }
 }

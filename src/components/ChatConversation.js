@@ -619,6 +619,7 @@ function ChatConversation({ backTo, backLabel, NavComponent }) {
         {NavComponent && (
           <NavComponent
             active="chats"
+            user={user}
             userName={user.userName}
             onLogout={handleLogout}
           />
@@ -639,6 +640,7 @@ function ChatConversation({ backTo, backLabel, NavComponent }) {
         {NavComponent && (
           <NavComponent
             active="chats"
+            user={user}
             userName={user.userName}
             onLogout={handleLogout}
           />
@@ -657,6 +659,7 @@ function ChatConversation({ backTo, backLabel, NavComponent }) {
       {NavComponent && (
         <NavComponent
           active="chats"
+          user={user}
           userName={user.userName}
           onLogout={handleLogout}
         />
