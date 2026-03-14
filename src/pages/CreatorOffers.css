@@ -94,7 +94,7 @@
 /* Mobile: reduced padding and font size so content fits in viewport */
 @media (max-width: 767px) {
   .creator-offers-main {
-    padding: 16px 6px 40px;
+    padding: 16px 16px 40px;
   }
 
   .creator-offers-header {
@@ -150,6 +150,14 @@
     box-sizing: border-box;
   }
 
+  /* Availability table: card container with border, rounded corners, and internal padding */
+  .creator-offers-table-wrap:has(.creator-offers-table--availability) {
+    border: 1px solid rgba(244, 192, 70, 0.3);
+    border-radius: 12px;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
   /* 4-column availability table (Set Your Availability): same look as Offers, no Book now column */
   .creator-offers-table--availability .creator-offers-th-day,
   .creator-offers-table--availability td:first-child {
@@ -180,16 +188,25 @@
     width: 24%;
   }
 
-  /* Set Your Availability: minimal padding so price pill fits */
+  /* Set Your Availability: comfortable padding inside card */
   .creator-offers-table--availability th {
-    padding: 8px 4px;
+    padding: 12px 10px;
   }
   .creator-offers-table--availability td {
-    padding: 8px 4px;
+    padding: 12px 10px;
+  }
+  .creator-offers-table--availability td:first-child {
+    padding-left: 20px;
+  }
+  .creator-offers-table--availability th:first-child {
+    padding-left: 20px;
   }
   .creator-offers-table--availability td.creator-offers-price {
-    padding-left: 2px;
-    padding-right: 4px;
+    padding-left: 4px;
+    padding-right: 20px;
+  }
+  .creator-offers-table--availability .creator-offers-th-price {
+    padding-right: 20px;
   }
 
   /* Table headers: center align for mobile */
@@ -275,7 +292,7 @@
 /* Extra small screens (375px): smaller font, less padding, lighter weight – less odd wrapping */
 @media (max-width: 375px) {
   .creator-offers-main {
-    padding: 10px 2px 40px 6px;
+    padding: 10px 12px 40px;
   }
 
   .creator-offers-header {
@@ -326,7 +343,7 @@
   }
   .creator-offers-table--availability td.creator-offers-price {
     padding-left: 2px;
-    padding-right: 4px;
+    padding-right: 16px;
   }
 
   .creator-offers-table td {
@@ -362,16 +379,25 @@
     white-space: normal;
   }
 
-  /* Set Your Availability: minimal padding so price pill fits (375px) */
+  /* Set Your Availability: comfortable padding inside card (375px) */
   .creator-offers-table--availability th {
-    padding: 6px 4px;
+    padding: 10px 6px;
   }
   .creator-offers-table--availability td {
-    padding: 6px 4px;
+    padding: 10px 6px;
+  }
+  .creator-offers-table--availability td:first-child {
+    padding-left: 16px;
+  }
+  .creator-offers-table--availability th:first-child {
+    padding-left: 16px;
   }
   .creator-offers-table--availability td.creator-offers-price {
     padding-left: 2px;
-    padding-right: 4px;
+    padding-right: 16px;
+  }
+  .creator-offers-table--availability .creator-offers-th-price {
+    padding-right: 16px;
   }
 
   /* Availability: Price column right-aligned on small mobile (375px) */
@@ -479,30 +505,27 @@
   direction: ltr;
 }
 
-/* Mobile: minimal padding so full pill fits; no RTL (avoid left clip) */
+/* Mobile: price pill padding inside card */
 @media (max-width: 767px) {
   .creator-offers-table--availability td.creator-offers-price {
-    padding-left: 2px;
-    padding-right: 4px;
+    padding-left: 4px;
+    padding-right: 20px;
   }
   .creator-offers-table--availability .creator-offers-price-pill {
-    padding: 5px 6px;
+    padding: 5px 8px;
     font-size: 10px;
   }
 }
 
 @media (max-width: 375px) {
   .creator-offers-table--availability .creator-offers-price-pill {
-    padding: 4px 2px 4px 6px; /* minimal right padding so pill and ">" don’t hide */
+    padding: 4px 6px;
     font-size: 9px;
   }
 
   .creator-offers-table--availability td.creator-offers-price {
-    padding-right: 2px;
+    padding-right: 16px;
     padding-left: 2px;
-  }
-  .creator-offers-table--availability .creator-offers-price-pill {
-    padding: 3px 4px 3px 5px;
   }
 }
 
@@ -592,7 +615,7 @@
   justify-content: center;
   pointer-events: none; /* allow underlying page clicks except button */
   background: var(--bg-primary);
-  padding: 8px 16px 72px; /* 8px gap above button + ~64px bottom nav height */
+  padding: 24px 16px 72px; /* 24px gap above button + ~64px bottom nav height */
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.35);
 }
 
@@ -600,7 +623,7 @@
 @media (max-width: 1024px) {
   .creator-offers-add-slot-wrap {
     bottom: 0;
-    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); /* match nav height on smaller screens */
+    padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px));
   }
 }
 

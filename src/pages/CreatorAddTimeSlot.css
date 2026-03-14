@@ -237,6 +237,14 @@
 
 .creator-add-slot-submit-wrap {
   margin-top: 8px;
+  padding-bottom: 32px;
+}
+
+/* Mobile: extra bottom padding so button clears the bottom nav bar */
+@media (max-width: 1024px) {
+  .creator-add-slot-submit-wrap {
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 .creator-add-slot-submit {

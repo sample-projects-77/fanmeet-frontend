@@ -15,6 +15,7 @@ export default function FanNav({ active, userName, user, avatarUrl, onLogout }) 
     <header className="fan-nav">
       <div className="fan-nav-inner">
         <Link to="/fan/home" className="fan-nav-logo">
+          <img src="/logo.png" alt="" className="fan-nav-logo-icon" />
           {t('nav.fanSession')}
         </Link>
         <nav className="fan-nav-links">

@@ -74,6 +74,9 @@ body.fanmeet-chat-keyboard-open .bottom-nav {
   .chat-conversation-stream .str-chat__message-input-inner,
   .chat-conversation-stream .str-chat__message-textarea-container {
     max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    min-width: 0 !important;
   }
 }
 
@@ -292,15 +295,17 @@ body.fanmeet-chat-keyboard-open .bottom-nav {
 
 /* Mobile/tablet: message margins and list padding (must come after base rules above so they take effect) */
 @media (max-width: 1024px) {
-  /* Right padding on list/scroll so sent bubbles don't touch the screen edge */
+  /* Horizontal padding on message list only so bubbles don't touch screen edges */
   .chat-conversation-stream .str-chat__list,
   .chat-conversation-stream .str-chat__message-list-scroll,
   .chat-conversation-stream .str-chat__ul,
   .chat-conversation-stream .str-chat__virtual-list,
-  .chat-conversation-stream .str-chat__main-panel,
   .chat-conversation-stream [data-virtuoso-scroller] {
-    padding-right: 4px !important;
-    padding-inline-end: 4px !important;
+    padding-right: 12px !important;
+    padding-inline-end: 12px !important;
+    padding-left: 12px !important;
+    padding-inline-start: 12px !important;
+    box-sizing: border-box !important;
   }
 
   .chat-conversation-stream .str-chat__message.str-chat__message--me,
@@ -363,17 +368,22 @@ body.fanmeet-chat-keyboard-open .bottom-nav {
 }
 
 /* No clip so timestamp isn't cut off; scrollbar hidden via scrollbar-width/::-webkit-scrollbar above */
-.chat-conversation-stream .str-chat__message-list-scroll,
-.chat-conversation-stream [data-virtuoso-scroller] {
-  padding-right: 0 !important;
+/* Desktop only: zero right padding (mobile keeps its own padding for bubble spacing) */
+@media (min-width: 1025px) {
+  .chat-conversation-stream .str-chat__message-list-scroll,
+  .chat-conversation-stream [data-virtuoso-scroller] {
+    padding-right: 0 !important;
+  }
 }
 
 /* Message row: for incoming (--other) use grid so metadata sits BELOW bubble, not beside it */
 .chat-conversation-stream .str-chat__message {
   width: 100%;
   max-width: 100%;
+  box-sizing: border-box !important;
   column-gap: 8px !important;
   row-gap: 0 !important;
+  overflow: hidden !important;
 }
 .chat-conversation-stream .str-chat__message.str-chat__message--other {
   display: grid !important;
@@ -401,7 +411,7 @@ body.fanmeet-chat-keyboard-open .bottom-nav {
 .chat-conversation-stream .str-chat__message-simple .str-chat__message-inner {
   margin: 0 !important;
   min-width: 0 !important;
-  max-width: min(65%, 600px) !important;
+  max-width: min(75%, 600px) !important;
   width: fit-content !important;
   display: grid !important;
   grid-template-columns: 1fr !important;
@@ -843,12 +853,13 @@ body.fanmeet-message-menu-open .chat-conversation-stream [class*="virtual-list-m
   position: relative;
   box-shadow: -1px -1px 0 0 rgba(255, 255, 255, 0.12) !important;
   border: 2px solid rgba(255, 255, 255, 0.6) !important;
-  max-width: min(65%, 600px) !important;
-  width: max-content;
+  max-width: min(75%, 600px) !important;
+  width: fit-content;
   min-width: 5em !important;
   padding: 0.5rem 1rem 0.5rem 0.5rem !important;
   box-sizing: border-box !important;
   overflow: hidden !important;
+  flex-shrink: 1 !important;
 }
 .chat-conversation-stream .str-chat__message.str-chat__message--other .str-chat__message-text,
 .chat-conversation-stream .str-chat__message.str-chat__message--other .str-chat__message-bubble p {
@@ -860,7 +871,7 @@ body.fanmeet-message-menu-open .chat-conversation-stream [class*="virtual-list-m
 .chat-conversation-stream .str-chat__message-bubble .str-chat__message-text-inner,
 .chat-conversation-stream .str-chat__message-bubble p {
   word-break: break-word !important;
-  overflow-wrap: break-word !important;
+  overflow-wrap: anywhere !important;
   hyphens: none !important;
   white-space: pre-wrap !important;
   min-width: 0 !important;
@@ -873,14 +884,14 @@ body.fanmeet-message-menu-open .chat-conversation-stream [class*="virtual-list-m
 .chat-conversation-stream .str-chat__message-inner .str-chat__message-bubble {
   min-width: 5em !important;
   min-height: 2.6em !important;
-  max-width: min(65%, 600px) !important;
-  width: max-content !important;
+  max-width: min(75%, 600px) !important;
+  width: fit-content !important;
   padding: 0.5rem 0.5rem 0.5rem 0.5rem !important;
   border: none !important;
   box-shadow: none !important;
   box-sizing: border-box !important;
   overflow: hidden !important;
-  flex-shrink: 0 !important;
+  flex-shrink: 1 !important;
 }
 /* Left tail on incoming bubble */
 .chat-conversation-stream .str-chat__message.str-chat__message--other .str-chat__message-bubble::before {
@@ -902,14 +913,14 @@ body.fanmeet-message-menu-open .chat-conversation-stream [class*="virtual-list-m
   position: relative;
   box-shadow: none !important;
   border: 1px solid rgba(255, 255, 255, 0.6) !important;
-  max-width: min(65%, 600px) !important;
-  width: max-content;
+  max-width: min(75%, 600px) !important;
+  width: fit-content;
   min-width: 5em !important;
   min-height: 2.6em !important;
   padding: 0.5rem 1rem 0.5rem 0.5rem !important;
   box-sizing: border-box !important;
   overflow: hidden !important;
-  flex-shrink: 0 !important;
+  flex-shrink: 1 !important;
 }
 .chat-conversation-stream .str-chat__message.str-chat__message--me .str-chat__message-bubble p,
 .chat-conversation-stream .str-chat__message.str-chat__message--me .str-chat__message-bubble .str-chat__message-text {
@@ -1102,4 +1113,57 @@ body.fanmeet-message-menu-open .chat-conversation-stream [class*="virtual-list-m
 .chat-conversation-stream .str-chat__message-input input::placeholder,
 .chat-conversation-stream .str-chat__message-input textarea::placeholder {
   color: var(--text-secondary);
+}
+
+/* ── Composer textarea: proper multiline wrapping & auto-grow ── */
+.chat-conversation-stream .str-chat__message-input-inner {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.chat-conversation-stream .str-chat__message-textarea-container {
+  flex: 1;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.chat-conversation-stream .str-chat__message-input textarea {
+  width: 100% !important;
+  min-height: 40px;
+  max-height: 120px;
+  resize: none !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  white-space: pre-wrap !important;
+  box-sizing: border-box !important;
+  line-height: 1.4;
+}
+
+/* Mobile: tighter composer constraints */
+@media (max-width: 1024px) {
+  .chat-conversation-stream .str-chat__message-input-inner {
+    gap: 8px;
+    max-width: 100% !important;
+    overflow: hidden;
+  }
+
+  .chat-conversation-stream .str-chat__message-textarea-container {
+    overflow: hidden;
+  }
+
+  .chat-conversation-stream .str-chat__message-input textarea {
+    max-height: 100px;
+    font-size: 16px !important; /* prevent iOS zoom on focus */
+  }
+
+  /* Keep send button from shrinking or being pushed off */
+  .chat-conversation-stream .str-chat__message-input .str-chat__send-button {
+    flex-shrink: 0;
+  }
 }

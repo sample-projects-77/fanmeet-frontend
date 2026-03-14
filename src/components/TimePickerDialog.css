@@ -215,3 +215,19 @@
 .time-picker-dialog-ok:active {
   transform: scale(0.98);
 }
+
+@media (max-width: 375px) {
+  .time-picker-dialog-clock {
+    width: 200px;
+    height: 200px;
+  }
+  .time-picker-dialog {
+    padding: 20px;
+  }
+  .time-picker-dialog-hour,
+  .time-picker-dialog-minute {
+    font-size: 24px;
+    padding: 8px 12px;
+    min-width: 44px;
+  }
+}
