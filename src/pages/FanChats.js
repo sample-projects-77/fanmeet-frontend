@@ -245,7 +245,8 @@ function FanChats({ embedded, user: userProp, onLogout: onLogoutProp }) {
           ) : (
             <ul className="fan-chats-list">
               {channels.map((ch) => {
-                const displayName = (memberInfoMap[ch.otherMemberId]?.name || ch.otherMemberDisplayName) || 'User';
+                const rawName = (memberInfoMap[ch.otherMemberId]?.name || ch.otherMemberDisplayName || '').trim();
+                const displayName = rawName ? rawName.charAt(0).toUpperCase() + rawName.slice(1) : 'User';
                 const avatarUrl = memberInfoMap[ch.otherMemberId]?.image || ch.otherMemberAvatarUrl;
                 const isMenuOpen = menuOpenFor === ch.id;
                 const isDeleting = deletingId === ch.id;

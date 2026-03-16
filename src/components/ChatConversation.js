@@ -7,6 +7,7 @@ import {
   ChannelHeader,
   MessageList,
   MessageInput,
+  MessageSimple,
   DateSeparator,
   MessageTimestamp,
   useChatContext,
@@ -385,6 +386,71 @@ function EmptyStateIndicator() {
   );
 }
 
+/**
+ * Normalize display name: capitalize first letter for consistency.
+ * Handles cases where the same user connects from different clients
+ * with different name casing (e.g., "gorgios" from mobile, "Gorgios" from web).
+ */
+function normalizeDisplayName(name) {
+  if (!name || !name.trim()) return 'User';
+  const trimmed = name.trim();
+  return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+}
+
+/**
+ * Custom Message component that normalizes sender identity across all messages.
+ *
+ * Problem: Stream Chat stores a snapshot of message.user at send-time. When the
+ * same user connects from different clients (mobile vs web) with different
+ * name casing or avatar, each message retains its own snapshot — causing the
+ * same person to appear as multiple different senders.
+ *
+ * Fix: use channel.state.members (latest data) as the single source of truth
+ * for name and avatar, and normalize display name casing consistently.
+ */
+function NormalizedMessage(props) {
+  const { channel } = useChatContext();
+  const members = channel?.state?.members;
+  const msg = props.message;
+
+  if (msg?.user?.id) {
+    const latestUser = members?.[msg.user.id]?.user;
+    const normalizedMessage = {
+      ...msg,
+      user: {
+        ...msg.user,
+        name: normalizeDisplayName(latestUser?.name || msg.user.name),
+        image: latestUser?.image || msg.user.image,
+      },
+    };
+    return <MessageSimple {...props} message={normalizedMessage} />;
+  }
+
+  return <MessageSimple {...props} />;
+}
+
+/**
+ * Custom ChannelHeader that normalizes the displayed title (other member's name)
+ * so the header matches the normalized names used in message rendering.
+ */
+function NormalizedChannelHeader() {
+  const { channel, client } = useChatContext();
+  const members = channel?.state?.members;
+  const currentUserId = client?.userID;
+
+  let title;
+  if (members && currentUserId) {
+    const otherMember = Object.values(members).find(
+      (m) => (m.user_id || m.user?.id) !== currentUserId
+    );
+    if (otherMember?.user?.name) {
+      title = normalizeDisplayName(otherMember.user.name);
+    }
+  }
+
+  return <ChannelHeader title={title} />;
+}
+
 const MOBILE_BREAKPOINT_PX = 1024;
 const KEYBOARD_SCROLL_DELAY_MS = 350;
 
@@ -445,6 +511,7 @@ function ChatContent({ channelId, backTo, backLabel, NavComponent }) {
   return (
     <Channel
       channel={channel}
+      Message={NormalizedMessage}
       MessageOptions={CombinedMessageOptions}
       reactionOptions={CHAT_REACTION_OPTIONS}
       DateSeparator={CustomDateSeparator}
@@ -453,7 +520,7 @@ function ChatContent({ channelId, backTo, backLabel, NavComponent }) {
       EmptyStateIndicator={EmptyStateIndicator}
     >
       <Window>
-        <ChannelHeader />
+        <NormalizedChannelHeader />
         <MessageList
           customMessageActions={CUSTOM_MESSAGE_ACTIONS}
           messageActions={['edit', 'pin', 'delete', 'react']}
