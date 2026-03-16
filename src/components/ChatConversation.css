@@ -3,6 +3,12 @@ body.fanmeet-chat-keyboard-open .bottom-nav {
   display: none !important;
 }
 
+/* When keyboard is open, bottom nav is hidden — remove the 64px bottom clearance from input */
+body.fanmeet-chat-keyboard-open .chat-conversation-stream .str-chat__message-input-wrapper,
+body.fanmeet-chat-keyboard-open .chat-conversation-stream .str-chat__message-input {
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+}
+
 .chat-conversation-page {
   height: 100vh;
   height: 100dvh; /* iOS: use dynamic viewport so layout fits when browser UI is visible */
@@ -10,7 +16,7 @@ body.fanmeet-chat-keyboard-open .bottom-nav {
   color: var(--text-primary, #e0e0e0);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: hidden !important;
 }
 
 .chat-conversation-main {
@@ -31,9 +37,20 @@ body.fanmeet-chat-keyboard-open .bottom-nav {
 
 /* Mobile/tablet: full-width header and input (no side gaps), room for bottom nav */
 @media (max-width: 1024px) {
+  /* Lock chat page to viewport so body/window never scrolls on mobile */
+  .chat-conversation-page {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100%;
+    height: 100dvh;
+  }
+
   .chat-conversation-main {
     padding: 16px 0 0 0;
-    padding-bottom: 0;
+    padding-bottom: 0 !important; /* override .bottom-nav ~ main padding */
   }
 
   .chat-conversation-wrap {
@@ -59,16 +76,17 @@ body.fanmeet-chat-keyboard-open .bottom-nav {
     box-sizing: border-box !important;
   }
 
-  /* Message input: full width, no side gaps; internal padding for content */
+  /* Message input: full width, no side gaps; pad bottom to clear fixed bottom nav */
   .chat-conversation-stream .str-chat__message-input-wrapper,
   .chat-conversation-stream .str-chat__message-input {
     padding: 12px 16px 12px 16px !important;
-    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+    padding-bottom: calc(12px + 64px + env(safe-area-inset-bottom, 0px)) !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
+    flex-shrink: 0 !important;
   }
 
   .chat-conversation-stream .str-chat__message-input-inner,
@@ -98,8 +116,10 @@ body.fanmeet-chat-keyboard-open .bottom-nav {
   flex: 1;
   min-height: 0;
   border-radius: var(--radius, 8px);
-  overflow: hidden;
+  overflow: hidden !important;
   background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
 }
 
 .chat-conversation-loading,
@@ -158,18 +178,18 @@ body.fanmeet-chat-keyboard-open .bottom-nav {
 }
 
 .chat-conversation-stream .str-chat__main-panel {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
 }
 
 /* Message list fills remaining space and scrolls; input stays pinned at bottom */
 .chat-conversation-stream .str-chat__message-list {
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
+  flex: 1 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
 }
 
 /* ========== Chat conversation – match Flutter / web theme ========== */

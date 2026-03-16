@@ -77,8 +77,8 @@
     max-width: 100%;
   }
 
-  /* Reserve space so main content is not hidden behind the bar */
+  /* Reserve space so main content is not hidden behind the bar, plus breathing room */
   .bottom-nav ~ main {
-    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(64px + 24px + env(safe-area-inset-bottom, 0px));
   }
 }

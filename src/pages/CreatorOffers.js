@@ -76,6 +76,10 @@ function CreatorOffers() {
   const sentinelRef = useRef(null);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     const token = localStorage.getItem('token');
     const userJson = localStorage.getItem('user');
     if (!token || !userJson) {

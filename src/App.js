@@ -47,6 +47,13 @@ import './App.css';
 function ScrollToTop() {
   const { pathname } = useLocation();
   React.useEffect(() => {
+    // Disable browser's automatic scroll restoration so it doesn't
+    // override our manual scrollTo(0,0) after navigation.
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+  }, []);
+  React.useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
   return null;
