@@ -1,0 +1,162 @@
+/* Image cropper modal – full-screen dark overlay */
+
+.image-cropper-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1001;
+  background: #0f0f0f;
+  display: flex;
+  flex-direction: column;
+}
+
+.image-cropper-modal {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* ── Header ── */
+.image-cropper-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--dark-blue-shade-3, #1C1F26);
+  flex-shrink: 0;
+}
+
+.image-cropper-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary, #fff);
+}
+
+.image-cropper-cancel,
+.image-cropper-done {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.image-cropper-cancel {
+  background: transparent;
+  color: var(--dark-grey-text, #AEB3BD);
+}
+
+.image-cropper-cancel:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.image-cropper-done {
+  background: var(--accent-yellow, #F4C046);
+  color: var(--black, #000);
+}
+
+.image-cropper-done:hover:not(:disabled) {
+  background: #FFC933;
+}
+
+.image-cropper-done:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── Crop area (react-easy-crop renders here) ── */
+.image-cropper-area {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  background: #0f0f0f;
+}
+
+/* ── Aspect ratio preset pills ── */
+.image-cropper-presets {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--dark-blue-shade-3, #1C1F26);
+  flex-shrink: 0;
+}
+
+.image-cropper-preset {
+  padding: 8px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--dark-grey-text, #AEB3BD);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.image-cropper-preset:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.image-cropper-preset--active {
+  background: var(--accent-yellow, #F4C046);
+  color: var(--black, #000);
+  border-color: var(--accent-yellow, #F4C046);
+  font-weight: 600;
+}
+
+.image-cropper-preset--active:hover {
+  background: #FFC933;
+}
+
+/* ── Zoom slider ── */
+.image-cropper-zoom {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 24px calc(10px + env(safe-area-inset-bottom, 0px));
+  background: var(--dark-blue-shade-3, #1C1F26);
+  flex-shrink: 0;
+}
+
+.image-cropper-zoom svg {
+  flex-shrink: 0;
+  color: var(--dark-grey-text, #AEB3BD);
+}
+
+.image-cropper-zoom-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.15);
+  outline: none;
+}
+
+.image-cropper-zoom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent-yellow, #F4C046);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.image-cropper-zoom-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent-yellow, #F4C046);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}

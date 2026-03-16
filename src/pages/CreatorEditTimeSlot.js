@@ -16,7 +16,7 @@ import {
   formatUTCDateToLocalTime,
   localSlotToUtcPayload,
 } from '../utils/dateTimeUtils';
-import { clearCached } from '../utils/routeDataCache';
+import { getCached, setCached } from '../utils/routeDataCache';
 import { appToast } from '../utils/toast';
 import './CreatorAddTimeSlot.css';
 
@@ -180,7 +180,16 @@ function CreatorEditTimeSlot() {
         priceCents,
       });
       if (res.StatusCode === 200 && res.data) {
-        clearCached('creatorOffers');
+        const updatedOffer = res.data.offer || res.data;
+        const cached = getCached('creatorOffers', Infinity);
+        if (cached?.offers) {
+          setCached('creatorOffers', {
+            ...cached,
+            offers: cached.offers.map((o) =>
+              String(o._id || o.id) === String(offerId) ? { ...o, ...updatedOffer } : o
+            ),
+          });
+        }
         appToast.success(t('availability.slotUpdated'));
         navigate('/creator/offers', { replace: true });
       } else {
@@ -207,7 +216,15 @@ function CreatorEditTimeSlot() {
     try {
       const res = await offerAPI.deleteOffer(offerId);
       if (res.StatusCode === 200) {
-        clearCached('creatorOffers');
+        const cached = getCached('creatorOffers', Infinity);
+        if (cached?.offers) {
+          setCached('creatorOffers', {
+            ...cached,
+            offers: cached.offers.filter((o) =>
+              String(o._id || o.id) !== String(offerId)
+            ),
+          });
+        }
         appToast.success(t('availability.slotDeleted'));
         navigate('/creator/offers', { replace: true });
       } else {

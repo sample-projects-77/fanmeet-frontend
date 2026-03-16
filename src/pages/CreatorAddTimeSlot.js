@@ -8,7 +8,7 @@ import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined
 import { DatePickerDialog } from '../components/DatePickerDialog';
 import { TimePickerDialog } from '../components/TimePickerDialog';
 import { localSlotToUtcPayload, formatTimeToAMPM, getEndTimeFromStartAndDuration } from '../utils/dateTimeUtils';
-import { clearCached } from '../utils/routeDataCache';
+import { getCached, setCached, clearCached } from '../utils/routeDataCache';
 import { appToast } from '../utils/toast';
 import './CreatorAddTimeSlot.css';
 
@@ -130,7 +130,17 @@ function CreatorAddTimeSlot() {
         priceCents,
       });
       if (res.StatusCode === 200 && res.data) {
-        clearCached('creatorOffers');
+        // Inject the new offer into the cache so the list shows it immediately
+        const newOffer = res.data.offer || res.data;
+        const cached = getCached('creatorOffers', Infinity);
+        if (cached?.offers) {
+          setCached('creatorOffers', {
+            ...cached,
+            offers: [newOffer, ...cached.offers],
+          });
+        } else {
+          setCached('creatorOffers', { offers: [newOffer], pagination: null });
+        }
         appToast.success(t('availability.slotAdded'));
         navigate('/creator/offers', { replace: true });
       } else {

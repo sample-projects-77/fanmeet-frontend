@@ -86,6 +86,15 @@
   "creatorEdit.saving": "Saving…",
   "creatorEdit.failedToLoad": "Failed to load profile",
   "creatorEdit.selectCategoryError": "Please select a category.",
+  "category.Creator": "Creator",
+  "category.Fitness & Personal Training": "Fitness & Personal Training",
+  "category.Entertainment & Influencing": "Entertainment & Influencing",
+  "category.Music & Performing Arts": "Music & Performing Arts",
+  "category.Health & Wellness": "Health & Wellness",
+  "category.Business & Consulting": "Business & Consulting",
+  "category.Education & Tutoring": "Education & Tutoring",
+  "category.Art & Design": "Art & Design",
+  "category.Other": "Other",
   "creatorEdit.failedToSave": "Failed to save.",
   "profileEdit.changePhoto": "Change photo",
   "profileEdit.saveProfile": "Save Profile",
@@ -351,5 +360,15 @@
   "resetPassword.submit": "Reset Password",
   "resetPassword.successToast": "Password reset successfully!",
   "resetPassword.confirmRequired": "Please confirm your password.",
-  "resetPassword.mismatch": "Passwords do not match."
+  "resetPassword.mismatch": "Passwords do not match.",
+
+  "imagePicker.chooseSource": "Choose image source",
+  "imagePicker.camera": "Camera",
+  "imagePicker.gallery": "Gallery",
+
+  "imageCropper.title": "Crop Image",
+  "imageCropper.done": "Done",
+  "imageCropper.square": "Square",
+  "imageCropper.fourThree": "4:3",
+  "imageCropper.free": "Free"
 }

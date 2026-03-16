@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { profileAPI } from '../services/api';
 import { getCached, setCached } from '../utils/routeDataCache';
 import { ButtonLoadingSpinner } from '../components/LoadingSpinner';
+import ImageSourcePickerModal from '../components/ImageSourcePickerModal';
+import ImageCropperModal from '../components/ImageCropperModal';
 import './FanProfileEdit.css';
 
 function FanProfileEdit() {
@@ -23,6 +25,13 @@ function FanProfileEdit() {
   const [hourlyRateEur, setHourlyRateEur] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+
+  // Image picker + cropper state
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [pickerTarget, setPickerTarget] = useState(null); // 'avatar' | 'cover'
+  const [cropperOpen, setCropperOpen] = useState(false);
+  const [rawImageSrc, setRawImageSrc] = useState(null);
+  const [avatarUploading, setAvatarUploading] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -67,26 +76,7 @@ function FanProfileEdit() {
     return () => { cancelled = true; };
   }, [isCreator]);
 
-  const handleAvatarChange = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setAvatarPreview((prev) => {
-      if (prev && prev.startsWith('blob:')) URL.revokeObjectURL(prev);
-      return URL.createObjectURL(file);
-    });
-    setAvatarFile(file);
-  };
-
-  const handleCoverChange = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setCoverPreview((prev) => {
-      if (prev && prev.startsWith('blob:')) URL.revokeObjectURL(prev);
-      return URL.createObjectURL(file);
-    });
-    setCoverFile(file);
-  };
-
+  // Clean up blob URLs
   useEffect(() => {
     return () => {
       if (avatarPreview && avatarPreview.startsWith('blob:')) {
@@ -103,6 +93,112 @@ function FanProfileEdit() {
     };
   }, [coverPreview]);
 
+  useEffect(() => {
+    return () => {
+      if (rawImageSrc && rawImageSrc.startsWith('blob:')) {
+        URL.revokeObjectURL(rawImageSrc);
+      }
+    };
+  }, [rawImageSrc]);
+
+  // ── Open source picker ──
+  const openPickerFor = useCallback((target) => {
+    setPickerTarget(target);
+    setPickerOpen(true);
+  }, []);
+
+  // ── File selected → open cropper ──
+  const handleFileSelected = useCallback((file) => {
+    setPickerOpen(false);
+    // Revoke previous raw image
+    if (rawImageSrc && rawImageSrc.startsWith('blob:')) {
+      URL.revokeObjectURL(rawImageSrc);
+    }
+    const url = URL.createObjectURL(file);
+    setRawImageSrc(url);
+    setCropperOpen(true);
+  }, [rawImageSrc]);
+
+  // ── Avatar: crop done → upload immediately ──
+  const handleAvatarCropDone = useCallback(async (croppedFile) => {
+    setCropperOpen(false);
+    // Update preview
+    setAvatarPreview((prev) => {
+      if (prev && prev.startsWith('blob:')) URL.revokeObjectURL(prev);
+      return URL.createObjectURL(croppedFile);
+    });
+    setAvatarFile(croppedFile);
+
+    // Immediately upload avatar
+    setAvatarUploading(true);
+    setError('');
+    try {
+      const formData = new FormData();
+      formData.append('userName', userName.trim() || user?.userName || '');
+      formData.append('avatarUrl', croppedFile);
+      const updateProfile = isCreator ? profileAPI.updateCreatorProfile : profileAPI.updateFanProfile;
+      const res = await updateProfile(formData);
+      if (res.StatusCode === 200 && res.data) {
+        const d = res.data;
+        const updated = {
+          ...user,
+          userName: d.userName !== undefined && d.userName !== null ? d.userName : user.userName,
+          avatarUrl: d.avatarUrl ?? user.avatarUrl,
+        };
+        setUser(updated);
+        localStorage.setItem('user', JSON.stringify(updated));
+        // Update preview to server URL
+        if (d.avatarUrl) {
+          setAvatarPreview(d.avatarUrl);
+          setAvatarFile(null); // Already uploaded
+        }
+      } else {
+        setError(res.error || t('profileEdit.failedToSave'));
+      }
+    } catch (err) {
+      setError(
+        err.response?.data?.error ||
+          err.message ||
+          t('common.errorGeneric')
+      );
+    } finally {
+      setAvatarUploading(false);
+    }
+  }, [userName, user, isCreator, t]);
+
+  // ── Cover: crop done → store locally (upload on form save) ──
+  const handleCoverCropDone = useCallback((croppedFile) => {
+    setCropperOpen(false);
+    setCoverPreview((prev) => {
+      if (prev && prev.startsWith('blob:')) URL.revokeObjectURL(prev);
+      return URL.createObjectURL(croppedFile);
+    });
+    setCoverFile(croppedFile);
+  }, []);
+
+  // ── Crop done dispatcher ──
+  const handleCropDone = useCallback((croppedFile) => {
+    if (pickerTarget === 'avatar') {
+      handleAvatarCropDone(croppedFile);
+    } else {
+      handleCoverCropDone(croppedFile);
+    }
+    // Clean up raw image
+    if (rawImageSrc && rawImageSrc.startsWith('blob:')) {
+      URL.revokeObjectURL(rawImageSrc);
+    }
+    setRawImageSrc(null);
+  }, [pickerTarget, handleAvatarCropDone, handleCoverCropDone, rawImageSrc]);
+
+  const handleCropperClose = useCallback(() => {
+    setCropperOpen(false);
+    if (rawImageSrc && rawImageSrc.startsWith('blob:')) {
+      URL.revokeObjectURL(rawImageSrc);
+    }
+    setRawImageSrc(null);
+  }, [rawImageSrc]);
+
+  // ── Form submit (cover uploads here) ──
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -114,8 +210,10 @@ function FanProfileEdit() {
     try {
       const formData = new FormData();
       formData.append('userName', userName.trim());
+      // Avatar: only include if not yet uploaded (edge case)
       if (avatarFile) formData.append('avatarUrl', avatarFile);
       if (isCreator) {
+        // Cover photo uploads on save
         if (coverFile) formData.append('coverPhoto', coverFile);
         const cents =
           hourlyRateEur.trim() === ''
@@ -170,13 +268,14 @@ function FanProfileEdit() {
       <main className="fan-profile-edit-main">
         <form onSubmit={handleSubmit} className="fan-profile-edit-form">
           {isCreator && (
-            <label className="fan-profile-edit-cover-wrap">
-              <input
-                type="file"
-                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-                onChange={handleCoverChange}
-                className="fan-profile-edit-cover-input"
-              />
+            <div
+              className="fan-profile-edit-cover-wrap"
+              onClick={() => openPickerFor('cover')}
+              onKeyDown={(e) => e.key === 'Enter' && openPickerFor('cover')}
+              role="button"
+              tabIndex={0}
+              aria-label={t('profileEdit.uploadCoverPhoto')}
+            >
               <div className="fan-profile-edit-cover-inner">
                 {coverPreview ? (
                   <img src={coverPreview} alt="" className="fan-profile-edit-cover-img" />
@@ -184,7 +283,7 @@ function FanProfileEdit() {
                   <span className="fan-profile-edit-cover-placeholder">{t('profileEdit.uploadCoverPhoto')}</span>
                 )}
               </div>
-            </label>
+            </div>
           )}
 
           <div className="fan-profile-edit-avatar-wrap">
@@ -196,16 +295,20 @@ function FanProfileEdit() {
                   className="fan-profile-edit-avatar-img"
                 />
               ) : null}
+              {avatarUploading && (
+                <div className="fan-profile-edit-avatar-uploading">
+                  <ButtonLoadingSpinner />
+                </div>
+              )}
             </div>
-            <label className="fan-profile-edit-camera-btn" aria-label={t('profileEdit.changePhoto')}>
-              <input
-                type="file"
-                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-                onChange={handleAvatarChange}
-                className="fan-profile-edit-camera-input"
-              />
+            <button
+              type="button"
+              className="fan-profile-edit-camera-btn"
+              aria-label={t('profileEdit.changePhoto')}
+              onClick={() => openPickerFor('avatar')}
+            >
               <CameraIcon />
-            </label>
+            </button>
           </div>
 
           {error && (
@@ -263,16 +366,25 @@ function FanProfileEdit() {
           </button>
         </form>
       </main>
-    </div>
-  );
-}
 
-function PersonIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-      <circle cx="12" cy="7" r="4" />
-    </svg>
+      {/* Image source picker (Camera / Gallery) */}
+      <ImageSourcePickerModal
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        onFile={handleFileSelected}
+        accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+      />
+
+      {/* Image cropper */}
+      <ImageCropperModal
+        open={cropperOpen}
+        imageSrc={rawImageSrc}
+        initialAspect={pickerTarget === 'avatar' ? 'square' : 'free'}
+        onCropDone={handleCropDone}
+        onClose={handleCropperClose}
+        fileName={pickerTarget === 'avatar' ? 'avatar.jpg' : 'cover.jpg'}
+      />
+    </div>
   );
 }
 
