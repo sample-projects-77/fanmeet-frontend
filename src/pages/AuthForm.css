@@ -274,6 +274,56 @@
   color: var(--accent-yellow);
 }
 
+/* Forgot password link (right-aligned under password field) */
+.auth-forgot-password-wrap {
+  text-align: right;
+  margin-top: -8px;
+}
+
+.auth-forgot-password-link {
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.auth-forgot-password-link:hover {
+  color: var(--accent-yellow);
+}
+
+/* OTP code input row */
+.auth-otp-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.auth-otp-input {
+  width: 48px;
+  height: 56px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  border-radius: 8px;
+  border: 1px solid var(--outline-input-border);
+  background: var(--input-background);
+  color: var(--tertiary-color);
+  caret-color: var(--secondary-color);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  padding: 0;
+}
+
+.auth-otp-input:focus {
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 2px var(--focus-ring);
+}
+
+.auth-otp-submit-wrap {
+  margin-top: 8px;
+}
+
 @media (min-width: 480px) {
   .auth-body {
     padding: 32px 24px 40px;

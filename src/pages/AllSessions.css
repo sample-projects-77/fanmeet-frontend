@@ -106,6 +106,18 @@
   padding: 48px 24px;
 }
 
+@media (max-width: 767px) {
+  .all-sessions-content .shared-empty-wrap {
+    padding: 32px 16px;
+  }
+  .all-sessions-empty-state {
+    min-height: 180px;
+  }
+  .all-sessions-content {
+    min-height: 140px;
+  }
+}
+
 .all-sessions-list {
   list-style: none;
   margin: 0;

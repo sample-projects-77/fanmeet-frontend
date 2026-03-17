@@ -76,6 +76,13 @@ export default function FanLayout() {
     }
   }, [currentTabKey, mountedTabs]);
 
+  // Scroll to top whenever the active tab changes
+  useEffect(() => {
+    if (currentTabKey) {
+      window.scrollTo(0, 0);
+    }
+  }, [currentTabKey]);
+
   const handleLogout = () => {
     clearAllCached();
     localStorage.removeItem('token');

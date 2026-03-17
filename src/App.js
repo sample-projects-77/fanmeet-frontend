@@ -1,10 +1,13 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ChatProvider } from './context/ChatContext';
 import Welcome from './pages/Welcome';
 import Login from './pages/Login';
 import FanSignup from './pages/FanSignup';
 import CreatorSignup from './pages/CreatorSignup';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetCode from './pages/ResetCode';
+import ResetPassword from './pages/ResetPassword';
 import FanHome from './pages/FanHome';
 import FanDashboard from './pages/FanDashboard';
 import FanSearch from './pages/FanSearch';
@@ -41,9 +44,25 @@ import CreatorLayout from './layouts/CreatorLayout';
 import FanLayout from './layouts/FanLayout';
 import './App.css';
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  React.useEffect(() => {
+    // Disable browser's automatic scroll restoration so it doesn't
+    // override our manual scrollTo(0,0) after navigation.
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+  }, []);
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <ChatProvider>
         <div className="App">
           <Routes>
@@ -51,6 +70,9 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup/fan" element={<FanSignup />} />
           <Route path="/signup/creator" element={<CreatorSignup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-code" element={<ResetCode />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/fan" element={<FanLayout />}>
             <Route index element={<Navigate to="/fan/home" replace />} />
             <Route path="home" element={null} />

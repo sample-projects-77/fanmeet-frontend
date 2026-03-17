@@ -8,8 +8,8 @@ import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined
 import { DatePickerDialog } from '../components/DatePickerDialog';
 import { TimePickerDialog } from '../components/TimePickerDialog';
 import { localSlotToUtcPayload, formatTimeToAMPM, getEndTimeFromStartAndDuration } from '../utils/dateTimeUtils';
-import { clearCached } from '../utils/routeDataCache';
-import { toast } from 'react-toastify';
+import { getCached, setCached, clearCached } from '../utils/routeDataCache';
+import { appToast } from '../utils/toast';
 import './CreatorAddTimeSlot.css';
 
 function CreatorAddTimeSlot() {
@@ -130,8 +130,18 @@ function CreatorAddTimeSlot() {
         priceCents,
       });
       if (res.StatusCode === 200 && res.data) {
-        clearCached('creatorOffers');
-        toast.success(t('availability.slotAdded'));
+        // Inject the new offer into the cache so the list shows it immediately
+        const newOffer = res.data.offer || res.data;
+        const cached = getCached('creatorOffers', Infinity);
+        if (cached?.offers) {
+          setCached('creatorOffers', {
+            ...cached,
+            offers: [newOffer, ...cached.offers],
+          });
+        } else {
+          setCached('creatorOffers', { offers: [newOffer], pagination: null });
+        }
+        appToast.success(t('availability.slotAdded'));
         navigate('/creator/offers', { replace: true });
       } else {
         setError(res.error || t('availability.failedToAdd'));
@@ -271,11 +281,29 @@ function CreatorAddTimeSlot() {
                 <span className={endTime ? '' : 'creator-add-slot-placeholder'}>
                   {formatTimeToAMPM(endTime)}
                 </span>
-                <span className="creator-add-slot-time-icon" aria-hidden>
-                  <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                    <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
-                  </svg>
-                </span>
+                {isEndTimeManual ? (
+                  <button
+                    type="button"
+                    className="creator-add-slot-clear-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsEndTimeManual(false);
+                      setEndTime('');
+                      setDuration(30);
+                    }}
+                    aria-label={t('common.clear')}
+                  >
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                      <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                    </svg>
+                  </button>
+                ) : (
+                  <span className="creator-add-slot-time-icon" aria-hidden>
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                      <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
+                    </svg>
+                  </span>
+                )}
               </div>
               {showEndTimePicker && (
                 <TimePickerDialog

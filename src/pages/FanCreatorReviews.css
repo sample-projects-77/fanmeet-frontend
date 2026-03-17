@@ -169,3 +169,18 @@
   color: var(--secondary-color);
   opacity: 0.35;
 }
+
+@media (max-width: 767px) {
+  .fan-creator-reviews-empty-wrap {
+    min-height: 200px;
+  }
+  .fan-creator-reviews-main {
+    padding: 0 16px 48px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .fan-creator-reviews-main {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  }
+}

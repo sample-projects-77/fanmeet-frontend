@@ -137,6 +137,11 @@ const Login = () => {
               </button>
             </div>
           </div>
+          <div className="auth-forgot-password-wrap">
+            <Link to="/forgot-password" className="auth-forgot-password-link">
+              {t('forgotPassword.link')}
+            </Link>
+          </div>
           <button type="submit" className="auth-submit" disabled={loading} aria-busy={loading}>
             {loading ? <ButtonLoadingSpinner /> : t('auth.logIn')}
           </button>

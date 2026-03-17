@@ -38,10 +38,14 @@ export function ChatProvider({ children }) {
       }
       const { token: streamToken, userId } = res.data;
       const chatClient = StreamChat.getInstance(streamApiKey);
+      const rawName = (user.userName || user.name || '').trim();
+      const displayName = rawName
+        ? rawName.charAt(0).toUpperCase() + rawName.slice(1)
+        : 'User';
       await chatClient.connectUser(
         {
           id: userId,
-          name: user.userName || user.name || 'User',
+          name: displayName,
           image: user.avatarUrl || DEFAULT_AVATAR_URL,
         },
         streamToken

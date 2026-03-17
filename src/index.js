@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import './utils/toast.css';
 import './i18n';
 import './index.css';
 import App from './App';
@@ -12,13 +13,16 @@ root.render(
     <>
       <App />
       <ToastContainer
-        position="top-right"
+        position="top-center"
         autoClose={4000}
         hideProgressBar
         newestOnTop
         closeOnClick={false}
+        closeButton={false}
         pauseOnHover
         draggable
+        draggableDirection="y"
+        draggablePercent={30}
         theme="dark"
       />
     </>

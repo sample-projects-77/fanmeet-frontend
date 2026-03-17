@@ -18,7 +18,7 @@
 }
 
 .time-picker-dialog {
-  background: #2C2C2E;
+  background: #1C1F26;
   border-radius: 20px;
   padding: 24px;
   max-width: 320px;
@@ -73,16 +73,16 @@
 
 .time-picker-dialog-hour:focus-visible,
 .time-picker-dialog-minute:focus-visible {
-  outline: 2px solid #FFC107;
+  outline: 2px solid #F4C046;
   outline-offset: 2px;
 }
 
 /* Same selected UI for both hour and minute: yellow background, dark text, rounded border */
 .time-picker-dialog-display--mode-hour .time-picker-dialog-hour,
 .time-picker-dialog-display--mode-minute .time-picker-dialog-minute {
-  background: #FFC107;
+  background: #F4C046;
   color: var(--black);
-  border: 2px solid #FFC107;
+  border: 2px solid #F4C046;
 }
 
 .time-picker-dialog-colon {
@@ -194,7 +194,7 @@
 }
 
 .time-picker-dialog-ok {
-  background: #FFC107;
+  background: #F4C046;
   color: var(--black);
   border: none;
   font-size: 16px;
@@ -209,9 +209,25 @@
 }
 
 .time-picker-dialog-ok:hover {
-  background: #FFCA28;
+  background: #F6CC5C;
 }
 
 .time-picker-dialog-ok:active {
   transform: scale(0.98);
+}
+
+@media (max-width: 375px) {
+  .time-picker-dialog-clock {
+    width: 200px;
+    height: 200px;
+  }
+  .time-picker-dialog {
+    padding: 20px;
+  }
+  .time-picker-dialog-hour,
+  .time-picker-dialog-minute {
+    font-size: 24px;
+    padding: 8px 12px;
+    min-width: 44px;
+  }
 }

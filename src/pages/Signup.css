@@ -177,4 +177,14 @@
   color: #764ba2;
 }
 
-
+@media (max-width: 480px) {
+  .signup-card {
+    padding: 24px 20px;
+  }
+  .signup-header h1 {
+    font-size: 24px;
+  }
+  .signup-header {
+    margin-bottom: 24px;
+  }
+}

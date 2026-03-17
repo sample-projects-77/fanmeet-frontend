@@ -1,0 +1,99 @@
+/* Image source picker – bottom-sheet style (Camera / Gallery) */
+
+.image-source-picker-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: isp-fade-in 0.2s ease-out;
+}
+
+@keyframes isp-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.image-source-picker-sheet {
+  width: 100%;
+  max-width: 440px;
+  background: var(--dark-blue-shade-3, #1C1F26);
+  border-radius: 20px 20px 0 0;
+  padding: 12px 20px calc(20px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  animation: isp-slide-up 0.25s ease-out;
+}
+
+@keyframes isp-slide-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+.image-source-picker-handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 0 auto 12px;
+}
+
+.image-source-picker-option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px 12px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-primary, #fff);
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.image-source-picker-option:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.image-source-picker-option:active {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.image-source-picker-option svg {
+  flex-shrink: 0;
+  color: var(--accent-yellow, #F4C046);
+}
+
+.image-source-picker-cancel {
+  width: 100%;
+  padding: 14px 12px;
+  margin-top: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--dark-grey-text, #AEB3BD);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.image-source-picker-cancel:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.image-source-picker-hidden {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}

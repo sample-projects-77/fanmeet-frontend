@@ -192,9 +192,7 @@ export function formatTimeToAMPM(hhmm) {
   if (!parts) return hhmm;
   const hour = parseInt(parts[1], 10) % 24;
   const minute = parseInt(parts[2], 10) % 60;
-  const isPm = hour >= 12;
-  const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-  return `${hour12}:${String(minute).padStart(2, '0')} ${isPm ? 'PM' : 'AM'}`;
+  return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
 }
 
 /**
@@ -212,6 +210,30 @@ export function getEndTimeFromStartAndDuration(startHHmm, durationMinutes) {
   const endH = Math.floor(endTotal / 60) % 24;
   const endM = endTotal % 60;
   return `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`;
+}
+
+/**
+ * Check if an offer's start time is in the future (not expired).
+ * Offers with invalid/missing dates are kept visible (fail safe).
+ * @param {{ date?: string, startTime?: string }} offer
+ * @returns {boolean}
+ */
+export function isOfferInFuture(offer) {
+  if (!offer?.date || !offer?.startTime) return true;
+  const dateStr = (offer.date || '').toString().split('T')[0].split(' ')[0].substring(0, 10);
+  const startUtc = parseOfferSlotToUTC(dateStr, offer.startTime || '00:00', 'UTC');
+  const time = startUtc.getTime();
+  if (Number.isNaN(time)) return true;
+  return time >= Date.now();
+}
+
+/**
+ * Filter a list of offers to only include future (non-expired) ones.
+ * @param {Array} offers
+ * @returns {Array}
+ */
+export function filterActiveOffers(offers) {
+  return (offers || []).filter(isOfferInFuture);
 }
 
 /**

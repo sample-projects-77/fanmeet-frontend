@@ -157,6 +157,24 @@
   align-items: center;
 }
 
+.creator-add-slot-clear-btn {
+  appearance: none;
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: var(--accent-yellow);
+  padding: 0;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.15s ease;
+}
+
+.creator-add-slot-clear-btn:hover {
+  opacity: 0.7;
+}
+
 .creator-add-slot-input-wrap input::placeholder {
   color: var(--dark-grey-text);
 }
@@ -219,7 +237,14 @@
 
 .creator-add-slot-submit-wrap {
   margin-top: 8px;
-  margin-bottom: 35px; /* gap above bottom navbar for save/add button */
+  padding-bottom: 32px;
+}
+
+/* Mobile: extra bottom padding so button clears the bottom nav bar */
+@media (max-width: 1024px) {
+  .creator-add-slot-submit-wrap {
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 .creator-add-slot-submit {

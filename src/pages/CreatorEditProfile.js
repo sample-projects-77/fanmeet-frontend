@@ -6,6 +6,7 @@ import LoadingSpinner, { ButtonLoadingSpinner } from '../components/LoadingSpinn
 import './CreatorEditProfile.css';
 
 const CREATOR_CATEGORIES = [
+  'Creator',
   'Fitness & Personal Training',
   'Entertainment & Influencing',
   'Music & Performing Arts',
@@ -190,7 +191,7 @@ function CreatorEditProfile() {
                         : CREATOR_CATEGORIES;
                     })()
                   ).map((c) => (
-                    <option key={c} value={c}>{c}</option>
+                    <option key={c} value={c}>{t(`category.${c}`, c)}</option>
                   ))}
                 </select>
                 <div className="creator-edit-profile-gap creator-edit-profile-gap--small" />
@@ -245,7 +246,7 @@ function CreatorEditProfile() {
                     </button>
                   )}
                   {category ? (
-                    <span className="creator-edit-profile-pill">{category}</span>
+                    <span className="creator-edit-profile-pill">{t(`category.${category}`, category)}</span>
                   ) : (
                     <span className="creator-edit-profile-placeholder">
                       {t('creatorEdit.selectCategoryPlaceholder')}
