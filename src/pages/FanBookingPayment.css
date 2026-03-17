@@ -100,6 +100,17 @@
   gap: 20px;
 }
 
+.fan-booking-payment-element-wrap {
+  min-height: 220px;
+}
+
+.fan-booking-payment-element-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin: 0 0 12px 0;
+}
+
 .fan-booking-payment-error {
   font-size: 14px;
   color: var(--red);

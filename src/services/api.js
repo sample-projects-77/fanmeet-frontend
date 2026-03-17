@@ -363,6 +363,18 @@ export const paymentAPI = {
   },
 };
 
+// Connect – Stripe Connect onboarding for creators (payout setup)
+export const connectAPI = {
+  getOnboardingLink: async (body = {}) => {
+    const response = await api.post('/connect/onboarding-link', body);
+    return response.data;
+  },
+  getConnectStatus: async () => {
+    const response = await api.get('/connect/status');
+    return response.data;
+  },
+};
+
 export default api;
 
 

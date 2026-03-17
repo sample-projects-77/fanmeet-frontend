@@ -75,6 +75,10 @@
   "profile.blockedUsers": "Blocked Users",
   "profile.logout": "Logout",
   "profile.deleteAccount": "Delete Account",
+  "profile.setupPayout": "Setup payout",
+  "profile.payoutsConnected": "Payouts connected",
+  "profile.payoutSetupLoading": "Loading...",
+  "profile.payoutSetupError": "Could not open payout setup.",
 
   "profileEdit.title": "Edit Profile",
   "creatorEdit.title": "Edit Profile",
@@ -204,6 +208,7 @@
   "booking.backToBookings": "← Back to bookings",
   "booking.totalDue": "Total due",
   "booking.cardNote": "Your card will be authorized now. The amount will be charged when the session ends.",
+  "booking.cardDetails": "Card details",
 
   "creatorProfile.noDescription": "No description yet.",
   "creatorProfile.message": "Message",

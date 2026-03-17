@@ -200,6 +200,11 @@
   background: var(--blue-accent);
 }
 
+/* Setup payout – green (success / money) */
+.fan-profile-setting-icon--green {
+  background: #22c55e;
+}
+
 .fan-profile-setting-label {
   flex: 1;
 }

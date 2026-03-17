@@ -75,6 +75,10 @@
   "profile.blockedUsers": "Blockierte Nutzer",
   "profile.logout": "Abmelden",
   "profile.deleteAccount": "Konto löschen",
+  "profile.setupPayout": "Auszahlung einrichten",
+  "profile.payoutsConnected": "Auszahlung verbunden",
+  "profile.payoutSetupLoading": "Laden...",
+  "profile.payoutSetupError": "Auszahlungseinrichtung konnte nicht geöffnet werden.",
 
   "profileEdit.title": "Profil bearbeiten",
   "creatorEdit.title": "Profil bearbeiten",
@@ -204,6 +208,7 @@
   "booking.backToBookings": "← Zurück zu Buchungen",
   "booking.totalDue": "Gesamtbetrag",
   "booking.cardNote": "Deine Karte wird jetzt autorisiert. Der Betrag wird nach Ende der Session abgebucht.",
+  "booking.cardDetails": "Kartendaten",
 
   "creatorProfile.noDescription": "Noch keine Beschreibung.",
   "creatorProfile.message": "Nachricht",

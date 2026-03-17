@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { authAPI, profileAPI } from '../services/api';
+import { authAPI, profileAPI, connectAPI } from '../services/api';
 import { getCached, setCached } from '../utils/routeDataCache';
 import { DEFAULT_AVATAR_URL } from '../constants';
 import CreatorNav from '../components/CreatorNav';
-import { SettingsIcon, KeyIcon, OutlinedUserIcon, OutgoingIcon, DeleteAccountIcon, BlockedIcon } from '../components/ProfileIcons';
+import { SettingsIcon, KeyIcon, OutlinedUserIcon, OutgoingIcon, DeleteAccountIcon, BlockedIcon, PayoutIcon } from '../components/ProfileIcons';
 import DeleteAccountDialog from '../components/DeleteAccountDialog';
 import './FanProfile.css';
 
@@ -22,6 +22,8 @@ function CreatorProfile({ embedded, user: userProp, onLogout: onLogoutProp }) {
   const [profile, setProfile] = useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [payoutLoading, setPayoutLoading] = useState(false);
+  const [connectStatus, setConnectStatus] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -57,6 +59,38 @@ function CreatorProfile({ embedded, user: userProp, onLogout: onLogoutProp }) {
     };
     fetchProfile();
   }, [user?.id]);
+
+  const fetchConnectStatus = async () => {
+    if (!user?.id) return;
+    try {
+      const res = await connectAPI.getConnectStatus();
+      if (res.StatusCode === 200 && res.data) setConnectStatus(res.data);
+    } catch {
+      // ignore
+    }
+  };
+
+  useEffect(() => {
+    fetchConnectStatus();
+  }, [user?.id]);
+
+  const handleSetupPayout = async () => {
+    setPayoutLoading(true);
+    try {
+      const returnUrl = window.location.origin + '/creator/profile';
+      const refreshUrl = window.location.origin + '/creator/profile';
+      const res = await connectAPI.getOnboardingLink({ returnUrl, refreshUrl });
+      if (res.StatusCode === 200 && res.data?.url) {
+        window.location.href = res.data.url;
+        return;
+      }
+      alert(res.error || t('profile.payoutSetupError') || 'Could not open payout setup.');
+    } catch (err) {
+      alert(err.response?.data?.error || err.message || 'Could not open payout setup.');
+    } finally {
+      setPayoutLoading(false);
+    }
+  };
 
   const handleDeleteAccountClick = () => {
     setDeleteDialogOpen(true);
@@ -137,6 +171,24 @@ function CreatorProfile({ embedded, user: userProp, onLogout: onLogoutProp }) {
               <span className="fan-profile-setting-label">{t('profile.blockedUsers')}</span>
               <span className="fan-profile-setting-arrow">›</span>
             </Link>
+            <button
+              type="button"
+              className="fan-profile-setting-row fan-profile-setting-row--button"
+              onClick={handleSetupPayout}
+              disabled={payoutLoading}
+            >
+              <span className="fan-profile-setting-icon fan-profile-setting-icon--green">
+                <PayoutIcon />
+              </span>
+              <span className="fan-profile-setting-label">
+                {connectStatus?.canReceivePayments
+                  ? (t('profile.payoutsConnected') || 'Payouts connected')
+                  : payoutLoading
+                    ? (t('profile.payoutSetupLoading') || 'Loading...')
+                    : (t('profile.setupPayout') || 'Setup payout')}
+              </span>
+              <span className="fan-profile-setting-arrow">›</span>
+            </button>
             <button
               type="button"
               className="fan-profile-setting-row fan-profile-setting-row--button"

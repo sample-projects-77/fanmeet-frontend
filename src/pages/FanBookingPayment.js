@@ -56,17 +56,20 @@ function PaymentForm({ amountCents, currency, bookingId, onSuccess, onError }) {
 
   return (
     <form onSubmit={handleSubmit} className="fan-booking-payment-form">
-      <PaymentElement
-        options={{
-          layout: 'tabs',
-          defaultCollapsed: false,
-          radios: true,
-          spacedAccordionItems: false,
-        }}
-        onChange={(event) => {
-          setIsPaymentComplete(event.complete);
-        }}
-      />
+      <div className="fan-booking-payment-element-wrap">
+        <p className="fan-booking-payment-element-label">{t('booking.cardDetails') || 'Card details'}</p>
+        <PaymentElement
+          options={{
+            layout: 'tabs',
+            defaultCollapsed: false,
+            radios: true,
+            spacedAccordionItems: false,
+          }}
+          onChange={(event) => {
+            setIsPaymentComplete(event.complete);
+          }}
+        />
+      </div>
       {message && <div className="fan-booking-payment-error" role="alert">{message}</div>}
       <button
         type="submit"
@@ -119,14 +122,15 @@ function FanBookingPayment() {
           return;
         }
 
-        const promise = loadStripe(keyRes.data.publishableKey);
-        if (!cancelled) setStripePromise(promise);
-
         const payRes = await paymentAPI.createPayment(bookingId);
         if (payRes.StatusCode !== 200 || !payRes.data?.clientSecret) {
           if (!cancelled) setError(payRes.error || t('booking.bookingNotFound'));
           return;
         }
+
+        const stripeConnectAccountId = payRes.data.stripeConnectAccountId || null;
+        const promise = loadStripe(keyRes.data.publishableKey, stripeConnectAccountId ? { stripeAccount: stripeConnectAccountId } : undefined);
+        if (!cancelled) setStripePromise(promise);
 
         if (!cancelled) {
           setPaymentData({
