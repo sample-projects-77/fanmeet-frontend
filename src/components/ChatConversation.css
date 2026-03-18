@@ -988,6 +988,89 @@ body.fanmeet-message-menu-open .chat-conversation-stream [class*="virtual-list-m
   background: #1e3a5f;
 }
 
+/* ── Edit message form: banner + Update/Cancel actions ── */
+.chat-conversation-stream .fanmeet-edit-message-form {
+  background: var(--bg-secondary, #1c1f26);
+  border: 1px solid rgba(244, 192, 70, 0.3);
+  border-radius: 12px;
+  padding: 10px;
+  margin: 8px 0;
+}
+
+.fanmeet-edit-message-banner {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 4px 8px;
+  font-size: 0.8rem;
+  color: var(--secondary-color, #f4c046);
+}
+
+.fanmeet-edit-message-banner-icon {
+  font-size: 0.85rem;
+}
+
+.fanmeet-edit-message-banner-text {
+  font-weight: 500;
+}
+
+.fanmeet-edit-message-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 4px 0;
+}
+
+.fanmeet-edit-message-cancel {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-family: var(--font-sans);
+  transition: background 0.15s, color 0.15s;
+}
+
+.fanmeet-edit-message-cancel:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.fanmeet-edit-message-update {
+  background: var(--secondary-color, #f4c046);
+  color: #1a1a1a;
+  border: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-family: var(--font-sans);
+  transition: background 0.15s, transform 0.1s;
+}
+
+.fanmeet-edit-message-update:hover {
+  background: #ffc933;
+}
+
+.fanmeet-edit-message-update:active {
+  transform: scale(0.97);
+}
+
+.fanmeet-edit-message-update:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Hide Stream's default edit-form buttons since we render our own */
+.chat-conversation-stream .str-chat__edit-message-form-options {
+  display: none !important;
+}
+
 /* "Edited" label below message (SDK uses .str-chat__mesage-simple-edited - typo) */
 .chat-conversation-stream .str-chat__mesage-simple-edited,
 .chat-conversation-stream .str-chat__message-simple-edited {

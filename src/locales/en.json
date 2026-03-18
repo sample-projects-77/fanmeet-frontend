@@ -338,6 +338,9 @@
   "chat.deleteMessage": "Delete message",
   "chat.openActionsMenu": "Open message actions",
   "chat.typeMessage": "Type a message",
+  "chat.editingMessage": "Editing message",
+  "chat.cancelEdit": "Cancel",
+  "chat.updateMessage": "Update",
 
   "forgotPassword.screenTitle": "Forgot Password",
   "forgotPassword.title": "Forgot Password?",

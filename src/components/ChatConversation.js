@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import {
   Chat,
@@ -7,10 +7,12 @@ import {
   ChannelHeader,
   MessageList,
   MessageInput,
+  MessageInputFlat,
   MessageSimple,
   DateSeparator,
   MessageTimestamp,
   useChatContext,
+  useMessageInputContext,
   StreamEmoji,
   DialogAnchor,
   useDialogOnNearestManager,
@@ -19,6 +21,47 @@ import {
 } from 'stream-chat-react';
 import { useTranslation as useAppTranslation } from 'react-i18next';
 import 'stream-chat-react/dist/css/v2/index.css';
+
+/**
+ * Custom EditMessageForm: replaces Stream's default with a clear
+ * "Update" button + "Cancel" link, properly translated.
+ */
+function CustomEditMessageForm() {
+  const { t: tApp } = useAppTranslation();
+  const { clearEditingState, handleSubmit, text } = useMessageInputContext('CustomEditMessageForm');
+
+  const cancel = useCallback(() => {
+    clearEditingState?.();
+  }, [clearEditingState]);
+
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') cancel();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [cancel]);
+
+  const hasContent = text && text.trim().length > 0;
+
+  return (
+    <form autoComplete="off" className="str-chat__edit-message-form fanmeet-edit-message-form" onSubmit={handleSubmit}>
+      <div className="fanmeet-edit-message-banner">
+        <span className="fanmeet-edit-message-banner-icon">✎</span>
+        <span className="fanmeet-edit-message-banner-text">{tApp('chat.editingMessage')}</span>
+      </div>
+      <MessageInputFlat />
+      <div className="fanmeet-edit-message-actions">
+        <button type="button" className="fanmeet-edit-message-cancel" onClick={cancel}>
+          {tApp('chat.cancelEdit')}
+        </button>
+        <button type="submit" className="fanmeet-edit-message-update" disabled={!hasContent}>
+          {tApp('chat.updateMessage')}
+        </button>
+      </div>
+    </form>
+  );
+}
 
 function ThreeDotsIcon({ className = '' }) {
   return (
@@ -365,6 +408,7 @@ function CombinedMessageOptions() {
 }
 
 import { useChat } from '../context/ChatContext';
+import { DEFAULT_AVATAR_URL } from '../constants';
 import LoadingSpinner from './LoadingSpinner';
 import './ChatConversation.css';
 
@@ -398,15 +442,47 @@ function normalizeDisplayName(name) {
 }
 
 /**
+ * Resolve the canonical user object for a message sender.
+ *
+ * Priority:
+ *   1. channel.state.members[userId].user  (latest, kept in sync by Stream)
+ *   2. message.user                        (snapshot at send-time)
+ *   3. safe defaults
+ *
+ * Returns a fully-normalized user object so that every message from the same
+ * userId always carries identical name, image, and id — regardless of which
+ * client (web / mobile) originally sent the message.
+ */
+function resolveMessageSender(message, members) {
+  const msgUser = message?.user;
+  if (!msgUser?.id) return msgUser;
+
+  const canonical = members?.[msgUser.id]?.user;
+
+  return {
+    // Start from the canonical member record (latest truth), fall back to
+    // the message snapshot, then layer on the normalized fields.  By
+    // spreading canonical *first* (when available) we ensure every field
+    // is consistent — not just name/image.
+    ...(canonical || msgUser),
+    id: msgUser.id,                                           // always keep original id
+    name: normalizeDisplayName(canonical?.name || msgUser.name),
+    image: canonical?.image || msgUser.image || DEFAULT_AVATAR_URL,
+  };
+}
+
+/**
  * Custom Message component that normalizes sender identity across all messages.
  *
  * Problem: Stream Chat stores a snapshot of message.user at send-time. When the
  * same user connects from different clients (mobile vs web) with different
- * name casing or avatar, each message retains its own snapshot — causing the
- * same person to appear as multiple different senders.
+ * name casing, avatar, or metadata fields (updated_at, last_active, etc.),
+ * each message retains its own snapshot — causing Stream's grouping logic to
+ * treat the same person as multiple different senders.
  *
- * Fix: use channel.state.members (latest data) as the single source of truth
- * for name and avatar, and normalize display name casing consistently.
+ * Fix: replace the entire message.user with the canonical record from
+ * channel.state.members so every message from the same userId carries an
+ * identical user object.
  */
 function NormalizedMessage(props) {
   const { channel } = useChatContext();
@@ -414,14 +490,9 @@ function NormalizedMessage(props) {
   const msg = props.message;
 
   if (msg?.user?.id) {
-    const latestUser = members?.[msg.user.id]?.user;
     const normalizedMessage = {
       ...msg,
-      user: {
-        ...msg.user,
-        name: normalizeDisplayName(latestUser?.name || msg.user.name),
-        image: latestUser?.image || msg.user.image,
-      },
+      user: resolveMessageSender(msg, members),
     };
     return <MessageSimple {...props} message={normalizedMessage} />;
   }
@@ -439,16 +510,18 @@ function NormalizedChannelHeader() {
   const currentUserId = client?.userID;
 
   let title;
+  let image;
   if (members && currentUserId) {
     const otherMember = Object.values(members).find(
       (m) => (m.user_id || m.user?.id) !== currentUserId
     );
-    if (otherMember?.user?.name) {
+    if (otherMember?.user) {
       title = normalizeDisplayName(otherMember.user.name);
+      image = otherMember.user.image || DEFAULT_AVATAR_URL;
     }
   }
 
-  return <ChannelHeader title={title} />;
+  return <ChannelHeader title={title} image={image} />;
 }
 
 const MOBILE_BREAKPOINT_PX = 1024;
@@ -513,6 +586,7 @@ function ChatContent({ channelId, backTo, backLabel, NavComponent }) {
       channel={channel}
       Message={NormalizedMessage}
       MessageOptions={CombinedMessageOptions}
+      EditMessageInput={CustomEditMessageForm}
       reactionOptions={CHAT_REACTION_OPTIONS}
       DateSeparator={CustomDateSeparator}
       MessageTimestamp={CustomMessageTimestamp}
