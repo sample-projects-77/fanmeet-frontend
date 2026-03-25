@@ -175,6 +175,33 @@
   pointer-events: none;
 }
 
+/* ----- Remove Picture button ----- */
+.fan-profile-edit-remove-picture {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: var(--dark-grey-text);
+  font-size: 14px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  padding: 4px 0;
+  margin: -12px auto 0;
+  transition: color 0.15s;
+}
+
+.fan-profile-edit-remove-picture:hover:not(:disabled) {
+  color: var(--required, #e57373);
+}
+
+.fan-profile-edit-remove-picture:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* ----- Fields ----- */
 .fan-profile-edit-error {
   padding: 12px 16px;

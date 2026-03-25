@@ -160,6 +160,52 @@
   line-height: 1.45;
 }
 
+/* ----- Review action buttons (edit / delete) ----- */
+.fan-creator-review-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.fan-creator-review-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+  background: none;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.fan-creator-review-edit-btn {
+  color: var(--secondary-color);
+}
+
+.fan-creator-review-edit-btn:hover {
+  background: rgba(244, 192, 70, 0.12);
+}
+
+.fan-creator-review-delete-btn {
+  color: var(--red, #e57373);
+}
+
+.fan-creator-review-delete-btn:hover:not(:disabled) {
+  background: rgba(229, 115, 115, 0.12);
+}
+
+.fan-creator-review-delete-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* Star icon – filled (yellow) and outline */
 .fan-creator-review-star-filled {
   color: var(--secondary-color);

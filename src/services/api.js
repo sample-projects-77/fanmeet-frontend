@@ -188,6 +188,12 @@ export const profileAPI = {
     return response.data;
   },
 
+  // Delete user's avatar
+  deleteAvatar: async () => {
+    const response = await api.delete('/upload/avatar');
+    return response.data;
+  },
+
   // Update creator bio and category (JSON)
   updateCreatorBioCategory: async ({ bio, category }) => {
     const response = await api.patch('/creators/me/bio-category', { bio, category });
@@ -287,6 +293,16 @@ export const reviewAPI = {
   },
   createReview: async (bookingId, { rating, comment } = {}) => {
     const response = await api.post('/reviews', { bookingId, rating, comment });
+    return response.data;
+  },
+  updateReview: async (reviewId, { rating, comment } = {}) => {
+    const id = String(reviewId).replace(/^review_/, '');
+    const response = await api.put(`/reviews/${encodeURIComponent(id)}`, { rating, comment });
+    return response.data;
+  },
+  deleteReview: async (reviewId) => {
+    const id = String(reviewId).replace(/^review_/, '');
+    const response = await api.delete(`/reviews/${encodeURIComponent(id)}`);
     return response.data;
   },
 };

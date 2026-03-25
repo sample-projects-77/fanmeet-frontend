@@ -51,8 +51,16 @@ function VideoCallContent({ bookingId, booking, user, onLeave, backUrl, backLabe
   const startSessionCalled = useRef(false);
   const hasAutoEnded = useRef(false);
 
-  const durationMinutes = booking?.offer?.durationMinutes ?? 60;
-  const totalDurationSeconds = durationMinutes * 60;
+  const durationMinutes = booking?.durationMinutes ?? booking?.offer?.durationMinutes ?? 60;
+
+  // Compute scheduled end time from booking so the timer reflects lateness
+  const scheduledEndMs = React.useMemo(() => {
+    const startIso = booking?.startTime;
+    if (!startIso) return null;
+    const start = new Date(startIso);
+    if (Number.isNaN(start.getTime())) return null;
+    return start.getTime() + durationMinutes * 60 * 1000;
+  }, [booking?.startTime, durationMinutes]);
 
   useEffect(() => {
     if (!bookingId || !user || !STREAM_API_KEY) return;
@@ -140,21 +148,20 @@ function VideoCallContent({ bookingId, booking, user, onLeave, backUrl, backLabe
       });
   }, [bothPresent, call, bookingId]);
 
-  // Timer: only run when both present
+  // Timer: starts as soon as call is joined, counts down to scheduled end time
   useEffect(() => {
-    if (!bothPresent || !call) return;
-    setRemainingSeconds(totalDurationSeconds);
+    if (!call || !scheduledEndMs) return;
+    const tick = () => {
+      const left = Math.max(0, Math.floor((scheduledEndMs - Date.now()) / 1000));
+      setRemainingSeconds(left);
+      return left;
+    };
+    tick();
     const interval = setInterval(() => {
-      setRemainingSeconds((prev) => {
-        if (prev == null || prev <= 1) {
-          clearInterval(interval);
-          return 0;
-        }
-        return prev - 1;
-      });
+      if (tick() <= 0) clearInterval(interval);
     }, 1000);
     return () => clearInterval(interval);
-  }, [bothPresent, call, totalDurationSeconds]);
+  }, [call, scheduledEndMs]);
 
   // Auto-end when timer reaches 0: end session then leave
   useEffect(() => {
@@ -242,7 +249,7 @@ function VideoCallContent({ bookingId, booking, user, onLeave, backUrl, backLabe
                 {!bothPresent && (
                   <span className="video-call-waiting">Waiting for other participant…</span>
                 )}
-                {bothPresent && remainingSeconds != null && (
+                {remainingSeconds != null && (
                   <span className="video-call-timer" aria-live="polite">
                     {formatTimeLeft(remainingSeconds)}
                   </span>

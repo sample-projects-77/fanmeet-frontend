@@ -108,6 +108,7 @@
   "profileEdit.hourlyRatePlaceholder": "z. B. 15",
   "profileEdit.usernameRequired": "Benutzername ist erforderlich.",
   "profileEdit.failedToSave": "Speichern fehlgeschlagen.",
+  "profileEdit.removePicture": "Bild entfernen",
 
   "profileChangePassword.title": "Passwort ändern",
   "profileChangePassword.currentPassword": "Aktuelles Passwort",
@@ -280,6 +281,12 @@
   "reviews.selectRating": "Bitte wähle eine Bewertung.",
   "reviews.enterComment": "Bitte gib einen Kommentar ein.",
   "reviews.star": "Stern",
+  "reviews.editReview": "Bewertung bearbeiten",
+  "reviews.deleteReview": "Bewertung löschen",
+  "reviews.deleteConfirm": "Möchten Sie diese Bewertung wirklich löschen?",
+  "reviews.deleting": "Wird gelöscht…",
+  "reviews.updating": "Wird aktualisiert…",
+  "reviews.update": "Aktualisieren",
   "reviews.stars": "Sterne",
 
   "chats.title": "Chats",
