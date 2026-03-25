@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { reviewAPI } from '../services/api';
 import { DEFAULT_AVATAR_URL } from '../constants';
 import LoadingSpinner from '../components/LoadingSpinner';
 import EmptyWidget from '../components/EmptyWidget';
 import ErrorWidget from '../components/ErrorWidget';
+import EditReviewDialog from '../components/EditReviewDialog';
 import '../pages/FanCreatorReviews.css';
 
 function formatReviewDate(isoString) {
@@ -53,10 +55,16 @@ function StarOutline({ className }) {
  * @param {{ backTo: string }} props - backTo: URL for the back link
  */
 function CreatorReviewsContent({ backTo }) {
+  const { t } = useTranslation();
   const { creatorId } = useParams();
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [editingReview, setEditingReview] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
+  const [loggedInUser] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('user')); } catch { return null; }
+  });
 
   const fetchReviews = useCallback(async () => {
     if (!creatorId) return;
@@ -82,6 +90,30 @@ function CreatorReviewsContent({ backTo }) {
   useEffect(() => {
     fetchReviews();
   }, [fetchReviews]);
+
+  const handleDeleteReview = useCallback(async (reviewId) => {
+    if (!window.confirm(t('reviews.deleteConfirm'))) return;
+    setDeletingId(reviewId);
+    try {
+      await reviewAPI.deleteReview(reviewId);
+      setReviews((prev) => prev.filter((r) => r.id !== reviewId));
+    } catch (err) {
+      setError(err.response?.data?.error || err.message || t('common.errorGeneric'));
+    } finally {
+      setDeletingId(null);
+    }
+  }, [t]);
+
+  const handleEditSuccess = useCallback(() => {
+    fetchReviews();
+  }, [fetchReviews]);
+
+  const isOwnReview = (review) => {
+    if (!loggedInUser?.id) return false;
+    const uid = String(loggedInUser.id).replace(/^fan_/, '').replace(/^creator_/, '');
+    const reviewerId = String(review.reviewer?.id || '').replace(/^fan_/, '').replace(/^creator_/, '');
+    return uid === reviewerId;
+  };
 
   return (
     <main className="fan-creator-reviews-main">
@@ -121,12 +153,59 @@ function CreatorReviewsContent({ backTo }) {
                 {review.comment && (
                   <p className="fan-creator-review-comment">{review.comment}</p>
                 )}
+                {isOwnReview(review) && (
+                  <div className="fan-creator-review-actions">
+                    <button
+                      type="button"
+                      className="fan-creator-review-action-btn fan-creator-review-edit-btn"
+                      onClick={() => setEditingReview(review)}
+                    >
+                      <EditIcon />
+                      {t('reviews.editReview')}
+                    </button>
+                    <button
+                      type="button"
+                      className="fan-creator-review-action-btn fan-creator-review-delete-btn"
+                      onClick={() => handleDeleteReview(review.id)}
+                      disabled={deletingId === review.id}
+                    >
+                      <TrashIcon />
+                      {deletingId === review.id ? t('reviews.deleting') : t('reviews.deleteReview')}
+                    </button>
+                  </div>
+                )}
               </li>
             ))}
           </ul>
         )}
       </div>
+
+      {editingReview && (
+        <EditReviewDialog
+          review={editingReview}
+          onClose={() => setEditingReview(null)}
+          onSuccess={handleEditSuccess}
+        />
+      )}
     </main>
+  );
+}
+
+function EditIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16">
+      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+    </svg>
+  );
+}
+
+function TrashIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16">
+      <polyline points="3 6 5 6 21 6" />
+      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+    </svg>
   );
 }
 

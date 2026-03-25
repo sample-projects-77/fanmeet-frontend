@@ -32,6 +32,7 @@ function FanProfileEdit() {
   const [cropperOpen, setCropperOpen] = useState(false);
   const [rawImageSrc, setRawImageSrc] = useState(null);
   const [avatarUploading, setAvatarUploading] = useState(false);
+  const [avatarRemoving, setAvatarRemoving] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -198,6 +199,37 @@ function FanProfileEdit() {
     setRawImageSrc(null);
   }, [rawImageSrc]);
 
+  // ── Remove avatar ──
+  const handleRemoveAvatar = useCallback(async () => {
+    // Immediately clear avatar locally
+    setAvatarPreview(null);
+    setAvatarFile(null);
+    setAvatarRemoving(true);
+    setError('');
+    try {
+      const res = await profileAPI.deleteAvatar();
+      if (res.StatusCode === 200) {
+        const updated = { ...user, avatarUrl: null };
+        setUser(updated);
+        localStorage.setItem('user', JSON.stringify(updated));
+      } else {
+        // Restore preview on failure
+        setAvatarPreview(user?.avatarUrl || null);
+        setError(res.error || t('profileEdit.failedToSave'));
+      }
+    } catch (err) {
+      // Restore preview on failure
+      setAvatarPreview(user?.avatarUrl || null);
+      setError(
+        err.response?.data?.error ||
+          err.message ||
+          t('common.errorGeneric')
+      );
+    } finally {
+      setAvatarRemoving(false);
+    }
+  }, [user, t]);
+
   // ── Form submit (cover uploads here) ──
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -311,6 +343,18 @@ function FanProfileEdit() {
             </button>
           </div>
 
+          {(avatarPreview || user?.avatarUrl) && (
+            <button
+              type="button"
+              className="fan-profile-edit-remove-picture"
+              onClick={handleRemoveAvatar}
+              disabled={avatarRemoving || avatarUploading}
+            >
+              <TrashIcon />
+              {avatarRemoving ? <ButtonLoadingSpinner /> : t('profileEdit.removePicture')}
+            </button>
+          )}
+
           {error && (
             <div className="fan-profile-edit-error">{error}</div>
           )}
@@ -385,6 +429,15 @@ function FanProfileEdit() {
         fileName={pickerTarget === 'avatar' ? 'avatar.jpg' : 'cover.jpg'}
       />
     </div>
+  );
+}
+
+function TrashIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="18" height="18">
+      <polyline points="3 6 5 6 21 6" />
+      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+    </svg>
   );
 }
 
