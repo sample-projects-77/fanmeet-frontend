@@ -41,6 +41,11 @@ import CreatorProfile from './pages/CreatorProfile';
 import CreatorEditProfile from './pages/CreatorEditProfile';
 import CreatorCreatorProfile from './pages/CreatorCreatorProfile';
 import CreatorLayout from './layouts/CreatorLayout';
+import LegalHub from './pages/LegalHub';
+import FanTerms from './pages/FanTerms';
+import CreatorTerms from './pages/CreatorTerms';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import Contact from './pages/Contact';
 import FanLayout from './layouts/FanLayout';
 import './App.css';
 
@@ -70,6 +75,11 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup/fan" element={<FanSignup />} />
           <Route path="/signup/creator" element={<CreatorSignup />} />
+          <Route path="/terms" element={<LegalHub />} />
+          <Route path="/terms/fans" element={<FanTerms />} />
+          <Route path="/terms/creators" element={<CreatorTerms />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-code" element={<ResetCode />} />
           <Route path="/reset-password" element={<ResetPassword />} />
