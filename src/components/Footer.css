@@ -1,0 +1,26 @@
+.site-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 20px;
+}
+
+.site-footer-link {
+  font-size: 12px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.site-footer-link:hover {
+  color: var(--text-secondary);
+}
+
+.site-footer-dot {
+  color: var(--text-muted);
+  font-size: 12px;
+  opacity: 0.6;
+}

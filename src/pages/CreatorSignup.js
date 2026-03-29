@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { authAPI } from '../services/api';
 import { ButtonLoadingSpinner } from '../components/LoadingSpinner';
 import './AuthForm.css';
@@ -21,6 +21,14 @@ function CreatorSignup() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [consent, setConsent] = useState({ terms: false, age: false });
+
+  const allConsented = consent.terms && consent.age;
+
+  const toggleConsent = (key) => {
+    setConsent((prev) => ({ ...prev, [key]: !prev[key] }));
+    setError('');
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -40,6 +48,10 @@ function CreatorSignup() {
     }
     if (formData.password.length < 6) {
       setError(t('auth.passwordMinLength'));
+      return;
+    }
+    if (!allConsented) {
+      setError(t('auth.consent.requiredCheckboxes'));
       return;
     }
 
@@ -177,7 +189,36 @@ function CreatorSignup() {
               </button>
             </div>
           </div>
-          <button type="submit" className="auth-submit" disabled={loading} aria-busy={loading}>
+          <div className="auth-consent-group">
+            <label className="auth-checkbox-label">
+              <input
+                type="checkbox"
+                checked={consent.terms}
+                onChange={() => toggleConsent('terms')}
+              />
+              <span className="auth-checkbox-custom" />
+              <span className="auth-checkbox-text">
+                <Trans
+                  i18nKey="auth.consent.creatorTerms"
+                  components={{
+                    termsLink: <Link to="/terms/creators" className="auth-consent-link" />,
+                    privacyLink: <Link to="/privacy" className="auth-consent-link" />,
+                  }}
+                />
+              </span>
+            </label>
+            <label className="auth-checkbox-label">
+              <input
+                type="checkbox"
+                checked={consent.age}
+                onChange={() => toggleConsent('age')}
+              />
+              <span className="auth-checkbox-custom" />
+              <span className="auth-checkbox-text">{t('auth.consent.ageConfirmation')}</span>
+            </label>
+            <p className="auth-consent-note">{t('auth.consent.creatorNote')}</p>
+          </div>
+          <button type="submit" className="auth-submit" disabled={loading || !allConsented} aria-busy={loading}>
             {loading ? <ButtonLoadingSpinner /> : t('auth.createAccountButton')}
           </button>
         </form>
