@@ -5,14 +5,19 @@ import LanguageSwitcher from '../components/LanguageSwitcher';
 import './LegalPage.css';
 
 const SECTIONS = [
-  { titleKey: 'legal.creatorTerms.eligibilityTitle', bodyKey: 'legal.creatorTerms.eligibility' },
-  { titleKey: 'legal.creatorTerms.profileTitle', bodyKey: 'legal.creatorTerms.profile' },
-  { titleKey: 'legal.creatorTerms.payoutTitle', bodyKey: 'legal.creatorTerms.payout' },
-  { titleKey: 'legal.creatorTerms.responsibilitiesTitle', bodyKey: 'legal.creatorTerms.responsibilities' },
-  { titleKey: 'legal.creatorTerms.offPlatformTitle', bodyKey: 'legal.creatorTerms.offPlatform' },
-  { titleKey: 'legal.creatorTerms.cancellationsTitle', bodyKey: 'legal.creatorTerms.cancellations' },
-  { titleKey: 'legal.creatorTerms.platformRightsTitle', bodyKey: 'legal.creatorTerms.platformRights' },
-  { titleKey: 'legal.creatorTerms.liabilityTitle', bodyKey: 'legal.creatorTerms.liability' },
+  { titleKey: 'legal.creatorTerms.s1Title', bodyKey: 'legal.creatorTerms.s1Body' },
+  { titleKey: 'legal.creatorTerms.s2Title', bodyKey: 'legal.creatorTerms.s2Body' },
+  { titleKey: 'legal.creatorTerms.s3Title', bodyKey: 'legal.creatorTerms.s3Body' },
+  { titleKey: 'legal.creatorTerms.s4Title', bodyKey: 'legal.creatorTerms.s4Body' },
+  { titleKey: 'legal.creatorTerms.s5Title', bodyKey: 'legal.creatorTerms.s5Body' },
+  { titleKey: 'legal.creatorTerms.s6Title', bodyKey: 'legal.creatorTerms.s6Body' },
+  { titleKey: 'legal.creatorTerms.s7Title', bodyKey: 'legal.creatorTerms.s7Body' },
+  { titleKey: 'legal.creatorTerms.s8Title', bodyKey: 'legal.creatorTerms.s8Body' },
+  { titleKey: 'legal.creatorTerms.s9Title', bodyKey: 'legal.creatorTerms.s9Body' },
+  { titleKey: 'legal.creatorTerms.s10Title', bodyKey: 'legal.creatorTerms.s10Body' },
+  { titleKey: 'legal.creatorTerms.s11Title', bodyKey: 'legal.creatorTerms.s11Body' },
+  { titleKey: 'legal.creatorTerms.s12Title', bodyKey: 'legal.creatorTerms.s12Body' },
+  { titleKey: 'legal.creatorTerms.s13Title', bodyKey: 'legal.creatorTerms.s13Body' },
 ];
 
 function CreatorTerms() {
@@ -28,13 +33,15 @@ function CreatorTerms() {
 
         <div className="legal-header">
           <h1 className="legal-title">{t('legal.creatorTerms.title')}</h1>
-          <p className="legal-intro">{t('legal.creatorTerms.intro')}</p>
+          <p className="legal-intro" style={{ fontWeight: 700, marginBottom: 4 }}>{t('legal.creatorTerms.subtitle')}</p>
+          <p className="legal-intro" style={{ marginBottom: 16 }}>{t('legal.creatorTerms.date')}</p>
+          <p className="legal-intro" style={{ whiteSpace: 'pre-line' }}>{t('legal.creatorTerms.intro')}</p>
         </div>
 
         {SECTIONS.map(({ titleKey, bodyKey }) => (
           <div className="legal-section" key={titleKey}>
             <h2 className="legal-section-title">{t(titleKey)}</h2>
-            <p className="legal-section-body">{t(bodyKey)}</p>
+            <p className="legal-section-body" style={{ whiteSpace: 'pre-line' }}>{t(bodyKey)}</p>
           </div>
         ))}
       </div>
