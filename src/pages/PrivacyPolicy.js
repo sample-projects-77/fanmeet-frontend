@@ -5,18 +5,18 @@ import LanguageSwitcher from '../components/LanguageSwitcher';
 import './LegalPage.css';
 
 const SECTIONS = [
-  { titleKey: 'legal.privacy.controllerTitle', bodyKey: 'legal.privacy.controller' },
-  { titleKey: 'legal.privacy.dataCollectedTitle', bodyKey: 'legal.privacy.dataCollected' },
-  { titleKey: 'legal.privacy.paymentTitle', bodyKey: 'legal.privacy.payment' },
-  { titleKey: 'legal.privacy.videoTitle', bodyKey: 'legal.privacy.video' },
-  { titleKey: 'legal.privacy.legalBasesTitle', bodyKey: 'legal.privacy.legalBases' },
-  { titleKey: 'legal.privacy.hostingTitle', bodyKey: 'legal.privacy.hosting' },
-  { titleKey: 'legal.privacy.retentionTitle', bodyKey: 'legal.privacy.retention' },
-  { titleKey: 'legal.privacy.rightsTitle', bodyKey: 'legal.privacy.rights' },
-  { titleKey: 'legal.privacy.securityTitle', bodyKey: 'legal.privacy.security' },
-  { titleKey: 'legal.privacy.cookiesTitle', bodyKey: 'legal.privacy.cookies' },
-  { titleKey: 'legal.privacy.changesTitle', bodyKey: 'legal.privacy.changes' },
-  { titleKey: 'legal.privacy.contactTitle', bodyKey: 'legal.privacy.contact' },
+  { titleKey: 'legal.privacy.s1Title', bodyKey: 'legal.privacy.s1Body' },
+  { titleKey: 'legal.privacy.s2Title', bodyKey: 'legal.privacy.s2Body' },
+  { titleKey: 'legal.privacy.s3Title', bodyKey: 'legal.privacy.s3Body' },
+  { titleKey: 'legal.privacy.s4Title', bodyKey: 'legal.privacy.s4Body' },
+  { titleKey: 'legal.privacy.s5Title', bodyKey: 'legal.privacy.s5Body' },
+  { titleKey: 'legal.privacy.s6Title', bodyKey: 'legal.privacy.s6Body' },
+  { titleKey: 'legal.privacy.s7Title', bodyKey: 'legal.privacy.s7Body' },
+  { titleKey: 'legal.privacy.s8Title', bodyKey: 'legal.privacy.s8Body' },
+  { titleKey: 'legal.privacy.s9Title', bodyKey: 'legal.privacy.s9Body' },
+  { titleKey: 'legal.privacy.s10Title', bodyKey: 'legal.privacy.s10Body' },
+  { titleKey: 'legal.privacy.s11Title', bodyKey: 'legal.privacy.s11Body' },
+  { titleKey: 'legal.privacy.s12Title', bodyKey: 'legal.privacy.s12Body' },
 ];
 
 function PrivacyPolicy() {
@@ -33,13 +33,14 @@ function PrivacyPolicy() {
 
         <div className="legal-header">
           <h1 className="legal-title">{t('legal.privacy.title')}</h1>
-          <p className="legal-intro">{t('legal.privacy.intro')}</p>
+          <p className="legal-intro" style={{ fontWeight: 700, marginBottom: 4 }}>{t('legal.privacy.subtitle')}</p>
+          <p className="legal-intro" style={{ marginBottom: 16 }}>{t('legal.privacy.date')}</p>
         </div>
 
         {SECTIONS.map(({ titleKey, bodyKey }) => (
           <div className="legal-section" key={titleKey}>
             <h2 className="legal-section-title">{t(titleKey)}</h2>
-            <p className="legal-section-body">{t(bodyKey)}</p>
+            <p className="legal-section-body" style={{ whiteSpace: 'pre-line' }}>{t(bodyKey)}</p>
           </div>
         ))}
       </div>

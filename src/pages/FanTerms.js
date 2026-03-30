@@ -5,14 +5,18 @@ import LanguageSwitcher from '../components/LanguageSwitcher';
 import './LegalPage.css';
 
 const SECTIONS = [
-  { titleKey: 'legal.fanTerms.eligibilityTitle', bodyKey: 'legal.fanTerms.eligibility' },
-  { titleKey: 'legal.fanTerms.bookingTitle', bodyKey: 'legal.fanTerms.booking' },
-  { titleKey: 'legal.fanTerms.platformTitle', bodyKey: 'legal.fanTerms.platform' },
-  { titleKey: 'legal.fanTerms.responsibilitiesTitle', bodyKey: 'legal.fanTerms.responsibilities' },
-  { titleKey: 'legal.fanTerms.cancellationsTitle', bodyKey: 'legal.fanTerms.cancellations' },
-  { titleKey: 'legal.fanTerms.prohibitedTitle', bodyKey: 'legal.fanTerms.prohibited' },
-  { titleKey: 'legal.fanTerms.terminationTitle', bodyKey: 'legal.fanTerms.termination' },
-  { titleKey: 'legal.fanTerms.withdrawalTitle', bodyKey: 'legal.fanTerms.withdrawal' },
+  { titleKey: 'legal.fanTerms.s1Title', bodyKey: 'legal.fanTerms.s1Body' },
+  { titleKey: 'legal.fanTerms.s2Title', bodyKey: 'legal.fanTerms.s2Body' },
+  { titleKey: 'legal.fanTerms.s3Title', bodyKey: 'legal.fanTerms.s3Body' },
+  { titleKey: 'legal.fanTerms.s4Title', bodyKey: 'legal.fanTerms.s4Body' },
+  { titleKey: 'legal.fanTerms.s5Title', bodyKey: 'legal.fanTerms.s5Body' },
+  { titleKey: 'legal.fanTerms.s6Title', bodyKey: 'legal.fanTerms.s6Body' },
+  { titleKey: 'legal.fanTerms.s7Title', bodyKey: 'legal.fanTerms.s7Body' },
+  { titleKey: 'legal.fanTerms.s8Title', bodyKey: 'legal.fanTerms.s8Body' },
+  { titleKey: 'legal.fanTerms.s9Title', bodyKey: 'legal.fanTerms.s9Body' },
+  { titleKey: 'legal.fanTerms.s10Title', bodyKey: 'legal.fanTerms.s10Body' },
+  { titleKey: 'legal.fanTerms.s11Title', bodyKey: 'legal.fanTerms.s11Body' },
+  { titleKey: 'legal.fanTerms.s12Title', bodyKey: 'legal.fanTerms.s12Body' },
 ];
 
 function FanTerms() {
@@ -28,13 +32,15 @@ function FanTerms() {
 
         <div className="legal-header">
           <h1 className="legal-title">{t('legal.fanTerms.title')}</h1>
-          <p className="legal-intro">{t('legal.fanTerms.intro')}</p>
+          <p className="legal-intro" style={{ fontWeight: 700, marginBottom: 4 }}>{t('legal.fanTerms.subtitle')}</p>
+          <p className="legal-intro" style={{ marginBottom: 16 }}>{t('legal.fanTerms.date')}</p>
+          <p className="legal-intro" style={{ whiteSpace: 'pre-line' }}>{t('legal.fanTerms.intro')}</p>
         </div>
 
         {SECTIONS.map(({ titleKey, bodyKey }) => (
           <div className="legal-section" key={titleKey}>
             <h2 className="legal-section-title">{t(titleKey)}</h2>
-            <p className="legal-section-body">{t(bodyKey)}</p>
+            <p className="legal-section-body" style={{ whiteSpace: 'pre-line' }}>{t(bodyKey)}</p>
           </div>
         ))}
       </div>
