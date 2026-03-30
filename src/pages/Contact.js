@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { contactAPI } from '../services/api';
+import { appToast } from '../utils/toast';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import Footer from '../components/Footer';
 import './Contact.css';
@@ -9,6 +11,7 @@ function Contact() {
   const { t } = useTranslation();
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
   const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
   function handleChange(e) {
@@ -16,7 +19,7 @@ function Contact() {
     if (error) setError('');
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
 
     if (!form.name.trim() || !form.email.trim() || !form.subject.trim() || !form.message.trim()) {
@@ -31,7 +34,24 @@ function Contact() {
     }
 
     setError('');
-    setSubmitted(true);
+    setSubmitting(true);
+    try {
+      await contactAPI.submit({
+        name: form.name.trim(),
+        subject: form.subject.trim(),
+        email: form.email.trim(),
+        message: form.message.trim(),
+      });
+      appToast.success(t('contact.success'));
+      setForm({ name: '', email: '', subject: '', message: '' });
+      setSubmitted(true);
+    } catch (err) {
+      const msg = err.response?.data?.error || err.message || t('common.errorGeneric');
+      setError(msg);
+      appToast.error(msg);
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -119,8 +139,8 @@ function Contact() {
 
               {error && <p className="contact-error">{error}</p>}
 
-              <button type="submit" className="contact-submit">
-                {t('contact.submit')}
+              <button type="submit" className="contact-submit" disabled={submitting}>
+                {submitting ? t('contact.submitting') : t('contact.submit')}
               </button>
 
               <p className="contact-helper">{t('contact.helperText')}</p>

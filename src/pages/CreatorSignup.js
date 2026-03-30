@@ -12,7 +12,6 @@ function CreatorSignup() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     userName: '',
-    bio: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -63,7 +62,6 @@ function CreatorSignup() {
       submitData.append('email', formData.email.trim());
       submitData.append('password', formData.password);
       submitData.append('userName', formData.userName.trim());
-      if (formData.bio?.trim()) submitData.append('bio', formData.bio.trim());
 
       const response = await authAPI.registerCreator(submitData);
       if (response.StatusCode === 200 && response.data && !response.error) {
@@ -108,18 +106,6 @@ function CreatorSignup() {
               required
               placeholder={t('auth.usernamePlaceholder')}
               autoComplete="username"
-            />
-          </div>
-          <div className="auth-field">
-            <label htmlFor="bio">{t('auth.bio')}</label>
-            <textarea
-              id="bio"
-              name="bio"
-              value={formData.bio}
-              onChange={handleChange}
-              placeholder={t('auth.bioPlaceholder')}
-              rows={3}
-              className="auth-textarea"
             />
           </div>
           <div className="auth-field">
@@ -216,7 +202,6 @@ function CreatorSignup() {
               <span className="auth-checkbox-custom" />
               <span className="auth-checkbox-text">{t('auth.consent.ageConfirmation')}</span>
             </label>
-            <p className="auth-consent-note">{t('auth.consent.creatorNote')}</p>
           </div>
           <button type="submit" className="auth-submit" disabled={loading || !allConsented} aria-busy={loading}>
             {loading ? <ButtonLoadingSpinner /> : t('auth.createAccountButton')}

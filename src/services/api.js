@@ -391,6 +391,14 @@ export const connectAPI = {
   },
 };
 
+// Contact (public – no auth required)
+export const contactAPI = {
+  submit: async ({ name, subject, email, message }) => {
+    const response = await api.post('/contact-us', { name, subject, email, message });
+    return response.data;
+  },
+};
+
 export default api;
 
 

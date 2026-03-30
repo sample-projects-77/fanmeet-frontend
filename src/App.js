@@ -58,8 +58,10 @@ function ScrollToTop() {
       window.history.scrollRestoration = 'manual';
     }
   }, []);
-  React.useEffect(() => {
-    window.scrollTo(0, 0);
+  // useLayoutEffect fires before the browser paints, so the user never
+  // sees the new page rendered at the old scroll position.
+  React.useLayoutEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, [pathname]);
   return null;
 }

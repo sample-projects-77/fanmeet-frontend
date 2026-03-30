@@ -449,7 +449,7 @@
   "legal.privacy.title": "Datenschutzerklärung",
   "legal.privacy.intro": "Diese Datenschutzerklärung erläutert, wie Fan Session personenbezogene Daten bei der Nutzung der App und Webplattform durch Fans und Creator verarbeitet.",
   "legal.privacy.controllerTitle": "Verantwortlicher",
-  "legal.privacy.controller": "George Jerjes, Fan-session.com, c/o Online-Impressum #7159, Europaring 90, 53757 Sankt Augustin, Deutschland. E-Mail: TODO — finale Datenschutz-E-Mail einfügen.",
+  "legal.privacy.controller": "George Jerjes, Fan-session.com, c/o Online-Impressum #7159, Europaring 90, 53757 Sankt Augustin, Deutschland. E-Mail: Kontakt@fan-session.com",
   "legal.privacy.dataCollectedTitle": "Welche Daten wir erheben",
   "legal.privacy.dataCollected": "Je nach Nutzung können Kontodaten wie Benutzername, E-Mail-Adresse, Passwort und Profilbilder, außerdem Buchungsdaten, Bewertungen, Kommentare, Dienstleistungskategorien, Stundensätze und Stripe-Kontodaten für Auszahlungen verarbeitet werden. Zusätzlich können technische Daten wie IP-Adresse, Gerätetyp, Betriebssystem, Browsertyp, Zugriffszeitpunkt und aufgerufene Seiten automatisch erhoben werden.",
   "legal.privacy.paymentTitle": "Zahlungsdaten",
@@ -471,7 +471,7 @@
   "legal.privacy.changesTitle": "Änderungen dieser Datenschutzerklärung",
   "legal.privacy.changes": "Fan Session kann diese Datenschutzerklärung anpassen. Die aktuelle Fassung sollte jederzeit auf der Website und in der App abrufbar sein. Über wesentliche Änderungen können Nutzer informiert werden.",
   "legal.privacy.contactTitle": "Kontakt",
-  "legal.privacy.contact": "Bei Fragen zum Datenschutz oder zur Ausübung Ihrer Rechte: George Jerjes, Fan-session.com, c/o Online-Impressum #7159, Europaring 90, 53757 Sankt Augustin, Deutschland. E-Mail: TODO — finale Datenschutz-E-Mail einfügen.",
+  "legal.privacy.contact": "Bei Fragen zum Datenschutz oder zur Ausübung Ihrer Rechte: George Jerjes, Fan-session.com, c/o Online-Impressum #7159, Europaring 90, 53757 Sankt Augustin, Deutschland. E-Mail: Kontakt@fan-session.com",
 
   "footer.contact": "Kontakt",
 
@@ -484,11 +484,12 @@
   "contact.fieldEmail": "E-Mail-Adresse",
   "contact.fieldSubject": "Betreff",
   "contact.fieldMessage": "Nachricht",
-  "contact.placeholderName": "Geben Sie Ihren vollständigen Namen ein",
+  "contact.placeholderName": "Geben Sie Ihren Namen ein",
   "contact.placeholderEmail": "Geben Sie Ihre E-Mail-Adresse ein",
   "contact.placeholderSubject": "Worum geht es?",
   "contact.placeholderMessage": "Schreiben Sie hier Ihre Nachricht...",
   "contact.submit": "Nachricht senden",
+  "contact.submitting": "Wird gesendet...",
   "contact.success": "Ihre Nachricht wurde erfolgreich übermittelt.",
   "contact.validationRequired": "Bitte füllen Sie alle Pflichtfelder aus.",
   "contact.validationEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein."
