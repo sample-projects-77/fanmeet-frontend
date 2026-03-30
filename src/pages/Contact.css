@@ -190,6 +190,11 @@
   transform: scale(0.98);
 }
 
+.contact-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .contact-helper {
   font-size: 13px;
   color: var(--text-muted);

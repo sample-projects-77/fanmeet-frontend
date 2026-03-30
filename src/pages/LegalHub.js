@@ -10,7 +10,8 @@ function LegalHub() {
   return (
     <div className="legal-page">
       <div className="legal-page-inner">
-        <div className="legal-topbar-right">
+        <div className="legal-topbar">
+          <Link to="/" className="legal-back">← {t('common.back')}</Link>
           <LanguageSwitcher />
         </div>
         <div className="legal-header">

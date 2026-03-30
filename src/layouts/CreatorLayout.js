@@ -77,9 +77,9 @@ export default function CreatorLayout() {
   }, [currentTabKey, mountedTabs]);
 
   // Scroll to top whenever the active tab changes
-  useEffect(() => {
+  React.useLayoutEffect(() => {
     if (currentTabKey) {
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     }
   }, [currentTabKey]);
 

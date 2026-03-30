@@ -36,6 +36,10 @@
   font-weight: 500;
   font-family: var(--font-sans);
   text-decoration: none;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
   transition: color 0.15s;
 }
 

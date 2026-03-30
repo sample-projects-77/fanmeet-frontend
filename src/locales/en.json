@@ -449,7 +449,7 @@
   "legal.privacy.title": "Privacy Policy",
   "legal.privacy.intro": "This Privacy Policy explains how Fan Session collects, uses, stores, and shares personal data when users access the app and web platform as fans or creators.",
   "legal.privacy.controllerTitle": "Data Controller",
-  "legal.privacy.controller": "Fan Session is operated by: George Jerjes, Fan-session.com, c/o Online-Impressum #7159, Europaring 90, 53757 Sankt Augustin, Germany. Email: TODO — replace placeholder with final privacy contact email.",
+  "legal.privacy.controller": "Fan Session is operated by: George Jerjes, Fan-session.com, c/o Online-Impressum #7159, Europaring 90, 53757 Sankt Augustin, Germany. Email: Kontakt@fan-session.com",
   "legal.privacy.dataCollectedTitle": "Data We Collect",
   "legal.privacy.dataCollected": "Depending on how the platform is used, Fan Session may collect account data such as username, email address, password, and profile images, as well as booking data, reviews, comments, creator category information, hourly rate information, and payout-related Stripe account data. Technical data such as IP address, browser type, device type, operating system, access time, and visited pages may also be collected automatically.",
   "legal.privacy.paymentTitle": "Payment Data",
@@ -471,7 +471,7 @@
   "legal.privacy.changesTitle": "Changes to This Policy",
   "legal.privacy.changes": "Fan Session may update this Privacy Policy from time to time. The current version should be made available on the website and in the app. Users may be notified of material changes via the app or by email.",
   "legal.privacy.contactTitle": "Contact",
-  "legal.privacy.contact": "For privacy-related questions or to exercise your rights, contact: George Jerjes, Fan-session.com, c/o Online-Impressum #7159, Europaring 90, 53757 Sankt Augustin, Germany. Email: TODO — replace placeholder with final privacy contact email.",
+  "legal.privacy.contact": "For privacy-related questions or to exercise your rights, contact: George Jerjes, Fan-session.com, c/o Online-Impressum #7159, Europaring 90, 53757 Sankt Augustin, Germany. Email: Kontakt@fan-session.com",
 
   "footer.contact": "Contact",
 
@@ -489,6 +489,7 @@
   "contact.placeholderSubject": "What is this about?",
   "contact.placeholderMessage": "Write your message here...",
   "contact.submit": "Send Message",
+  "contact.submitting": "Sending...",
   "contact.success": "Your message has been submitted successfully.",
   "contact.validationRequired": "Please fill in all required fields.",
   "contact.validationEmail": "Please enter a valid email address."

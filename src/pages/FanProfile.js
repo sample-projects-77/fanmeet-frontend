@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { authAPI } from '../services/api';
 import { DEFAULT_AVATAR_URL } from '../constants';
 import FanNav from '../components/FanNav';
-import { SettingsIcon, KeyIcon, OutlinedUserIcon, OutgoingIcon, DeleteAccountIcon, BlockedIcon } from '../components/ProfileIcons';
+import { SettingsIcon, KeyIcon, OutlinedUserIcon, OutgoingIcon, DeleteAccountIcon, BlockedIcon, PrivacyIcon } from '../components/ProfileIcons';
 import DeleteAccountDialog from '../components/DeleteAccountDialog';
 import './FanProfile.css';
 
@@ -109,6 +109,13 @@ function FanProfile({ embedded, user: userProp, onLogout: onLogoutProp }) {
                 <BlockedIcon />
               </span>
               <span className="fan-profile-setting-label">{t('profile.blockedUsers')}</span>
+              <span className="fan-profile-setting-arrow">›</span>
+            </Link>
+            <Link to="/privacy" className="fan-profile-setting-row">
+              <span className="fan-profile-setting-icon fan-profile-setting-icon--purple">
+                <PrivacyIcon />
+              </span>
+              <span className="fan-profile-setting-label">{t('legal.privacy.title')}</span>
               <span className="fan-profile-setting-arrow">›</span>
             </Link>
             <button

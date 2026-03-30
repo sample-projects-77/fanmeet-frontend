@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import './LegalPage.css';
@@ -21,12 +21,13 @@ const SECTIONS = [
 
 function PrivacyPolicy() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   return (
     <div className="legal-page">
       <div className="legal-page-inner">
         <div className="legal-topbar">
-          <Link to="/terms" className="legal-back">← {t('legal.backToTerms')}</Link>
+          <button type="button" className="legal-back" onClick={() => navigate(-1)}>← {t('common.back')}</button>
           <LanguageSwitcher />
         </div>
 

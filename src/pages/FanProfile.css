@@ -205,6 +205,11 @@
   background: #22c55e;
 }
 
+/* Privacy Policy – purple */
+.fan-profile-setting-icon--purple {
+  background: #8b5cf6;
+}
+
 .fan-profile-setting-label {
   flex: 1;
 }
