@@ -49,7 +49,7 @@ function Imprint() {
           </div>
           <div className="imprint-row">
             <span className="imprint-label">{t('legal.imprint.vatId')}</span>
-            <span className="imprint-value">DE123456789</span>
+            <span className="imprint-value">DE313513325</span>
           </div>
         </div>
 
