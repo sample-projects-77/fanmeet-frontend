@@ -468,6 +468,7 @@
   "legal.creatorTerms.s13Title": "\u00a7 13  Final Provisions",
   "legal.creatorTerms.s13Body": "13.1  German law applies.\n13.2  The place of jurisdiction is the registered office of the Provider.\n13.3  Should any provision of these Terms be or become invalid, the validity of the remaining provisions shall remain unaffected.",
 
+  "legal.legalNotice": "LEGAL NOTICE",
   "legal.privacy.title": "PRIVACY POLICY (III)",
   "legal.privacy.subtitle": "FAN SESSION \u2013 APP AND WEB PLATFORM",
   "legal.privacy.date": "As of: March 25, 2026",
@@ -515,5 +516,22 @@
   "contact.submitting": "Sending...",
   "contact.success": "Your message has been submitted successfully.",
   "contact.validationRequired": "Please fill in all required fields.",
-  "contact.validationEmail": "Please enter a valid email address."
+  "contact.validationEmail": "Please enter a valid email address.",
+
+  "legal.hub.imprintTitle": "Imprint",
+  "legal.hub.imprintDesc": "Legal information about the provider, owner, contact details, and responsible person for the content of Fan Session.",
+
+  "legal.imprint.title": "Imprint",
+  "legal.imprint.provider": "Provider:",
+  "legal.imprint.owner": "Owner",
+  "legal.imprint.address": "Address",
+  "legal.imprint.email": "Email",
+  "legal.imprint.website": "Website",
+  "legal.imprint.vatId": "VAT ID",
+  "legal.imprint.responsible": "Responsible for the content (§ 18 para. 2 MStV):",
+  "legal.imprint.addressAsAbove": "Address as above",
+  "legal.imprint.legalNoticeTitle": "Legal Notice (Imprint)",
+  "legal.imprint.legalNoticeBody": "Fan Session is operated by George Jerjes as a private individual. The platform acts solely as an intermediary between fans and creators for the purpose of facilitating paid 1:1 video sessions. Fan Session is not a party to any session contract concluded between a fan and a creator.\n\nDespite careful content control, we assume no liability for the content of external links. The operators of linked pages are solely responsible for their content.\n\nAll content published on this platform is subject to German copyright law. Any use, reproduction, or distribution requires the prior written consent of the respective author or rights holder.",
+
+  "footer.imprint": "Legal Notice"
 }

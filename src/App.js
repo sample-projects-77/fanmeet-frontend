@@ -45,6 +45,7 @@ import LegalHub from './pages/LegalHub';
 import FanTerms from './pages/FanTerms';
 import CreatorTerms from './pages/CreatorTerms';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import Imprint from './pages/Imprint';
 import Contact from './pages/Contact';
 import FanLayout from './layouts/FanLayout';
 import './App.css';
@@ -81,6 +82,7 @@ function App() {
           <Route path="/terms/fans" element={<FanTerms />} />
           <Route path="/terms/creators" element={<CreatorTerms />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/imprint" element={<Imprint />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-code" element={<ResetCode />} />

@@ -468,6 +468,7 @@
   "legal.creatorTerms.s13Title": "\u00a7 13 Schlussbestimmungen",
   "legal.creatorTerms.s13Body": "13.1 Es gilt deutsches Recht.\n13.2 Gerichtsstand ist der Sitz des Anbieters.\n13.3 Sollte eine Bestimmung dieser Nutzungsbedingungen unwirksam sein oder werden, bleibt die Wirksamkeit der \u00fcbrigen Bestimmungen unber\u00fchrt.",
 
+  "legal.legalNotice": "RECHTLICHER HINWEIS",
   "legal.privacy.title": "DATENSCHUTZERKL\u00c4RUNG (III)",
   "legal.privacy.subtitle": "FAN SESSION \u2013 APP UND WEBPLATTFORM",
   "legal.privacy.date": "Stand: 27. M\u00e4rz 2026",
@@ -515,5 +516,22 @@
   "contact.submitting": "Wird gesendet...",
   "contact.success": "Ihre Nachricht wurde erfolgreich übermittelt.",
   "contact.validationRequired": "Bitte füllen Sie alle Pflichtfelder aus.",
-  "contact.validationEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein."
+  "contact.validationEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+
+  "legal.hub.imprintTitle": "Impressum",
+  "legal.hub.imprintDesc": "Rechtliche Angaben zum Anbieter, Eigentümer, Kontaktdaten und Verantwortlichen für den Inhalt von Fan Session.",
+
+  "legal.imprint.title": "Impressum",
+  "legal.imprint.provider": "Anbieter:",
+  "legal.imprint.owner": "Inhaber",
+  "legal.imprint.address": "Adresse",
+  "legal.imprint.email": "E-Mail",
+  "legal.imprint.website": "Website",
+  "legal.imprint.vatId": "USt-IdNr.",
+  "legal.imprint.responsible": "Verantwortlich für den Inhalt (§ 18 Abs. 2 MStV):",
+  "legal.imprint.addressAsAbove": "Adresse wie oben",
+  "legal.imprint.legalNoticeTitle": "Rechtlicher Hinweis (Impressum)",
+  "legal.imprint.legalNoticeBody": "Fan Session wird von George Jerjes als Privatperson betrieben. Die Plattform fungiert ausschließlich als Vermittler zwischen Fans und Creatorn zur Ermöglichung kostenpflichtiger 1:1-Videosessions. Fan Session ist keine Vertragspartei eines zwischen Fan und Creator geschlossenen Sessionvertrags.\n\nTrotz sorgfältiger inhaltlicher Kontrolle übernehmen wir keine Haftung für die Inhalte externer Links. Für den Inhalt der verlinkten Seiten sind ausschließlich deren Betreiber verantwortlich.\n\nAlle auf dieser Plattform veröffentlichten Inhalte unterliegen dem deutschen Urheberrecht. Jede Verwendung, Vervielfältigung oder Verbreitung bedarf der vorherigen schriftlichen Zustimmung des jeweiligen Autors oder Rechteinhabers.",
+
+  "footer.imprint": "Impressum"
 }

@@ -13,6 +13,8 @@ function Footer() {
       <Link to="/privacy" className="site-footer-link">{t('footer.privacy')}</Link>
       <span className="site-footer-dot">·</span>
       <Link to="/contact" className="site-footer-link">{t('footer.contact')}</Link>
+      <span className="site-footer-dot">·</span>
+      <Link to="/imprint" className="site-footer-link">{t('footer.imprint')}</Link>
     </footer>
   );
 }
