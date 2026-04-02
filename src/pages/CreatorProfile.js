@@ -189,11 +189,11 @@ function CreatorProfile({ embedded, user: userProp, onLogout: onLogoutProp }) {
               </span>
               <span className="fan-profile-setting-arrow">›</span>
             </button>
-            <Link to="/privacy" className="fan-profile-setting-row">
+            <Link to="/imprint" className="fan-profile-setting-row">
               <span className="fan-profile-setting-icon fan-profile-setting-icon--purple">
                 <PrivacyIcon />
               </span>
-              <span className="fan-profile-setting-label">{t('legal.privacy.title')}</span>
+              <span className="fan-profile-setting-label">{t('legal.legalNotice')}</span>
               <span className="fan-profile-setting-arrow">›</span>
             </Link>
             <button

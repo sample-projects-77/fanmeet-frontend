@@ -37,6 +37,12 @@ function LegalHub() {
             <p className="legal-card-desc">{t('legal.hub.privacyDesc')}</p>
             <div className="legal-card-arrow">→</div>
           </Link>
+
+          <Link to="/imprint" className="legal-card">
+            <h2 className="legal-card-title">{t('legal.hub.imprintTitle')}</h2>
+            <p className="legal-card-desc">{t('legal.hub.imprintDesc')}</p>
+            <div className="legal-card-arrow">→</div>
+          </Link>
         </div>
 
         <p className="legal-hub-note">{t('legal.hub.note')}</p>
