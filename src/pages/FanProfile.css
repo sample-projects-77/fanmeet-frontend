@@ -7,7 +7,7 @@
 }
 
 .fan-profile-main {
-  padding: 16px 16px 48px;
+  padding: 16px 16px calc(80px + env(safe-area-inset-bottom, 0px));
 }
 
 .fan-profile-container {
