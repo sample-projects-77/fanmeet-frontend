@@ -86,8 +86,9 @@
   overflow-x: hidden;
 }
 
-/* Angebote table: outer grid border */
-.creator-offers-table-wrap:not(:has(.creator-offers-table--availability)) {
+/* Both tables: outer golden border + rounded corners */
+.creator-offers-table-wrap:not(:has(.creator-offers-table--availability)),
+.creator-offers-table-wrap:has(.creator-offers-table--availability) {
   border: 1px solid rgba(244, 192, 70, 0.45);
   border-radius: 10px;
   overflow: hidden;
@@ -159,11 +160,8 @@
     box-sizing: border-box;
   }
 
-  /* Availability table: card container with border, rounded corners, and internal padding */
+  /* Availability table: card container sizing */
   .creator-offers-table-wrap:has(.creator-offers-table--availability) {
-    border: 1px solid rgba(244, 192, 70, 0.3);
-    border-radius: 12px;
-    overflow: hidden;
     box-sizing: border-box;
   }
 
@@ -459,21 +457,25 @@
   min-width: 140px;
 }
 
-/* Angebote table: vertical grid lines between columns */
-.creator-offers-table:not(.creator-offers-table--availability) th,
-.creator-offers-table:not(.creator-offers-table--availability) td {
+/* Both tables: vertical grid lines between columns */
+.creator-offers-table th,
+.creator-offers-table td {
   border-right: 1px solid rgba(244, 192, 70, 0.25);
   text-align: center;
 }
-.creator-offers-table:not(.creator-offers-table--availability) th:first-child,
-.creator-offers-table:not(.creator-offers-table--availability) td:first-child {
+.creator-offers-table th:first-child,
+.creator-offers-table td:first-child {
   text-align: left;
   padding-left: 16px;
 }
-.creator-offers-table:not(.creator-offers-table--availability) th:last-child,
-.creator-offers-table:not(.creator-offers-table--availability) td:last-child {
+.creator-offers-table th:last-child,
+.creator-offers-table td:last-child {
   border-right: none;
-  text-align: center;
+}
+/* Availability: price column stays right-aligned with pill */
+.creator-offers-table--availability th:last-child,
+.creator-offers-table--availability td:last-child {
+  text-align: right;
 }
 
 /* Set Your Availability page only: extra padding in table columns (desktop) */
@@ -507,9 +509,7 @@
   vertical-align: middle;
 }
 
-.creator-offers-th-price {
-  text-align: left;
-}
+/* price th alignment handled by grid-line rules above */
 
 /* Set your availability page only: golden Price header + green pill */
 .creator-offers-table--availability .creator-offers-th-price {
