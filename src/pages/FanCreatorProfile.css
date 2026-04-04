@@ -224,9 +224,10 @@
   margin: 4px 0 0 0;
   font-weight: 400;
   line-height: 1.4;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 /* ----- CreatorDetailsRating: star + value (h3) + (count) b2Muted tertiary ----- */

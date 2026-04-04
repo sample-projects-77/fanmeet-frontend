@@ -24,7 +24,7 @@ function Imprint() {
         <div className="imprint-table">
           <div className="imprint-row">
             <span className="imprint-label">{t('legal.imprint.provider')}</span>
-            <span className="imprint-value">Fan-session.com</span>
+            <span className="imprint-value">Fan Session</span>
           </div>
           <div className="imprint-row">
             <span className="imprint-label">{t('legal.imprint.owner')}</span>
