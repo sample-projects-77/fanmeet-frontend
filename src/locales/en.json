@@ -469,7 +469,7 @@
   "legal.creatorTerms.s13Body": "13.1  German law applies.\n13.2  The place of jurisdiction is the registered office of the Provider.\n13.3  Should any provision of these Terms be or become invalid, the validity of the remaining provisions shall remain unaffected.",
 
   "legal.legalNotice": "LEGAL NOTICE",
-  "legal.privacy.title": "PRIVACY POLICY (III)",
+  "legal.privacy.title": "Privacy Policy",
   "legal.privacy.subtitle": "FAN SESSION \u2013 APP AND WEB PLATFORM",
   "legal.privacy.date": "As of: March 25, 2026",
   "legal.privacy.s1Title": "\u00a7 1  Data Controller",
@@ -521,7 +521,7 @@
   "legal.hub.imprintTitle": "Imprint",
   "legal.hub.imprintDesc": "Legal information about the provider, owner, contact details, and responsible person for the content of Fan Session.",
 
-  "legal.imprint.title": "Imprint",
+  "legal.imprint.title": "Online Impressum",
   "legal.imprint.provider": "Provider:",
   "legal.imprint.owner": "Owner",
   "legal.imprint.address": "Address",

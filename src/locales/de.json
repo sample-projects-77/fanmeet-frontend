@@ -469,7 +469,7 @@
   "legal.creatorTerms.s13Body": "13.1 Es gilt deutsches Recht.\n13.2 Gerichtsstand ist der Sitz des Anbieters.\n13.3 Sollte eine Bestimmung dieser Nutzungsbedingungen unwirksam sein oder werden, bleibt die Wirksamkeit der \u00fcbrigen Bestimmungen unber\u00fchrt.",
 
   "legal.legalNotice": "RECHTLICHER HINWEIS",
-  "legal.privacy.title": "DATENSCHUTZERKL\u00c4RUNG (III)",
+  "legal.privacy.title": "Datenschutzerkl\u00e4rung",
   "legal.privacy.subtitle": "FAN SESSION \u2013 APP UND WEBPLATTFORM",
   "legal.privacy.date": "Stand: 27. M\u00e4rz 2026",
   "legal.privacy.s1Title": "\u00a7 1 Verantwortlicher",
@@ -521,7 +521,7 @@
   "legal.hub.imprintTitle": "Impressum",
   "legal.hub.imprintDesc": "Rechtliche Angaben zum Anbieter, Eigentümer, Kontaktdaten und Verantwortlichen für den Inhalt von Fan Session.",
 
-  "legal.imprint.title": "Impressum",
+  "legal.imprint.title": "Online Impressum",
   "legal.imprint.provider": "Anbieter:",
   "legal.imprint.owner": "Inhaber",
   "legal.imprint.address": "Adresse",

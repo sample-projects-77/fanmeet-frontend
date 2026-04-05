@@ -15,8 +15,12 @@ import {
 
 function formatPrice(priceCents, currency = 'EUR') {
   if (priceCents == null) return '—';
-  const value = (priceCents / 100).toFixed(2).replace('.', ',');
-  return `${value} ${currency}`;
+  const euros = priceCents / 100;
+  const value = Number.isInteger(euros)
+    ? euros.toString()
+    : euros.toFixed(2).replace('.', ',');
+  const symbol = currency === 'EUR' ? '€' : currency;
+  return `${value}${symbol}`;
 }
 
 /** API returns date + startTime/endTime in UTC. Parse as UTC then display in user's local timezone. */
