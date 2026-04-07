@@ -52,17 +52,18 @@ import './App.css';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
-  React.useEffect(() => {
-    // Disable browser's automatic scroll restoration so it doesn't
-    // override our manual scrollTo(0,0) after navigation.
-    if ('scrollRestoration' in window.history) {
-      window.history.scrollRestoration = 'manual';
-    }
-  }, []);
   // useLayoutEffect fires before the browser paints, so the user never
   // sees the new page rendered at the old scroll position.
   React.useLayoutEffect(() => {
+    // Disable browser's automatic scroll restoration on every navigation
+    // (not just once) so the browser never overrides our manual scroll.
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    // Fallback for Safari / older WebKit where scrollTo on window may be ignored
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
   }, [pathname]);
   return null;
 }

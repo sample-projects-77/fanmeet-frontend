@@ -116,6 +116,7 @@
   "profileEdit.usernameRequired": "Benutzername ist erforderlich.",
   "profileEdit.failedToSave": "Speichern fehlgeschlagen.",
   "profileEdit.removePicture": "Bild entfernen",
+  "profileEdit.removeCoverPhoto": "Titelbild entfernen",
 
   "profileChangePassword.title": "Passwort ändern",
   "profileChangePassword.currentPassword": "Aktuelles Passwort",

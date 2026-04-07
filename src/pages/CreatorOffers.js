@@ -78,10 +78,7 @@ function CreatorOffers() {
   const [hasMore, setHasMore] = useState(true);
   const currentPageRef = useRef(1);
   const sentinelRef = useRef(null);
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  const isFetchingRef = useRef(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -107,6 +104,8 @@ function CreatorOffers() {
 
   const fetchOffers = useCallback(async (page = 1, isBackgroundRefresh = false) => {
     if (!user?.id) return;
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
     if (page === 1 && !isBackgroundRefresh) {
       setLoading(true);
       setError(null);
@@ -127,8 +126,14 @@ function CreatorOffers() {
         const totalPages = pag?.totalPages || pag?.pages || 1;
 
         if (page === 1) {
-          setCached(CACHE_KEY, { offers: newOffers, pagination: pag });
-          setOffers(newOffers);
+          // During background refresh, don't replace existing offers with an empty list —
+          // the newly created offer may not yet be returned by the API (e.g. status lag).
+          if (isBackgroundRefresh && newOffers.length === 0) {
+            // Keep current state; skip cache update so stale injected offer stays visible.
+          } else {
+            setCached(CACHE_KEY, { offers: newOffers, pagination: pag });
+            setOffers(newOffers);
+          }
         } else {
           setOffers((prev) => {
             const existingIds = new Set(prev.map((o) => o.id));
@@ -155,6 +160,7 @@ function CreatorOffers() {
       }
       setHasMore(false);
     } finally {
+      isFetchingRef.current = false;
       setLoading(false);
       setLoadingMore(false);
     }
@@ -180,16 +186,16 @@ function CreatorOffers() {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loadingMore && !loading) {
+        if (entries[0].isIntersecting && hasMore && !isFetchingRef.current) {
           fetchOffers(currentPageRef.current + 1);
         }
       },
-      { rootMargin: '200px' }
+      { rootMargin: '0px' }
     );
 
     observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [hasMore, loadingMore, loading, fetchOffers]);
+  }, [hasMore, fetchOffers]);
 
   const handleLogout = () => {
     clearAllCached();

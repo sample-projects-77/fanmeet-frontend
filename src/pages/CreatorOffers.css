@@ -77,8 +77,9 @@
   max-width: 100%;
   min-width: 0;
   overflow-x: auto;
+  overflow-y: hidden;
   border-radius: 10px;
-  overflow: hidden;
+  margin-top: 16px;
 }
 
 /* Set your availability: no horizontal scroll; table fits viewport */
@@ -91,6 +92,10 @@
 .creator-offers-table-wrap:has(.creator-offers-table--availability) {
   border: 1px solid rgba(244, 192, 70, 0.45);
   border-radius: 10px;
+}
+
+/* Availability table: no horizontal scroll needed */
+.creator-offers-table-wrap:has(.creator-offers-table--availability) {
   overflow: hidden;
 }
 
@@ -125,7 +130,8 @@
     min-width: 0;
   }
 
-  .creator-offers-table {
+  /* Availability table only: fixed layout to fit viewport without scroll */
+  .creator-offers-table--availability {
     min-width: 0;
     width: 100%;
     table-layout: fixed;
@@ -452,9 +458,9 @@
   padding-left: 12px;
 }
 
-/* Day column flex 2 equivalent – first column gets more space */
+/* Day column – short weekday names need less space */
 .creator-offers-table .creator-offers-th-day {
-  min-width: 140px;
+  min-width: 90px;
 }
 
 /* Both tables: vertical grid lines between columns */
