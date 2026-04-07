@@ -72,7 +72,7 @@ export function formatUTCDateToLocalDay(utcDate, locale) {
   if (!utcDate) return '—';
   const d = typeof utcDate === 'string' ? new Date(utcDate) : utcDate;
   if (Number.isNaN(d.getTime())) return '—';
-  return d.toLocaleDateString(locale || undefined, { weekday: 'long', month: 'short', day: 'numeric' });
+  return d.toLocaleDateString(locale || undefined, { weekday: 'short', month: 'short', day: 'numeric' });
 }
 
 /**
@@ -96,8 +96,9 @@ export function formatUTCDateToLocalTime(utcDate) {
   if (!utcDate) return '—';
   const d = typeof utcDate === 'string' ? new Date(utcDate) : utcDate;
   if (Number.isNaN(d.getTime())) return '—';
-  const pad = (n) => String(n).padStart(2, '0');
-  return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  const h = d.getHours();
+  const m = d.getMinutes();
+  return m === 0 ? `${h}` : `${h}:${String(m).padStart(2, '0')}`;
 }
 
 /**
@@ -213,18 +214,22 @@ export function getEndTimeFromStartAndDuration(startHHmm, durationMinutes) {
 }
 
 /**
- * Check if an offer's start time is in the future (not expired).
- * Offers with invalid/missing dates are kept visible (fail safe).
- * @param {{ date?: string, startTime?: string }} offer
+ * Check if an offer's date is today or in the future.
+ * Compares only the date portion (YYYY-MM-DD) so the result is robust regardless
+ * of whether the server stores times in UTC or the creator's local timezone.
+ * Offers with missing/invalid dates are kept visible (fail safe).
+ * @param {{ date?: string }} offer
  * @returns {boolean}
  */
 export function isOfferInFuture(offer) {
-  if (!offer?.date || !offer?.startTime) return true;
+  if (!offer?.date) return true;
   const dateStr = (offer.date || '').toString().split('T')[0].split(' ')[0].substring(0, 10);
-  const startUtc = parseOfferSlotToUTC(dateStr, offer.startTime || '00:00', 'UTC');
-  const time = startUtc.getTime();
-  if (Number.isNaN(time)) return true;
-  return time >= Date.now();
+  if (!dateStr || dateStr.length < 10) return true;
+  // Get today's date in local timezone as YYYY-MM-DD for comparison
+  const now = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  const todayLocal = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+  return dateStr >= todayLocal;
 }
 
 /**

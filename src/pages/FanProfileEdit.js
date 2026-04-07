@@ -33,6 +33,7 @@ function FanProfileEdit() {
   const [rawImageSrc, setRawImageSrc] = useState(null);
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [avatarRemoving, setAvatarRemoving] = useState(false);
+  const [coverRemoved, setCoverRemoved] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -230,6 +231,13 @@ function FanProfileEdit() {
     }
   }, [user, t]);
 
+  // ── Remove cover photo (local only — sent as removeCoverPhoto flag on save) ──
+  const handleRemoveCover = useCallback(() => {
+    setCoverPreview(null);
+    setCoverFile(null);
+    setCoverRemoved(true);
+  }, []);
+
   // ── Form submit (cover uploads here) ──
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -245,8 +253,9 @@ function FanProfileEdit() {
       // Avatar: only include if not yet uploaded (edge case)
       if (avatarFile) formData.append('avatarUrl', avatarFile);
       if (isCreator) {
-        // Cover photo uploads on save
+        // Cover photo: upload new file, or signal removal
         if (coverFile) formData.append('coverPhoto', coverFile);
+        else if (coverRemoved) formData.append('coverPhoto', '');
         const cents =
           hourlyRateEur.trim() === ''
             ? ''
@@ -300,22 +309,34 @@ function FanProfileEdit() {
       <main className="fan-profile-edit-main">
         <form onSubmit={handleSubmit} className="fan-profile-edit-form">
           {isCreator && (
-            <div
-              className="fan-profile-edit-cover-wrap"
-              onClick={() => openPickerFor('cover')}
-              onKeyDown={(e) => e.key === 'Enter' && openPickerFor('cover')}
-              role="button"
-              tabIndex={0}
-              aria-label={t('profileEdit.uploadCoverPhoto')}
-            >
-              <div className="fan-profile-edit-cover-inner">
-                {coverPreview ? (
-                  <img src={coverPreview} alt="" className="fan-profile-edit-cover-img" />
-                ) : (
-                  <span className="fan-profile-edit-cover-placeholder">{t('profileEdit.uploadCoverPhoto')}</span>
-                )}
+            <>
+              <div
+                className="fan-profile-edit-cover-wrap"
+                onClick={() => openPickerFor('cover')}
+                onKeyDown={(e) => e.key === 'Enter' && openPickerFor('cover')}
+                role="button"
+                tabIndex={0}
+                aria-label={t('profileEdit.uploadCoverPhoto')}
+              >
+                <div className="fan-profile-edit-cover-inner">
+                  {coverPreview ? (
+                    <img src={coverPreview} alt="" className="fan-profile-edit-cover-img" />
+                  ) : (
+                    <span className="fan-profile-edit-cover-placeholder">{t('profileEdit.uploadCoverPhoto')}</span>
+                  )}
+                </div>
               </div>
-            </div>
+              {coverPreview && (
+                <button
+                  type="button"
+                  className="fan-profile-edit-remove-picture fan-profile-edit-remove-cover"
+                  onClick={(e) => { e.stopPropagation(); handleRemoveCover(); }}
+                >
+                  <TrashIcon />
+                  {t('profileEdit.removeCoverPhoto')}
+                </button>
+              )}
+            </>
           )}
 
           <div className="fan-profile-edit-avatar-wrap">
