@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { profileAPI, chatAPI, userAPI } from '../services/api';
 import { DEFAULT_AVATAR_URL } from '../constants';
@@ -8,6 +8,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorWidget from '../components/ErrorWidget';
 import DeleteAccountDialog from '../components/DeleteAccountDialog';
 import { clearCached } from '../utils/routeDataCache';
+import { navTabFromLocationState } from '../utils/navTabFromLocationState';
 import './FanCreatorProfile.css';
 
 const COVER_HEIGHT = 180;
@@ -18,6 +19,7 @@ function FanCreatorProfile() {
   const { t } = useTranslation();
   const { creatorId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [user, setUser] = useState(null);
   const [creator, setCreator] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -27,6 +29,8 @@ function FanCreatorProfile() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [blockDialogOpen, setBlockDialogOpen] = useState(false);
   const menuRef = React.useRef(null);
+  const navTab = navTabFromLocationState(location, 'fan');
+  const backListPath = navTab === 'search' ? '/fan/search' : '/fan/home';
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -100,7 +104,7 @@ function FanCreatorProfile() {
       if (res.StatusCode === 201) {
         setBlockDialogOpen(false);
         clearCached('searchDefault');
-        navigate('/fan/search', { replace: true });
+        navigate(backListPath, { replace: true });
       } else {
         setError(res.error || t('creatorProfile.couldNotBlock'));
       }
@@ -109,7 +113,7 @@ function FanCreatorProfile() {
     } finally {
       setBlocking(false);
     }
-  }, [creator, creatorId, navigate, t]);
+  }, [creator, creatorId, navigate, t, backListPath]);
 
   const handleBlockCreatorClick = useCallback(() => {
     setMenuOpen(false);
@@ -134,20 +138,20 @@ function FanCreatorProfile() {
 
   return (
     <div className="fan-creator-details-page">
-      <FanNav active="search" user={user} onLogout={handleLogout} />
+      <FanNav active={navTab} user={user} onLogout={handleLogout} />
       <main className="fan-creator-details-main">
         {loading && !creator ? (
           <LoadingSpinner />
         ) : error ? (
           <div className="fan-creator-details-error-wrap">
             <ErrorWidget errorText={error} onRetry={fetchCreator} />
-            <Link to="/fan/search" className="fan-creator-details-back-link">{t('creatorProfile.backToSearch')}</Link>
+            <Link to={backListPath} className="fan-creator-details-back-link">{t('creatorProfile.backToSearch')}</Link>
           </div>
         ) : creator ? (
           <div className="fan-creator-details-container">
             <header className="fan-creator-details-header">
               <div className="fan-creator-details-top-bar">
-                <Link to="/fan/search" className="fan-creator-details-back" aria-label={t('common.back')}>←</Link>
+                <Link to={backListPath} className="fan-creator-details-back" aria-label={t('common.back')}>←</Link>
                 <div className="fan-creator-details-menu-wrap" ref={menuRef}>
                   <button
                     type="button"
@@ -222,7 +226,7 @@ function FanCreatorProfile() {
                   <ArrowIcon />
                 </span>
               </button>
-              <Link to={`/fan/creators/${creatorId}/offers`} className="fan-creator-details-action-btn">
+              <Link to={`/fan/creators/${creatorId}/offers`} state={{ navTab }} className="fan-creator-details-action-btn">
                 <span className="fan-creator-details-action-icon-wrap">
                   <OffersIcon />
                 </span>
@@ -231,7 +235,7 @@ function FanCreatorProfile() {
                   <ArrowIcon />
                 </span>
               </Link>
-              <Link to={`/fan/creators/${creatorId}/reviews`} className="fan-creator-details-action-btn">
+              <Link to={`/fan/creators/${creatorId}/reviews`} state={{ navTab }} className="fan-creator-details-action-btn">
                 <span className="fan-creator-details-action-icon-wrap">
                   <StarIcon />
                 </span>

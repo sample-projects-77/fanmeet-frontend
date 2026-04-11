@@ -144,7 +144,7 @@ function FanHome({ embedded, user: userProp, onLogout: onLogoutProp }) {
                 <ul className="fan-home-creator-list" aria-label={t('home.popularCreators')}>
                   {creators.map((c) => (
                     <li key={c.id}>
-                      <Link to={`/fan/creators/${c.id}`} className="fan-creator-card">
+                      <Link to={`/fan/creators/${c.id}`} state={{ navTab: 'home' }} className="fan-creator-card">
                         <div className="fan-creator-avatar-wrap">
                           <img
                             src={c.avatarUrl || DEFAULT_AVATAR_URL}

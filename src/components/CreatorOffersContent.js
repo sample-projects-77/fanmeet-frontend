@@ -10,7 +10,6 @@ import {
   formatUTCDateToLocalDay,
   formatUTCDateToLocalTime,
   offerSlotStartToUTCISO,
-  isOfferInFuture,
 } from '../utils/dateTimeUtils';
 
 function formatPrice(priceCents, currency = 'EUR') {
@@ -46,9 +45,9 @@ function formatOfferTimeRange(offer) {
 
 /**
  * Shared offers list for a creator. Used by both fan and creator (viewing another creator).
- * @param {{ backTo: string }} props - backTo: URL for the back link
+ * @param {{ backTo: string, backState?: object }} props - backTo: URL for the back link; optional backState for nav tab
  */
-function CreatorOffersContent({ backTo }) {
+function CreatorOffersContent({ backTo, backState }) {
   const { t, i18n } = useTranslation();
   const { creatorId } = useParams();
   const navigate = useNavigate();
@@ -65,7 +64,9 @@ function CreatorOffersContent({ backTo }) {
     try {
       const id = creatorId.toString().replace(/^creator_/, '');
       const res = await offerAPI.getCreatorScheduledOffers(id, { page: 1, itemsPerPage: 100 });
-      if (res.StatusCode === 200 && res.data) {
+      const ok =
+        (res.StatusCode === 200 || res.statusCode === 200) && res.data;
+      if (ok) {
         setOffers(res.data.offers || []);
       } else {
         setError(res.error || t('offers.failedToLoad'));
@@ -95,7 +96,9 @@ function CreatorOffersContent({ backTo }) {
         offerId: rawOfferId,
         startTime: startTimeISO,
       });
-      if (createRes.StatusCode !== 200 || !createRes.data?.id) {
+      const createOk =
+        createRes.StatusCode === 200 || createRes.statusCode === 200;
+      if (!createOk || !createRes.data?.id) {
         setError(createRes.error || t('offers.failedToCreateBooking'));
         return;
       }
@@ -108,14 +111,19 @@ function CreatorOffersContent({ backTo }) {
   };
 
   const bookableOffers = (offers || []).filter(
-    (offer) => offer.status === 'available' && isOfferInFuture(offer)
+    (offer) => offer.status === 'available'
   );
 
   return (
     <main className="creator-offers-main">
       <div className="creator-offers-container">
         <header className="creator-offers-header">
-          <Link to={backTo} className="creator-offers-back" aria-label={t('common.back')}>
+          <Link
+            to={backTo}
+            {...(backState == null ? {} : { state: backState })}
+            className="creator-offers-back"
+            aria-label={t('common.back')}
+          >
             ←
           </Link>
           <h1 className="creator-offers-title">{t('offers.title')}</h1>

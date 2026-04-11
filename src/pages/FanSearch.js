@@ -177,6 +177,7 @@ function FanSearch({ embedded, user: userProp, onLogout: onLogoutProp }) {
                   <Link
                     key={c.id}
                     to={`/fan/creators/${c.id}`}
+                    state={{ navTab: 'search' }}
                     className="fan-creator-card"
                   >
                     <div className="fan-creator-avatar-wrap">

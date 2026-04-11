@@ -11,7 +11,6 @@ import {
   parseOfferSlotToUTC,
   formatUTCDateToLocalDay,
   formatUTCDateToLocalTime,
-  filterActiveOffers,
 } from '../utils/dateTimeUtils';
 import './CreatorOffers.css';
 
@@ -120,10 +119,27 @@ function CreatorOffers() {
         itemsPerPage: ITEMS_PER_PAGE,
         status: 'available',
       });
-      if (res.StatusCode === 200 && res.data) {
+      const ok =
+        (res.StatusCode === 200 || res.statusCode === 200) && res.data;
+      if (ok) {
         const newOffers = sortOffers(res.data.offers || []);
         const pag = res.data.pagination || null;
-        const totalPages = pag?.totalPages || pag?.pages || 1;
+        let totalPages = pag?.totalPages ?? pag?.pages;
+        if (typeof totalPages !== "number" || Number.isNaN(totalPages)) {
+          const ti = pag?.totalItems;
+          totalPages =
+            typeof ti === "number" && ti >= 0
+              ? ti === 0
+                ? 0
+                : Math.ceil(ti / ITEMS_PER_PAGE)
+              : (newOffers?.length || 0) === 0
+                ? 0
+                : 1;
+        }
+        const hasNext =
+          typeof pag?.hasNextPage === "boolean"
+            ? pag.hasNextPage
+            : page < totalPages;
 
         if (page === 1) {
           // During background refresh, don't replace existing offers with an empty list —
@@ -144,7 +160,7 @@ function CreatorOffers() {
           });
         }
 
-        setHasMore(page < totalPages && newOffers.length > 0);
+        setHasMore(Boolean(hasNext));
         currentPageRef.current = page;
       } else {
         if (page === 1 && !isBackgroundRefresh) {
@@ -206,8 +222,6 @@ function CreatorOffers() {
 
   if (!user) return null;
 
-  const activeOffers = filterActiveOffers(offers);
-
   return (
     <div className="creator-offers-page">
       <CreatorNav active="creator" user={user} onLogout={handleLogout} />
@@ -226,7 +240,7 @@ function CreatorOffers() {
             <ErrorWidget errorText={error} onRetry={() => fetchOffers(1)} />
           ) : loading ? (
             <LoadingSpinner />
-          ) : activeOffers.length === 0 ? (
+          ) : offers.length === 0 ? (
             <EmptyWidget text={t('availability.noSlots')} />
           ) : (
             <>
@@ -241,7 +255,7 @@ function CreatorOffers() {
                     </tr>
                   </thead>
                   <tbody>
-                    {activeOffers.map((offer) => (
+                    {offers.map((offer) => (
                       <tr
                         key={offer.id}
                         className="creator-offers-row-clickable"

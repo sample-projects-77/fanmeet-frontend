@@ -52,9 +52,9 @@ function StarOutline({ className }) {
 
 /**
  * Shared reviews list for a creator. Used by both fan and creator (viewing another creator).
- * @param {{ backTo: string }} props - backTo: URL for the back link
+ * @param {{ backTo: string, backState?: object }} props - backTo: URL for the back link; optional backState for nav tab
  */
-function CreatorReviewsContent({ backTo }) {
+function CreatorReviewsContent({ backTo, backState }) {
   const { t } = useTranslation();
   const { creatorId } = useParams();
   const [reviews, setReviews] = useState([]);
@@ -118,7 +118,12 @@ function CreatorReviewsContent({ backTo }) {
   return (
     <main className="fan-creator-reviews-main">
       <header className="fan-creator-reviews-header">
-        <Link to={backTo} className="fan-creator-reviews-back" aria-label="Back to creator">
+        <Link
+          to={backTo}
+          {...(backState == null ? {} : { state: backState })}
+          className="fan-creator-reviews-back"
+          aria-label="Back to creator"
+        >
           ←
         </Link>
         <h1 className="fan-creator-reviews-title">Reviews</h1>

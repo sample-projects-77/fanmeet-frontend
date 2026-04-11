@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import FanNav from '../components/FanNav';
 import CreatorOffersContent from '../components/CreatorOffersContent';
+import { navTabFromLocationState } from '../utils/navTabFromLocationState';
 import './CreatorOffers.css';
 
 function FanCreatorOffers() {
   const { creatorId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const navTab = navTabFromLocationState(location, 'fan');
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -33,8 +36,8 @@ function FanCreatorOffers() {
 
   return (
     <div className="creator-offers-page">
-      <FanNav active="search" user={user} onLogout={handleLogout} />
-      <CreatorOffersContent backTo={`/fan/creators/${creatorId}`} />
+      <FanNav active={navTab} user={user} onLogout={handleLogout} />
+      <CreatorOffersContent backTo={`/fan/creators/${creatorId}`} backState={{ navTab }} />
     </div>
   );
 }

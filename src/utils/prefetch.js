@@ -142,7 +142,10 @@ export function prefetchCreatorOffers() {
   creatorOffersPrefetched = true;
   offerAPI.getCreatorScheduledOffers(creatorId, { page: 1, itemsPerPage: 100, status: 'available' })
     .then((res) => {
-      if (res?.StatusCode === 200 && res?.data) {
+      if (
+        (res?.StatusCode === 200 || res?.statusCode === 200) &&
+        res?.data
+      ) {
         setCached('creatorOffers', { offers: res.data.offers || [], pagination: res.data.pagination || null });
       }
     })

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { profileAPI } from '../services/api';
 import { getCached, setCached } from '../utils/routeDataCache';
+import { filterCreatorsExcludingSelf } from '../utils/filterCreatorsExcludingSelf';
 import { DEFAULT_AVATAR_URL } from '../constants';
 import CreatorNav from '../components/CreatorNav';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -59,11 +60,12 @@ function CreatorSearch({ embedded, user: userProp, onLogout: onLogoutProp }) {
         itemsPerPage: 12,
       });
       if (res.StatusCode === 200 && res.data) {
-        const list = res.data.creators || [];
+        const rawList = res.data.creators || [];
+        const list = filterCreatorsExcludingSelf(rawList, user);
         setCreators((prev) => (append ? [...prev, ...list] : list));
         const pag = res.data.pagination || null;
         setPagination(pag);
-        if (!append && !q) setCached(CACHE_KEY, { creators: list, pagination: pag });
+        if (!append && !q) setCached(CACHE_KEY, { creators: rawList, pagination: pag });
       } else {
         if (!append) {
           setError(res.error || t('search.failedToLoad'));
@@ -82,7 +84,7 @@ function CreatorSearch({ embedded, user: userProp, onLogout: onLogoutProp }) {
         setLoading(false);
       }
     }
-  }, [t]);
+  }, [t, user]);
 
   useEffect(() => {
     if (user === null) return;
@@ -90,7 +92,7 @@ function CreatorSearch({ embedded, user: userProp, onLogout: onLogoutProp }) {
     if (!trimmed) {
       const cached = getCached(CACHE_KEY);
       if (cached?.creators) {
-        setCreators(cached.creators);
+        setCreators(filterCreatorsExcludingSelf(cached.creators, user));
         setPagination(cached.pagination || null);
         setLoading(false);
         setError(null);
@@ -177,6 +179,7 @@ function CreatorSearch({ embedded, user: userProp, onLogout: onLogoutProp }) {
                   <Link
                     key={c.id}
                     to={`/creator/creators/${c.id}`}
+                    state={{ navTab: 'search' }}
                     className="creator-search-creator-card"
                   >
                     <div className="creator-search-avatar-wrap">

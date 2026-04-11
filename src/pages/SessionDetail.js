@@ -98,7 +98,7 @@ export function FanSessionDetail() {
 
   return (
     <div className="session-detail-page">
-      <FanNav active="home" user={user} onLogout={handleLogout} />
+      <FanNav active="fan" user={user} onLogout={handleLogout} />
       <main className="session-detail-main">
         <header className="session-detail-header">
           <Link to="/fan/bookings" className="session-detail-back" aria-label="Back to sessions">
@@ -232,7 +232,7 @@ export function CreatorSessionDetail() {
 
   return (
     <div className="session-detail-page">
-      <CreatorNav active="home" user={user} onLogout={handleLogout} />
+      <CreatorNav active="creator" user={user} onLogout={handleLogout} />
       <main className="session-detail-main">
         <header className="session-detail-header">
           <Link to="/creator/bookings" className="session-detail-back" aria-label="Back to sessions">

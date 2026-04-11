@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import CreatorNav from '../components/CreatorNav';
 import CreatorReviewsContent from '../components/CreatorReviewsContent';
+import { navTabFromLocationState } from '../utils/navTabFromLocationState';
 import './FanCreatorReviews.css';
 
 /**
@@ -10,6 +11,8 @@ import './FanCreatorReviews.css';
 function CreatorCreatorReviews() {
   const { creatorId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const navTab = navTabFromLocationState(location, 'creator');
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -36,8 +39,8 @@ function CreatorCreatorReviews() {
 
   return (
     <div className="fan-creator-reviews-page">
-      <CreatorNav active="search" user={user} onLogout={handleLogout} />
-      <CreatorReviewsContent backTo={`/creator/creators/${creatorId}`} />
+      <CreatorNav active={navTab} user={user} onLogout={handleLogout} />
+      <CreatorReviewsContent backTo={`/creator/creators/${creatorId}`} backState={{ navTab }} />
     </div>
   );
 }
