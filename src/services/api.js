@@ -24,6 +24,15 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    // FormData must not use the default application/json header, and must not use
+    // multipart/form-data without a boundary (that breaks multer / req.body).
+    if (typeof FormData !== 'undefined' && config.data instanceof FormData) {
+      if (config.headers && typeof config.headers.delete === 'function') {
+        config.headers.delete('Content-Type');
+      } else if (config.headers) {
+        delete config.headers['Content-Type'];
+      }
+    }
     return config;
   },
   (error) => {
@@ -45,21 +54,13 @@ export const authAPI = {
 
   // Register Fan
   registerFan: async (formData) => {
-    const response = await api.post('/auth/fans/register', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    const response = await api.post('/auth/fans/register', formData);
     return response.data;
   },
 
   // Register Creator
   registerCreator: async (formData) => {
-    const response = await api.post('/auth/creators/register', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    const response = await api.post('/auth/creators/register', formData);
     return response.data;
   },
 
@@ -170,21 +171,13 @@ export const profileAPI = {
 
   // Update fan profile (multipart: userName, avatarUrl file)
   updateFanProfile: async (formData) => {
-    const response = await api.patch('/fans/me', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    const response = await api.patch('/fans/me', formData);
     return response.data;
   },
 
   // Update creator profile (multipart: userName, avatarUrl file)
   updateCreatorProfile: async (formData) => {
-    const response = await api.patch('/creators/me', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    const response = await api.patch('/creators/me', formData);
     return response.data;
   },
 

@@ -7,7 +7,7 @@ import CreatorNav from '../components/CreatorNav';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorWidget from '../components/ErrorWidget';
 import DeleteAccountDialog from '../components/DeleteAccountDialog';
-import { clearCached } from '../utils/routeDataCache';
+import { removeCreatorFromDiscoveryCaches } from '../utils/removeCreatorFromDiscoveryCaches';
 import { navTabFromLocationState } from '../utils/navTabFromLocationState';
 import './FanCreatorProfile.css';
 
@@ -80,7 +80,7 @@ function CreatorCreatorProfile() {
       const res = await userAPI.blockUser(userIdToBlock);
       if (res.StatusCode === 201) {
         setBlockDialogOpen(false);
-        clearCached('searchDefault');
+        removeCreatorFromDiscoveryCaches(userIdToBlock);
         navigate(backListPath, { replace: true });
       } else {
         setError(res.error || t('creatorProfile.couldNotBlock'));
@@ -189,7 +189,9 @@ function CreatorCreatorProfile() {
               <div className="fan-creator-details-meta">
                 <h1 className="fan-creator-details-name">{creator.displayName || t('home.creator')}</h1>
                 <p className="fan-creator-details-category">{creator.category || ''}</p>
-                <p className="fan-creator-details-bio-line">{creator.bio?.trim() || t('creatorProfile.noDescription')}</p>
+                {creator.bio?.trim() ? (
+                  <p className="fan-creator-details-bio-line">{creator.bio.trim()}</p>
+                ) : null}
               </div>
             </header>
 
