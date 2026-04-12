@@ -68,6 +68,40 @@ export function ChatProvider({ children }) {
     }
   }, [client]);
 
+  /**
+   * After profile / avatar is saved to our API (and GetStream user upserted on the server),
+   * push the latest name + image to the open Stream connection so the UI updates without reconnecting.
+   */
+  const syncProfileToConnectedChat = useCallback(async () => {
+    if (!client?.userID) return;
+    const userJson = localStorage.getItem('user');
+    if (!userJson) return;
+    let user;
+    try {
+      user = JSON.parse(userJson);
+    } catch {
+      return;
+    }
+    const prefixed = typeof user.id === 'string' ? user.id : '';
+    const rawMongoId = prefixed.replace(/^(fan_|creator_)/i, '');
+    if (!rawMongoId || rawMongoId !== client.userID) return;
+
+    const rawName = (user.userName || user.name || '').trim();
+    const displayName = rawName ? rawName.charAt(0).toUpperCase() + rawName.slice(1) : 'User';
+    try {
+      await client.partialUpdateUser({
+        id: client.userID,
+        set: {
+          name: displayName,
+          image: user.avatarUrl || DEFAULT_AVATAR_URL,
+        },
+      });
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.warn('Stream partialUpdateUser:', err?.message || err);
+    }
+  }, [client]);
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token && streamApiKey) {
@@ -81,6 +115,7 @@ export function ChatProvider({ children }) {
     error,
     connect,
     disconnect,
+    syncProfileToConnectedChat,
     isReady: !!client && !connecting,
   };
 

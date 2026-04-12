@@ -575,6 +575,17 @@ function ChatContent({ channelId, backTo, backLabel, NavComponent }) {
     setLoadError(null);
   }, [client, channelId]);
 
+  /* When returning to the tab, re-watch so member avatars/names match GetStream (e.g. after the other user updates their profile). */
+  useEffect(() => {
+    if (!channel) return;
+    const onVisibility = () => {
+      if (document.visibilityState !== 'visible') return;
+      channel.watch().catch(() => {});
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => document.removeEventListener('visibilitychange', onVisibility);
+  }, [channel]);
+
   /* Mobile: when keyboard opens (visualViewport shrinks), keep input above keyboard. Must be before any early return so hook count is stable. */
   useEffect(() => {
     if (typeof window === 'undefined' || !window.visualViewport || window.innerWidth > MOBILE_BREAKPOINT_PX) return;

@@ -39,6 +39,50 @@ function BothPresentTrigger({ onBothPresent }) {
   return null;
 }
 
+/**
+ * Stream disables mic/camera when the browser permission state is "denied" (!hasBrowserPermission).
+ * Show a clickable path that runs getUserMedia in a real click handler so Chrome / others can prompt again.
+ */
+function VideoCallBrowserPermissionBar() {
+  const { useMicrophoneState, useCameraState } = useCallStateHooks();
+  const { hasBrowserPermission: micOk, microphone } = useMicrophoneState();
+  const { hasBrowserPermission: camOk, camera } = useCameraState();
+  const [busy, setBusy] = useState(false);
+
+  if (micOk && camOk) return null;
+
+  const requestAccess = async () => {
+    setBusy(true);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+      stream.getTracks().forEach((t) => t.stop());
+      await microphone.enable().catch(() => {});
+      await camera.enable().catch(() => {});
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.warn('Media permission retry:', e);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="video-call-permission-bar" role="region" aria-label="Camera and microphone access">
+      <p className="video-call-permission-bar-text">
+        Microphone or camera is blocked in the browser. Click below to open the permission prompt again.
+      </p>
+      <button
+        type="button"
+        className="btn-primary video-call-permission-bar-btn"
+        onClick={requestAccess}
+        disabled={busy}
+      >
+        {busy ? 'Requesting…' : 'Allow microphone & camera'}
+      </button>
+    </div>
+  );
+}
+
 function VideoCallContent({ bookingId, booking, user, onLeave, backUrl, backLabel, isFan }) {
   const [client, setClient] = useState(null);
   const [call, setCall] = useState(null);
@@ -103,6 +147,18 @@ function VideoCallContent({ bookingId, booking, user, onLeave, backUrl, backLabe
           streamCall.leave().catch(() => {});
           return;
         }
+
+        try {
+          await streamCall.microphone.enable();
+        } catch {
+          /* User may deny; in-call bar + Stream controls can retry */
+        }
+        try {
+          await streamCall.camera.enable();
+        } catch {
+          /* same */
+        }
+
         setCall(streamCall);
       } catch (err) {
         if (mounted) {
@@ -266,6 +322,7 @@ function VideoCallContent({ bookingId, booking, user, onLeave, backUrl, backLabe
             )}
             <div className="video-call-layout">
               <SpeakerLayout participantBarPosition="bottom" />
+              <VideoCallBrowserPermissionBar />
               <CallControls onLeave={handleLeave} />
             </div>
           </StreamTheme>
