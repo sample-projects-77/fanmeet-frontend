@@ -216,6 +216,7 @@ export const chatAPI = {
     const response = await api.post('/chat/individual', { otherUserId });
     return response.data;
   },
+  /** Removes the chat from this user's list only (other member keeps full Stream history). */
   deleteIndividualChannel: async (channelId) => {
     const safeId = String(channelId);
     const response = await api.delete(`/chat/individual/${encodeURIComponent(safeId)}`);

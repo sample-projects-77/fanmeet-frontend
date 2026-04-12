@@ -122,24 +122,52 @@ function CustomMessageTimestamp(props) {
   return <MessageTimestamp {...props} calendar={false} format="h:mm A" />;
 }
 
-/** Copy text to clipboard; works on mobile (Clipboard API + execCommand fallback) */
-function copyToClipboard(text) {
-  if (!text) return;
-  if (navigator.clipboard?.writeText) {
-    navigator.clipboard.writeText(text).catch(() => {
-      fallbackCopy(text);
-    });
-    return;
+/** Plain text to copy from a Stream message (body or stripped HTML). */
+function getMessageTextForCopy(message) {
+  if (!message) return '';
+  const raw = message.text;
+  if (raw != null && String(raw).trim() !== '') return String(raw);
+  if (message.html && typeof message.html === 'string') {
+    try {
+      const div = document.createElement('div');
+      div.innerHTML = message.html;
+      const plain = (div.textContent || div.innerText || '').trim();
+      if (plain) return plain;
+    } catch {
+      /* ignore */
+    }
   }
-  fallbackCopy(text);
+  return '';
 }
+
+/**
+ * Copy to clipboard. Must be awaited before closing menus/dialogs — otherwise the
+ * async Clipboard API runs after the user gesture ends and the write is blocked.
+ */
+async function copyToClipboard(text) {
+  if (text == null || String(text) === '') return;
+  const str = String(text);
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(str);
+      return;
+    }
+  } catch {
+    /* fall through */
+  }
+  fallbackCopy(str);
+}
+
 function fallbackCopy(text) {
-  if (!document.queryCommandSupported?.('copy')) return;
   const el = document.createElement('textarea');
   el.value = text;
-  el.style.cssText = 'position:fixed;left:-9999px;top:0;';
+  el.setAttribute('readonly', '');
+  el.style.cssText =
+    'position:fixed;top:0;left:0;opacity:0;width:2px;height:2px;padding:0;border:none;outline:none;';
   document.body.appendChild(el);
+  el.focus();
   el.select();
+  el.setSelectionRange(0, text.length);
   try {
     document.execCommand('copy');
   } finally {
@@ -148,10 +176,7 @@ function fallbackCopy(text) {
 }
 
 const CUSTOM_MESSAGE_ACTIONS = {
-  'Copy Message': (message) => {
-    const text = message?.text || '';
-    copyToClipboard(text);
-  },
+  'Copy Message': (message) => copyToClipboard(getMessageTextForCopy(message)),
 };
 
 /**
@@ -288,8 +313,8 @@ function CombinedMessageOptions() {
                   <button
                     type="button"
                     className="fanmeet-message-action"
-                    onClick={() => {
-                      customMessageActions['Copy Message'](message);
+                    onClick={async () => {
+                      await customMessageActions['Copy Message']?.(message);
                       close();
                     }}
                   >
@@ -356,8 +381,8 @@ function CombinedMessageOptions() {
                   <button
                     type="button"
                     className="fanmeet-message-action"
-                    onClick={() => {
-                      customMessageActions['Copy Message'](message);
+                    onClick={async () => {
+                      await customMessageActions['Copy Message']?.(message);
                       close();
                     }}
                   >
