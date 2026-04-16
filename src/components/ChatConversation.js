@@ -658,6 +658,7 @@ function ChatConversation({ backTo, backLabel, NavComponent }) {
   const [user, setUser] = useState(null);
   const streamRef = useRef(null);
   const mainRef = useRef(null);
+  const hasRequestedChatConnect = useRef(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -674,7 +675,9 @@ function ChatConversation({ backTo, backLabel, NavComponent }) {
   }, [navigate]);
 
   useEffect(() => {
-    if (!client && !connecting) connect();
+    if (client || connecting || hasRequestedChatConnect.current) return;
+    hasRequestedChatConnect.current = true;
+    connect();
   }, [client, connecting, connect]);
 
   /* Mobile: tap on message bubble opens options menu (three-dots hidden by CSS on small screens).

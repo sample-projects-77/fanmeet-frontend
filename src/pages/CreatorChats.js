@@ -51,6 +51,7 @@ function CreatorChats({ embedded, user: userProp, onLogout: onLogoutProp }) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [channelToDelete, setChannelToDelete] = useState(null);
   const hasEnrichedNamesOnce = useRef(false);
+  const hasRequestedChatConnect = useRef(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -116,7 +117,9 @@ function CreatorChats({ embedded, user: userProp, onLogout: onLogoutProp }) {
 
   // Connect Stream client when on this page so we can fetch member names/avatars
   useEffect(() => {
-    if (!client && !connecting) connect();
+    if (client || connecting || hasRequestedChatConnect.current) return;
+    hasRequestedChatConnect.current = true;
+    connect();
   }, [client, connecting, connect]);
 
   // Enrich channel list with usernames and avatars from Stream (same source as conversation header).

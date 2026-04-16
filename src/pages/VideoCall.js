@@ -239,7 +239,7 @@ function VideoCallContent({ bookingId, booking, user, onLeave, backUrl, backLabe
       });
   }, [remainingSeconds, bothPresent, bookingId, onLeave]);
 
-  const handleLeave = useCallback(() => {
+  const disconnectAndNavigate = useCallback(() => {
     if (callRef.current) {
       callRef.current.leave().catch(() => {});
       callRef.current = null;
@@ -247,21 +247,35 @@ function VideoCallContent({ bookingId, booking, user, onLeave, backUrl, backLabe
     if (client) {
       client.disconnectUser().catch(() => {});
     }
-    if (isFan) {
-      setSessionError(null);
-      bookingAPI
-        .endSession(bookingId)
-        .then((res) => {
-          if (res && res.StatusCode !== 200 && res.error) {
-            setSessionError(res.error || 'Failed to end session');
-          }
-        })
-        .catch((err) => {
-          setSessionError(err.response?.data?.error || err.message || 'Failed to end session');
-        });
-    }
     onLeave();
-  }, [client, onLeave, bookingId, isFan]);
+  }, [client, onLeave]);
+
+  /** Creator: leave Stream only; booking stays in_progress until timer auto-end or fan ends session. */
+  const handleLeave = useCallback(() => {
+    disconnectAndNavigate();
+  }, [disconnectAndNavigate]);
+
+  /**
+   * Fan: same as scheduled auto-end — POST endSession (complete booking + capture), then leave.
+   * Guards with hasAutoEnded so we do not double-call endSession if the timer fires in the same tick.
+   */
+  const handleFanEndSession = useCallback(() => {
+    hasAutoEnded.current = true;
+    setSessionError(null);
+    bookingAPI
+      .endSession(bookingId)
+      .then((res) => {
+        if (res && res.StatusCode !== 200 && res.error) {
+          setSessionError(res.error || 'Failed to end session');
+        }
+      })
+      .catch((err) => {
+        setSessionError(err.response?.data?.error || err.message || 'Failed to end session');
+      })
+      .finally(() => {
+        disconnectAndNavigate();
+      });
+  }, [bookingId, disconnectAndNavigate]);
 
   if (error) {
     return (
@@ -311,8 +325,12 @@ function VideoCallContent({ bookingId, booking, user, onLeave, backUrl, backLabe
                   </span>
                 )}
               </div>
-              <button type="button" className="video-call-leave-btn btn-primary" onClick={handleLeave}>
-                Leave call
+              <button
+                type="button"
+                className="video-call-leave-btn btn-primary"
+                onClick={isFan ? handleFanEndSession : handleLeave}
+              >
+                {isFan ? 'End Session' : 'Leave call'}
               </button>
             </div>
             {sessionError && (
@@ -323,7 +341,7 @@ function VideoCallContent({ bookingId, booking, user, onLeave, backUrl, backLabe
             <div className="video-call-layout">
               <SpeakerLayout participantBarPosition="bottom" />
               <VideoCallBrowserPermissionBar />
-              <CallControls onLeave={handleLeave} />
+              <CallControls onLeave={isFan ? handleFanEndSession : handleLeave} />
             </div>
           </StreamTheme>
         </StreamCall>

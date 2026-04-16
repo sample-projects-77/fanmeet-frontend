@@ -33,7 +33,7 @@ function Imprint() {
           <div className="imprint-row">
             <span className="imprint-label">{t('legal.imprint.address')}</span>
             <span className="imprint-value">
-              c/o Online Imprint #7159<br />
+              {t('legal.imprint.careOfLine')}<br />
               Europaring 90<br />
               53757 Sankt Augustin<br />
               Germany

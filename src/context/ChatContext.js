@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { StreamChat } from 'stream-chat';
 import { chatAPI } from '../services/api';
 import { DEFAULT_AVATAR_URL } from '../constants';
@@ -11,8 +11,12 @@ export function ChatProvider({ children }) {
   const [client, setClient] = useState(null);
   const [connecting, setConnecting] = useState(false);
   const [error, setError] = useState(null);
+  const connectPromiseRef = useRef(null);
 
   const connect = useCallback(async () => {
+    if (client) return client;
+    if (connectPromiseRef.current) return connectPromiseRef.current;
+
     if (!streamApiKey) {
       setError('REACT_APP_STREAM_API_KEY is not set');
       return null;
@@ -28,38 +32,44 @@ export function ChatProvider({ children }) {
       return null;
     }
 
-    setConnecting(true);
-    setError(null);
-    try {
-      const res = await chatAPI.getChatToken();
-      if (res.StatusCode !== 200 || !res.data?.token || !res.data?.userId) {
-        setError(res.error || 'Failed to get chat token');
+    const connectTask = (async () => {
+      setConnecting(true);
+      setError(null);
+      try {
+        const res = await chatAPI.getChatToken();
+        if (res.StatusCode !== 200 || !res.data?.token || !res.data?.userId) {
+          setError(res.error || 'Failed to get chat token');
+          return null;
+        }
+        const { token: streamToken, userId } = res.data;
+        const chatClient = StreamChat.getInstance(streamApiKey);
+        const rawName = (user.userName || user.name || '').trim();
+        const displayName = rawName
+          ? rawName.charAt(0).toUpperCase() + rawName.slice(1)
+          : 'User';
+        await chatClient.connectUser(
+          {
+            id: userId,
+            name: displayName,
+            image: user.avatarUrl || DEFAULT_AVATAR_URL,
+          },
+          streamToken
+        );
+        setClient(chatClient);
+        return chatClient;
+      } catch (err) {
+        setError(err.response?.data?.error || err.message || 'Failed to connect to chat');
+        setClient(null);
         return null;
+      } finally {
+        setConnecting(false);
+        connectPromiseRef.current = null;
       }
-      const { token: streamToken, userId } = res.data;
-      const chatClient = StreamChat.getInstance(streamApiKey);
-      const rawName = (user.userName || user.name || '').trim();
-      const displayName = rawName
-        ? rawName.charAt(0).toUpperCase() + rawName.slice(1)
-        : 'User';
-      await chatClient.connectUser(
-        {
-          id: userId,
-          name: displayName,
-          image: user.avatarUrl || DEFAULT_AVATAR_URL,
-        },
-        streamToken
-      );
-      setClient(chatClient);
-      return chatClient;
-    } catch (err) {
-      setError(err.response?.data?.error || err.message || 'Failed to connect to chat');
-      setClient(null);
-      return null;
-    } finally {
-      setConnecting(false);
-    }
-  }, []);
+    })();
+
+    connectPromiseRef.current = connectTask;
+    return connectTask;
+  }, [client]);
 
   const disconnect = useCallback(() => {
     if (client) {

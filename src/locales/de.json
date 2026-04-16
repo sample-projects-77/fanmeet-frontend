@@ -177,6 +177,8 @@
   "sessions.noUpcoming": "Keine anstehenden Sessions gefunden.",
   "sessions.noCompleted": "Keine abgeschlossenen Sessions gefunden.",
   "sessions.paid": "Bezahlt",
+  "sessions.confirmed": "Bestätigt",
+  "sessions.inProgress": "Läuft",
   "sessions.sessionEnded": "Session beendet",
   "sessions.joinNow": "Jetzt beitreten",
   "sessions.joinInMin": "Beitreten in {{count}} Min",
@@ -523,6 +525,7 @@
   "legal.hub.imprintDesc": "Rechtliche Angaben zum Anbieter, Eigentümer, Kontaktdaten und Verantwortlichen für den Inhalt von Fan Session.",
 
   "legal.imprint.title": "Online Impressum",
+  "legal.imprint.careOfLine": "c/o Online Impressum #7159",
   "legal.imprint.provider": "Anbieter:",
   "legal.imprint.owner": "Inhaber",
   "legal.imprint.address": "Adresse",

@@ -171,6 +171,16 @@
   color: var(--green-success);
 }
 
+.all-sessions-card-status--confirmed {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--green-success);
+}
+
+.all-sessions-card-status--in_progress {
+  background: rgba(255, 193, 7, 0.12);
+  color: var(--accent-yellow, #ffc107);
+}
+
 /* Completed: previous styling – subtle background, grey text */
 .all-sessions-card-status--completed {
   background: rgba(255, 255, 255, 0.08);

@@ -12,6 +12,26 @@ import './AllSessions.css';
 
 const JOIN_ENABLE_MINUTES = 5;
 
+/** Bookings that can appear under Upcoming until the slot end time (rejoin while in_progress). */
+const UPCOMING_BOOKING_STATUSES = new Set(['paid', 'confirmed', 'in_progress']);
+
+function isUpcomingSlotBooking(b, now) {
+  const status = (b.status || '').toLowerCase();
+  if (!UPCOMING_BOOKING_STATUSES.has(status)) return false;
+  const start = new Date(b.startTime);
+  if (Number.isNaN(start.getTime())) return false;
+  const end = new Date(start.getTime() + (b.durationMinutes || 0) * 60 * 1000);
+  return end > now;
+}
+
+function upcomingStatusLabel(t, rawStatus) {
+  const s = (rawStatus || 'paid').toLowerCase();
+  if (s === 'paid') return t('sessions.paid');
+  if (s === 'confirmed') return t('sessions.confirmed');
+  if (s === 'in_progress') return t('sessions.inProgress');
+  return (rawStatus || 'paid').replace(/_/g, ' ');
+}
+
 const CalendarIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
     <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
@@ -149,13 +169,7 @@ export function FanAllSessions() {
       }
       const allBookings = res.data.bookings || [];
       const now = new Date();
-      const upcomingList = allBookings.filter((b) => {
-        const status = (b.status || '').toLowerCase();
-        if (status !== 'paid') return false;
-        const start = new Date(b.startTime);
-        const end = new Date(start.getTime() + (b.durationMinutes || 0) * 60 * 1000);
-        return end > now;
-      });
+      const upcomingList = allBookings.filter((b) => isUpcomingSlotBooking(b, now));
       const completedList = allBookings.filter((b) => {
         const status = (b.status || '').toLowerCase();
         return status === 'completed';
@@ -236,15 +250,16 @@ export function FanAllSessions() {
           {!error && !loading && list.length > 0 && (
             <ul className="all-sessions-list" aria-label="Sessions">
               {list.map((session) => {
-                const countdown = activeTab === 'upcoming' ? getJoinCountdown(session.startTime, session.durationMinutes) : null;
+                const countdown = activeTab === 'upcoming' ? getJoinCountdown(session.startTime, session.durationMinutes, t) : null;
+                const statusKey = (session.status || (activeTab === 'upcoming' ? 'paid' : 'completed')).toLowerCase().replace(/\s+/g, '_');
                 return (
                   <li key={session.id}>
                     <div className="all-sessions-card">
                       <div className="all-sessions-card-inner">
                         <div className="all-sessions-card-top">
                           <span className="all-sessions-card-name">{session.creatorName}</span>
-                          <span className={`all-sessions-card-status all-sessions-card-status--${activeTab === 'upcoming' ? 'paid' : (session.status || 'completed')}`}>
-                            {activeTab === 'upcoming' ? t('sessions.paid') : (session.status || 'completed').replace(/_/g, ' ')}
+                          <span className={`all-sessions-card-status all-sessions-card-status--${statusKey}`}>
+                            {activeTab === 'upcoming' ? upcomingStatusLabel(t, session.status) : (session.status || 'completed').replace(/_/g, ' ')}
                           </span>
                         </div>
                         <div className="all-sessions-card-row">
@@ -353,13 +368,7 @@ export function CreatorAllSessions() {
       }
       const allBookings = res.data.bookings || [];
       const now = new Date();
-      const upcomingList = allBookings.filter((b) => {
-        const status = (b.status || '').toLowerCase();
-        if (status !== 'paid') return false;
-        const start = new Date(b.startTime);
-        const end = new Date(start.getTime() + (b.durationMinutes || 0) * 60 * 1000);
-        return end > now;
-      });
+      const upcomingList = allBookings.filter((b) => isUpcomingSlotBooking(b, now));
       const completedList = allBookings.filter((b) => {
         const status = (b.status || '').toLowerCase();
         return status === 'completed';
@@ -441,14 +450,15 @@ export function CreatorAllSessions() {
             <ul className="all-sessions-list" aria-label={t('sessions.ariaSessions')}>
               {list.map((session) => {
                 const countdown = activeTab === 'upcoming' ? getJoinCountdown(session.startTime, session.durationMinutes, t) : null;
+                const statusKey = (session.status || (activeTab === 'upcoming' ? 'paid' : 'completed')).toLowerCase().replace(/\s+/g, '_');
                 return (
                   <li key={session.id}>
                     <div className="all-sessions-card">
                       <div className="all-sessions-card-inner">
                         <div className="all-sessions-card-top">
                           <span className="all-sessions-card-name">{session.fanName}</span>
-                          <span className={`all-sessions-card-status all-sessions-card-status--${activeTab === 'upcoming' ? 'paid' : (session.status || 'completed')}`}>
-                            {activeTab === 'upcoming' ? t('sessions.paid') : (session.status || 'completed').replace(/_/g, ' ')}
+                          <span className={`all-sessions-card-status all-sessions-card-status--${statusKey}`}>
+                            {activeTab === 'upcoming' ? upcomingStatusLabel(t, session.status) : (session.status || 'completed').replace(/_/g, ' ')}
                           </span>
                         </div>
                         <div className="all-sessions-card-row">
