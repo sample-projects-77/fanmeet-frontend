@@ -117,7 +117,7 @@ function FanSignup() {
               value={formData.email}
               onChange={handleChange}
               required
-              placeholder="fan@example.com"
+              placeholder={t('auth.emailExampleUser')}
               autoComplete="email"
             />
           </div>

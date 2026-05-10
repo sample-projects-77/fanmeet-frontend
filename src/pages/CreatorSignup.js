@@ -117,7 +117,7 @@ function CreatorSignup() {
               value={formData.email}
               onChange={handleChange}
               required
-              placeholder="creator@example.com"
+              placeholder={t('auth.emailExampleProvider')}
               autoComplete="email"
             />
           </div>

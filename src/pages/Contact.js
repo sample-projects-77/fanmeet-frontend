@@ -67,7 +67,7 @@ function Contact() {
         <div className="contact-brand">
           <img
             src={`${process.env.PUBLIC_URL || ''}/logo.png`}
-            alt="Fan Session"
+            alt="User Session"
             className="contact-brand-logo"
           />
           <h1 className="contact-brand-title">{t('contact.brandTitle')}</h1>

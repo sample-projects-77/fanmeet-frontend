@@ -3,6 +3,7 @@ import { useLocation, useNavigate, Outlet } from 'react-router-dom';
 import FanNav from '../components/FanNav';
 import { clearAllCached } from '../utils/routeDataCache';
 import { preloadFanData } from '../utils/prefetch';
+import { useChat } from '../context/ChatContext';
 import FanHome from '../pages/FanHome';
 import FanSearch from '../pages/FanSearch';
 import FanDashboard from '../pages/FanDashboard';
@@ -39,6 +40,7 @@ const TAB_COMPONENTS = {
 export default function FanLayout() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { disconnect } = useChat();
   const pathname = location.pathname;
 
   const [user, setUser] = useState(null);
@@ -85,7 +87,8 @@ export default function FanLayout() {
     }
   }, [currentTabKey]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await disconnect();
     clearAllCached();
     localStorage.removeItem('token');
     localStorage.removeItem('user');

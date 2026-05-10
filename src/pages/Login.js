@@ -5,6 +5,7 @@ import { authAPI } from '../services/api';
 import { setAppLanguage, SUPPORTED } from '../i18n';
 import { clearAllCached } from '../utils/routeDataCache';
 import { ButtonLoadingSpinner } from '../components/LoadingSpinner';
+import { useChat } from '../context/ChatContext';
 import './AuthForm.css';
 
 let isSubmitting = false;
@@ -12,6 +13,7 @@ let isSubmitting = false;
 const Login = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { disconnect } = useChat();
 
   useEffect(() => {
     clearAllCached();
@@ -38,6 +40,7 @@ const Login = () => {
     setError('');
     setLoading(true);
     try {
+      await disconnect();
       const response = await authAPI.login(formData.email, formData.password, formData.role);
       if (response.StatusCode === 200 && response.data && !response.error) {
         if (response.data.token) localStorage.setItem('token', response.data.token);

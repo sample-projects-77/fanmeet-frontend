@@ -1,4 +1,4 @@
-/* Fan Home – Flutter-style: Fan Session header (gold border) + Popular Creators list */
+/* Fan Home – Flutter-style: User Session header (gold border) + Popular Creators list */
 
 .fan-home-page {
   min-height: 100vh;
@@ -16,7 +16,7 @@
   margin: 0 auto;
 }
 
-/* ----- Hero: Fan Session header with golden border ----- */
+/* ----- Hero: User Session header with golden border ----- */
 .fan-home-hero {
   padding: 24px 20px;
   margin-bottom: 32px;

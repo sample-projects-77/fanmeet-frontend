@@ -3,6 +3,7 @@ import { useLocation, useNavigate, Outlet } from 'react-router-dom';
 import CreatorNav from '../components/CreatorNav';
 import { clearAllCached } from '../utils/routeDataCache';
 import { preloadCreatorData } from '../utils/prefetch';
+import { useChat } from '../context/ChatContext';
 import CreatorHome from '../pages/CreatorHome';
 import CreatorSearch from '../pages/CreatorSearch';
 import CreatorDashboard from '../pages/CreatorDashboard';
@@ -39,6 +40,7 @@ const TAB_COMPONENTS = {
 export default function CreatorLayout() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { disconnect } = useChat();
   const pathname = location.pathname;
 
   const [user, setUser] = useState(null);
@@ -85,7 +87,8 @@ export default function CreatorLayout() {
     }
   }, [currentTabKey]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await disconnect();
     clearAllCached();
     localStorage.removeItem('token');
     localStorage.removeItem('user');

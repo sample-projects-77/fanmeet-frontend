@@ -43,6 +43,14 @@ export function ChatProvider({ children }) {
         }
         const { token: streamToken, userId } = res.data;
         const chatClient = StreamChat.getInstance(streamApiKey);
+        if (chatClient.userID && chatClient.userID !== userId) {
+          // Account switched in the app but old Stream session is still alive.
+          await chatClient.disconnectUser();
+        }
+        if (chatClient.userID === userId) {
+          setClient(chatClient);
+          return chatClient;
+        }
         const rawName = (user.userName || user.name || '').trim();
         const displayName = rawName
           ? rawName.charAt(0).toUpperCase() + rawName.slice(1)
@@ -71,11 +79,18 @@ export function ChatProvider({ children }) {
     return connectTask;
   }, [client]);
 
-  const disconnect = useCallback(() => {
-    if (client) {
-      client.disconnectUser().catch(() => {});
+  const disconnect = useCallback(async () => {
+    if (!streamApiKey) {
       setClient(null);
+      connectPromiseRef.current = null;
+      return;
     }
+    const chatClient = client || StreamChat.getInstance(streamApiKey);
+    if (chatClient?.userID) {
+      await chatClient.disconnectUser().catch(() => {});
+    }
+    setClient(null);
+    connectPromiseRef.current = null;
   }, [client]);
 
   /**
@@ -117,7 +132,7 @@ export function ChatProvider({ children }) {
     if (token && streamApiKey) {
       connect();
     }
-  }, []);
+  }, [connect]);
 
   const value = {
     client,

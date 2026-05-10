@@ -45,9 +45,9 @@ function formatOfferTimeRange(offer) {
 
 /**
  * Shared offers list for a creator. Used by both fan and creator (viewing another creator).
- * @param {{ backTo: string, backState?: object }} props - backTo: URL for the back link; optional backState for nav tab
+ * @param {{ backTo: string, backState?: object, canBook?: boolean }} props - backTo: URL for the back link; optional backState for nav tab
  */
-function CreatorOffersContent({ backTo, backState }) {
+function CreatorOffersContent({ backTo, backState, canBook = true }) {
   const { t, i18n } = useTranslation();
   const { creatorId } = useParams();
   const navigate = useNavigate();
@@ -159,7 +159,7 @@ function CreatorOffersContent({ backTo, backState }) {
                       {formatPrice(offer.priceCents, offer.currency)}
                     </td>
                     <td className="creator-offers-td-action">
-                      {offer.status === 'available' && (
+                      {canBook && offer.status === 'available' && (
                         <span
                           className="creator-offers-book-btn"
                           role="button"

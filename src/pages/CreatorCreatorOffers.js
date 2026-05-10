@@ -40,7 +40,7 @@ function CreatorCreatorOffers() {
   return (
     <div className="creator-offers-page">
       <CreatorNav active={navTab} user={user} onLogout={handleLogout} />
-      <CreatorOffersContent backTo={`/creator/creators/${creatorId}`} backState={{ navTab }} />
+      <CreatorOffersContent backTo={`/creator/creators/${creatorId}`} backState={{ navTab }} canBook={false} />
     </div>
   );
 }

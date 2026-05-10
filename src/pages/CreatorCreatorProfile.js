@@ -51,14 +51,14 @@ function CreatorCreatorProfile() {
       if (res.StatusCode === 200 && res.data) {
         setCreator(res.data);
       } else {
-        setError(res.error || 'Creator not found');
+        setError(res.error || t('creatorProfile.creatorNotFound'));
       }
     } catch (err) {
-      setError(err.response?.data?.error || err.message || 'Something went wrong');
+      setError(err.response?.data?.error || err.message || t('common.errorGeneric'));
     } finally {
       setLoading(false);
     }
-  }, [creatorId]);
+  }, [creatorId, t]);
 
   useEffect(() => {
     fetchCreator();
