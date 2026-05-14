@@ -22,7 +22,7 @@ export function FanCreators() {
   return (
     <div className="fan-placeholder">
       <header className="fan-placeholder-nav">
-        <Link to="/fan/home">← User Session</Link>
+        <Link to="/fan/home">← Fan Session</Link>
       </header>
       <main className="fan-placeholder-main">
         <h1>Browse session providers</h1>
@@ -69,7 +69,7 @@ export function FanBookings() {
   return (
     <div className="fan-placeholder">
       <header className="fan-placeholder-nav">
-        <Link to="/fan/home">← User Session</Link>
+        <Link to="/fan/home">← Fan Session</Link>
       </header>
       <main className="fan-placeholder-main">
         <h1>My bookings</h1>
