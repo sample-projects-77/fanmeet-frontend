@@ -1,11 +1,16 @@
 import axios from 'axios';
+import {
+  clearAuthSession,
+  getAccessToken,
+  getRefreshToken,
+  saveAuthSession,
+} from '../utils/authStorage';
 
 // Get API URL from environment variable, default to localhost
 let API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 // Ensure the URL ends with /api if it doesn't already
 if (!API_BASE_URL.endsWith('/api')) {
-  // Remove trailing slash if present, then add /api
   API_BASE_URL = API_BASE_URL.replace(/\/$/, '') + '/api';
 }
 
@@ -17,15 +22,54 @@ const api = axios.create({
   },
 });
 
+let isRefreshing = false;
+let refreshQueue = [];
+
+function processRefreshQueue(error, token = null) {
+  refreshQueue.forEach(({ resolve, reject }) => {
+    if (error) reject(error);
+    else resolve(token);
+  });
+  refreshQueue = [];
+}
+
+function shouldSkipRefresh(url = '') {
+  const path = String(url);
+  return (
+    path.includes('/auth/refresh') ||
+    path.includes('/auth/login') ||
+    path.includes('/auth/fans/register') ||
+    path.includes('/auth/creators/register')
+  );
+}
+
+async function refreshAccessToken() {
+  const refreshToken = getRefreshToken();
+  if (!refreshToken) {
+    throw new Error('No refresh token available');
+  }
+
+  const response = await axios.post(`${API_BASE_URL}/auth/refresh`, { refreshToken });
+  const payload = response.data?.data;
+  if (response.data?.StatusCode !== 200 || !payload?.token || !payload?.refreshToken) {
+    throw new Error(response.data?.error || 'Failed to refresh session');
+  }
+
+  saveAuthSession({
+    token: payload.token,
+    refreshToken: payload.refreshToken,
+  });
+
+  return payload.token;
+}
+
 // Add token to requests if available
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = getAccessToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    // FormData must not use the default application/json header, and must not use
-    // multipart/form-data without a boundary (that breaks multer / req.body).
     if (typeof FormData !== 'undefined' && config.data instanceof FormData) {
       if (config.headers && typeof config.headers.delete === 'function') {
         config.headers.delete('Content-Type');
@@ -35,8 +79,44 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
+  (error) => Promise.reject(error)
+);
+
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    if (!originalRequest || originalRequest._retry || error.response?.status !== 401) {
+      return Promise.reject(error);
+    }
+    if (shouldSkipRefresh(originalRequest.url)) {
+      return Promise.reject(error);
+    }
+
+    if (isRefreshing) {
+      return new Promise((resolve, reject) => {
+        refreshQueue.push({ resolve, reject });
+      }).then((token) => {
+        originalRequest.headers.Authorization = `Bearer ${token}`;
+        return api(originalRequest);
+      });
+    }
+
+    originalRequest._retry = true;
+    isRefreshing = true;
+
+    try {
+      const newToken = await refreshAccessToken();
+      processRefreshQueue(null, newToken);
+      originalRequest.headers.Authorization = `Bearer ${newToken}`;
+      return api(originalRequest);
+    } catch (refreshError) {
+      processRefreshQueue(refreshError, null);
+      clearAuthSession();
+      return Promise.reject(refreshError);
+    } finally {
+      isRefreshing = false;
+    }
   }
 );
 
@@ -49,6 +129,18 @@ export const authAPI = {
       password,
       role,
     });
+    return response.data;
+  },
+
+  refresh: async () => {
+    const refreshToken = getRefreshToken();
+    const response = await api.post('/auth/refresh', { refreshToken });
+    return response.data;
+  },
+
+  logout: async () => {
+    const refreshToken = getRefreshToken();
+    const response = await api.post('/auth/logout', { refreshToken });
     return response.data;
   },
 
@@ -394,5 +486,3 @@ export const contactAPI = {
 };
 
 export default api;
-
-

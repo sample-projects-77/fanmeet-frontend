@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate, Outlet } from 'react-router-dom';
 import FanNav from '../components/FanNav';
+import { authAPI } from '../services/api';
 import { clearAllCached } from '../utils/routeDataCache';
+import { clearAuthSession, hasAuthSession } from '../utils/authStorage';
 import { preloadFanData } from '../utils/prefetch';
 import { useChat } from '../context/ChatContext';
 import FanHome from '../pages/FanHome';
@@ -54,9 +56,8 @@ export default function FanLayout() {
   const navActive = currentTabKey ? TAB_TO_NAV_ACTIVE[currentTabKey] : 'home';
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
     const userJson = localStorage.getItem('user');
-    if (!token || !userJson) {
+    if (!hasAuthSession() || !userJson) {
       navigate('/login', { replace: true });
       return;
     }
@@ -88,10 +89,14 @@ export default function FanLayout() {
   }, [currentTabKey]);
 
   const handleLogout = async () => {
+    try {
+      await authAPI.logout();
+    } catch (_) {
+      // ignore network/auth errors during logout
+    }
     await disconnect();
     clearAllCached();
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    clearAuthSession();
     navigate('/', { replace: true });
   };
 

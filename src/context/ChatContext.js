@@ -3,6 +3,7 @@ import { StreamChat } from 'stream-chat';
 import { chatAPI } from '../services/api';
 import { DEFAULT_AVATAR_URL } from '../constants';
 import { getPublicDisplayName } from '../utils/getPublicDisplayName';
+import { getAccessToken } from '../utils/authStorage';
 
 const streamApiKey = process.env.REACT_APP_STREAM_API_KEY;
 
@@ -22,7 +23,7 @@ export function ChatProvider({ children }) {
       setError('REACT_APP_STREAM_API_KEY is not set');
       return null;
     }
-    const token = localStorage.getItem('token');
+    const token = getAccessToken();
     const userJson = localStorage.getItem('user');
     if (!token || !userJson) return null;
 
@@ -131,7 +132,7 @@ export function ChatProvider({ children }) {
   }, [client]);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = getAccessToken();
     if (token && streamApiKey) {
       connect();
     }

@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authAPI } from '../services/api';
+import { saveAuthSession } from '../utils/authStorage';
 import { ButtonLoadingSpinner } from '../components/LoadingSpinner';
 import './Signup.css';
 
@@ -77,13 +78,11 @@ const Signup = () => {
       
       // Backend returns: { StatusCode: 200, data: { user: {...}, token: "..." }, error: null }
       if (response.StatusCode === 200 && response.data && !response.error) {
-        // Store token and user data
-        if (response.data.token) {
-          localStorage.setItem('token', response.data.token);
-        }
-        if (response.data.user) {
-          localStorage.setItem('user', JSON.stringify(response.data.user));
-        }
+        saveAuthSession({
+          token: response.data.token,
+          refreshToken: response.data.refreshToken,
+          user: response.data.user,
+        });
         
         const role = response.data.user?.role || userType;
         if (role === 'creator') {
