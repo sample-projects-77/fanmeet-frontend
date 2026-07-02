@@ -10,6 +10,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import EmptyWidget from '../components/EmptyWidget';
 import ErrorWidget from '../components/ErrorWidget';
 import './CreatorHome.css';
+import { getPublicDisplayName } from '../utils/getPublicDisplayName';
 import './CreatorSearch.css';
 
 const ITEMS_PER_PAGE = 20;
@@ -116,7 +117,7 @@ function CreatorHome({ embedded, user: userProp, onLogout: onLogoutProp }) {
 
   if (!user) return null;
 
-  const displayName = user?.userName ?? t('home.creator');
+  const displayName = getPublicDisplayName(user, t('home.creator'));
   const priceStr = (cents) => (cents != null ? `${(cents / 100).toFixed(0)} €` : '—');
   const durationStr = (durations) =>
     durations?.length ? `${Math.min(...durations)} ${t('common.min')}` : '—';

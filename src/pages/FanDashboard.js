@@ -7,6 +7,7 @@ import { getSessionCountsFromBookings } from '../utils/sessionCounts';
 import FanNav from '../components/FanNav';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorWidget from '../components/ErrorWidget';
+import { getPublicDisplayName } from '../utils/getPublicDisplayName';
 import './FanDashboard.css';
 
 const CACHE_KEY = 'fanDashboard';
@@ -147,7 +148,7 @@ function FanDashboard({ embedded, user: userProp, onLogout: onLogoutProp }) {
             <div className="fan-hero-text">
               <h1 className="fan-hero-title">{t('dashboard.fanTitle')}</h1>
               <p className="fan-hero-welcome">
-                {t('home.welcomeBack', { name: user?.userName ?? t('home.fan') })}
+                {t('home.welcomeBack', { name: getPublicDisplayName(user, t('home.fan')) })}
               </p>
             </div>
           </section>

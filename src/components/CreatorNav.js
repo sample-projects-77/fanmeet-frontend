@@ -3,11 +3,12 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { DEFAULT_AVATAR_URL } from '../constants';
 import BottomNav from './BottomNav';
+import { getPublicDisplayName } from '../utils/getPublicDisplayName';
 import './CreatorNav.css';
 
 export default function CreatorNav({ active, userName, user, avatarUrl, onLogout }) {
   const { t } = useTranslation();
-  const displayName = user?.userName ?? userName ?? t('home.creator');
+  const displayName = getPublicDisplayName(user || (userName ? { userName } : null), t('home.creator'));
   const displayAvatar = user?.avatarUrl ?? avatarUrl ?? DEFAULT_AVATAR_URL;
 
   return (

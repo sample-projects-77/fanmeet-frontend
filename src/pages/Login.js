@@ -75,7 +75,7 @@ const Login = () => {
       </header>
       <div className="auth-body">
         <div className="auth-logo-wrap">
-          <img src={`${process.env.PUBLIC_URL || ''}/logo.png`} alt="FanMeet" className="auth-logo" />
+          <img src={`${process.env.PUBLIC_URL || ''}/logo.png`} alt="Fan Session" className="auth-logo" />
         </div>
         <h1 className="auth-heading">{t('auth.welcomeBack')}</h1>
         <p className="auth-subtitle">{t('auth.signInSubtitle')}</p>

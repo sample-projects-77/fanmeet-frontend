@@ -7,6 +7,7 @@ import { getSessionCountsFromBookings } from '../utils/sessionCounts';
 import CreatorNav from '../components/CreatorNav';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorWidget from '../components/ErrorWidget';
+import { getPublicDisplayName } from '../utils/getPublicDisplayName';
 import './CreatorDashboard.css';
 
 const CACHE_KEY = 'creatorDashboard';
@@ -140,7 +141,7 @@ function CreatorDashboard({ embedded, user: userProp, onLogout: onLogoutProp }) 
             <div className="creator-dashboard-welcome-text">
               <h1 className="creator-dashboard-welcome-title">{t('dashboard.creatorTitle')}</h1>
               <p className="creator-dashboard-welcome-subtitle">
-                {t('home.welcomeBack', { name: user?.userName ?? t('home.creator') })}
+                {t('home.welcomeBack', { name: getPublicDisplayName(user, t('home.creator')) })}
               </p>
             </div>
           </header>

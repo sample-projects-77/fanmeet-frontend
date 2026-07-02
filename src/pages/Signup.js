@@ -115,7 +115,7 @@ const Signup = () => {
     <div className="signup-container">
       <div className="signup-card">
         <div className="signup-header">
-          <h1>FanMeet</h1>
+          <h1>Fan Session</h1>
           <p>Create your account to get started.</p>
         </div>
 

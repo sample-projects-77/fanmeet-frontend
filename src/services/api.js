@@ -330,7 +330,7 @@ export const bookingAPI = {
     const response = await api.get(`/bookings/${encodeURIComponent(id)}`);
     return response.data;
   },
-  confirmBooking: async (bookingId, { paymentProvider = 'stripe', paymentIntentId } = {}) => {
+  confirmBooking: async (bookingId, { paymentProvider = 'mollie', paymentIntentId } = {}) => {
     const id = String(bookingId).replace(/^booking_/, '');
     const response = await api.post(`/bookings/${encodeURIComponent(id)}/confirm`, {
       paymentProvider,
@@ -355,10 +355,10 @@ export const bookingAPI = {
   },
 };
 
-// Payments – Stripe (requires auth; fan creates payment for booking)
+// Payments – Mollie (requires auth; fan creates payment for booking)
 export const paymentAPI = {
-  getStripePublishableKey: async () => {
-    const response = await api.get('/payments/stripe-key');
+  getPaymentConfig: async () => {
+    const response = await api.get('/payments/config');
     return response.data;
   },
   createPayment: async (bookingId) => {
@@ -373,7 +373,7 @@ export const paymentAPI = {
   },
 };
 
-// Connect – Stripe Connect onboarding for creators (payout setup)
+// Connect – Mollie Connect OAuth onboarding for creators (payout setup)
 export const connectAPI = {
   getOnboardingLink: async (body = {}) => {
     const response = await api.post('/connect/onboarding-link', body);

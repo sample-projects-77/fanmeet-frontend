@@ -11,6 +11,7 @@ import {
   formatUTCDateToLocalTime,
   offerSlotStartToUTCISO,
 } from '../utils/dateTimeUtils';
+import { getFriendlyPaymentError } from '../utils/paymentErrors';
 
 function formatPrice(priceCents, currency = 'EUR') {
   if (priceCents == null) return '—';
@@ -99,12 +100,19 @@ function CreatorOffersContent({ backTo, backState, canBook = true }) {
       const createOk =
         createRes.StatusCode === 200 || createRes.statusCode === 200;
       if (!createOk || !createRes.data?.id) {
-        setError(createRes.error || t('offers.failedToCreateBooking'));
+        setError(getFriendlyPaymentError(createRes.error, t) || t('offers.failedToCreateBooking'));
         return;
       }
-      navigate(`/fan/bookings/${createRes.data.id}/pay`, { replace: true });
+      if (createRes.data.status === 'HOLD') {
+        setError(t('offers.slotTemporarilyReserved'));
+        return;
+      }
+      navigate(`/fan/bookings/${createRes.data.id}/pay`, {
+        replace: true,
+        state: { creatorId: rawCreatorId },
+      });
     } catch (err) {
-      setError(err.response?.data?.error || err.message || t('common.errorGeneric'));
+      setError(getFriendlyPaymentError(err.response?.data?.error || err.message, t));
     } finally {
       setBookingInProgress(null);
     }
@@ -139,25 +147,20 @@ function CreatorOffersContent({ backTo, backState, canBook = true }) {
           <EmptyWidget text={t('offers.noOffers')} />
         ) : (
           <div className="creator-offers-table-wrap">
-            <table className="creator-offers-table">
+            <table className="creator-offers-table creator-offers-table--bookable">
               <thead>
                 <tr>
                   <th className="creator-offers-th-day">{t('availability.day')}</th>
-                  <th>{t('offers.time')}</th>
+                  <th className="creator-offers-th-action" aria-label={t('common.action')} />
                   <th>{t('offers.duration')}</th>
                   <th className="creator-offers-th-price">{t('offers.price')}</th>
-                  <th className="creator-offers-th-action" aria-label={t('common.action')} />
+                  <th className="creator-offers-th-time">{t('offers.time')}</th>
                 </tr>
               </thead>
               <tbody>
                 {bookableOffers.map((offer) => (
                   <tr key={offer.id}>
                     <td>{formatOfferDay(offer, locale)}</td>
-                    <td>{formatOfferTimeRange(offer)}</td>
-                    <td>{(offer.duration ?? offer.durationMinutes) != null ? `${offer.duration ?? offer.durationMinutes} ${t('availability.minAbbr')}` : '—'}</td>
-                    <td className="creator-offers-price">
-                      {formatPrice(offer.priceCents, offer.currency)}
-                    </td>
                     <td className="creator-offers-td-action">
                       {canBook && offer.status === 'available' && (
                         <span
@@ -172,6 +175,11 @@ function CreatorOffersContent({ backTo, backState, canBook = true }) {
                         </span>
                       )}
                     </td>
+                    <td>{(offer.duration ?? offer.durationMinutes) != null ? `${offer.duration ?? offer.durationMinutes} ${t('availability.minAbbr')}` : '—'}</td>
+                    <td className="creator-offers-price">
+                      {formatPrice(offer.priceCents, offer.currency)}
+                    </td>
+                    <td className="creator-offers-td-time">{formatOfferTimeRange(offer)}</td>
                   </tr>
                 ))}
               </tbody>

@@ -45,17 +45,17 @@ function CustomEditMessageForm() {
   const hasContent = text && text.trim().length > 0;
 
   return (
-    <form autoComplete="off" className="str-chat__edit-message-form fanmeet-edit-message-form" onSubmit={handleSubmit}>
-      <div className="fanmeet-edit-message-banner">
-        <span className="fanmeet-edit-message-banner-icon">✎</span>
-        <span className="fanmeet-edit-message-banner-text">{tApp('chat.editingMessage')}</span>
+    <form autoComplete="off" className="str-chat__edit-message-form fansession-edit-message-form" onSubmit={handleSubmit}>
+      <div className="fansession-edit-message-banner">
+        <span className="fansession-edit-message-banner-icon">✎</span>
+        <span className="fansession-edit-message-banner-text">{tApp('chat.editingMessage')}</span>
       </div>
       <MessageInputFlat />
-      <div className="fanmeet-edit-message-actions">
-        <button type="button" className="fanmeet-edit-message-cancel" onClick={cancel}>
+      <div className="fansession-edit-message-actions">
+        <button type="button" className="fansession-edit-message-cancel" onClick={cancel}>
           {tApp('chat.cancelEdit')}
         </button>
-        <button type="submit" className="fanmeet-edit-message-update" disabled={!hasContent}>
+        <button type="submit" className="fansession-edit-message-update" disabled={!hasContent}>
           {tApp('chat.updateMessage')}
         </button>
       </div>
@@ -111,7 +111,7 @@ function formatDateForSeparator(date) {
 /** Date separator: Flutter-style pill – "Feb 16", "Feb 18", "Today", "Friday" */
 function CustomDateSeparator(props) {
   return (
-    <div className="fanmeet-date-separator-pill">
+    <div className="fansession-date-separator-pill">
       <DateSeparator {...props} formatDate={formatDateForSeparator} position="center" />
     </div>
   );
@@ -234,7 +234,7 @@ function CombinedMessageOptions() {
   useEffect(() => {
     const row = buttonRef.current?.closest('li') || buttonRef.current?.closest('.str-chat__message') || buttonRef.current?.closest('[class*="virtual-list-message"]');
     if (!row) return;
-    const className = 'fanmeet-message-menu-open';
+    const className = 'fansession-message-menu-open';
     if (isOpen) {
       row.classList.add(className);
     } else {
@@ -247,7 +247,7 @@ function CombinedMessageOptions() {
   useEffect(() => {
     if (!isOpen) return;
     const scrollY = window.scrollY;
-    document.body.classList.add('fanmeet-message-menu-open');
+    document.body.classList.add('fansession-message-menu-open');
     document.body.style.overflow = 'hidden';
     document.body.style.touchAction = 'none';
     document.body.style.position = 'fixed';
@@ -255,7 +255,7 @@ function CombinedMessageOptions() {
     document.body.style.left = '0';
     document.body.style.right = '0';
     return () => {
-      document.body.classList.remove('fanmeet-message-menu-open');
+      document.body.classList.remove('fansession-message-menu-open');
       document.body.style.overflow = '';
       document.body.style.touchAction = '';
       document.body.style.position = '';
@@ -299,20 +299,20 @@ function CombinedMessageOptions() {
       >
         <>
           <div
-            className="fanmeet-message-menu-backdrop"
+            className="fansession-message-menu-backdrop"
             onClick={() => dialog?.close()}
             onKeyDown={(e) => e.key === 'Escape' && dialog?.close()}
             role="presentation"
             aria-hidden
           />
-          <div className={`fanmeet-combined-message-menu ${placement === 'bottom-end' ? 'fanmeet-combined-message-menu--below' : ''}`}>
+          <div className={`fansession-combined-message-menu ${placement === 'bottom-end' ? 'fansession-combined-message-menu--below' : ''}`}>
           {placement === 'bottom-end' ? (
             <>
-              <div className="fanmeet-message-actions-list">
+              <div className="fansession-message-actions-list">
                 {customMessageActions?.['Copy Message'] && (
                   <button
                     type="button"
-                    className="fanmeet-message-action"
+                    className="fansession-message-action"
                     onClick={async () => {
                       await customMessageActions['Copy Message']?.(message);
                       close();
@@ -322,31 +322,31 @@ function CombinedMessageOptions() {
                   </button>
                 )}
                 {hasEdit && (
-                  <button type="button" className="fanmeet-message-action" onClick={() => { setEditingState?.(); close(); }}>
+                  <button type="button" className="fansession-message-action" onClick={() => { setEditingState?.(); close(); }}>
                     {tApp('chat.editMessage')}
                   </button>
                 )}
                 {hasPin && !message.parent_id && (
-                  <button type="button" className="fanmeet-message-action" onClick={(e) => { handlePin?.(e); close(); }}>
+                  <button type="button" className="fansession-message-action" onClick={(e) => { handlePin?.(e); close(); }}>
                     {message.pinned ? tApp('chat.unpin') : tApp('chat.pinToConversation')}
                   </button>
                 )}
                 {hasDelete && (
                   <button
                     type="button"
-                    className="fanmeet-message-action fanmeet-message-action--delete"
+                    className="fansession-message-action fansession-message-action--delete"
                     onClick={(e) => { handleDelete?.(e); close(); }}
                   >
                     {tApp('chat.deleteMessage')}
                   </button>
                 )}
               </div>
-              <div className="fanmeet-reaction-strip fanmeet-reaction-strip--below">
+              <div className="fansession-reaction-strip fansession-reaction-strip--below">
                 {CHAT_REACTION_OPTIONS.map(({ type, Component }) => (
                   <button
                     key={type}
                     type="button"
-                    className="fanmeet-reaction-option"
+                    className="fansession-reaction-option"
                     onClick={(e) => {
                       handleReaction?.(type, e);
                       close();
@@ -360,12 +360,12 @@ function CombinedMessageOptions() {
             </>
           ) : (
             <>
-              <div className="fanmeet-reaction-strip">
+              <div className="fansession-reaction-strip">
                 {CHAT_REACTION_OPTIONS.map(({ type, Component }) => (
                   <button
                     key={type}
                     type="button"
-                    className="fanmeet-reaction-option"
+                    className="fansession-reaction-option"
                     onClick={(e) => {
                       handleReaction?.(type, e);
                       close();
@@ -376,11 +376,11 @@ function CombinedMessageOptions() {
                   </button>
                 ))}
               </div>
-              <div className="fanmeet-message-actions-list">
+              <div className="fansession-message-actions-list">
                 {customMessageActions?.['Copy Message'] && (
                   <button
                     type="button"
-                    className="fanmeet-message-action"
+                    className="fansession-message-action"
                     onClick={async () => {
                       await customMessageActions['Copy Message']?.(message);
                       close();
@@ -390,19 +390,19 @@ function CombinedMessageOptions() {
                   </button>
                 )}
                 {hasEdit && (
-                  <button type="button" className="fanmeet-message-action" onClick={() => { setEditingState?.(); close(); }}>
+                  <button type="button" className="fansession-message-action" onClick={() => { setEditingState?.(); close(); }}>
                     {tApp('chat.editMessage')}
                   </button>
                 )}
                 {hasPin && !message.parent_id && (
-                  <button type="button" className="fanmeet-message-action" onClick={(e) => { handlePin?.(e); close(); }}>
+                  <button type="button" className="fansession-message-action" onClick={(e) => { handlePin?.(e); close(); }}>
                     {message.pinned ? tApp('chat.unpin') : tApp('chat.pinToConversation')}
                   </button>
                 )}
                 {hasDelete && (
                   <button
                     type="button"
-                    className="fanmeet-message-action fanmeet-message-action--delete"
+                    className="fansession-message-action fansession-message-action--delete"
                     onClick={(e) => { handleDelete?.(e); close(); }}
                   >
                     {tApp('chat.deleteMessage')}
@@ -570,10 +570,36 @@ function ChatContent({ channelId, backTo, backLabel, NavComponent }) {
 
   useEffect(() => {
     if (!client || !channelId) return;
-    const c = client.channel('messaging', channelId);
-    setChannel(c);
+    let cancelled = false;
+    const c = client.channel("messaging", channelId);
     setLoadError(null);
-  }, [client, channelId]);
+
+    (async () => {
+      try {
+        await c.watch();
+        if (cancelled) return;
+        setChannel(c);
+      } catch (err) {
+        if (cancelled) return;
+        const status = err?.status || err?.response?.status || null;
+        if (status === 403) {
+          setLoadError(tApp("chats.failedToLoad") || "You are not authorized for this chat.");
+        } else {
+          setLoadError(
+            err?.response?.data?.error ||
+            err?.message ||
+            tApp("chats.failedToLoad") ||
+            "Failed to load chat."
+          );
+        }
+        setChannel(null);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [client, channelId, tApp]);
 
   /* When returning to the tab, re-watch so member avatars/names match GetStream (e.g. after the other user updates their profile). */
   useEffect(() => {
@@ -751,7 +777,7 @@ function ChatConversation({ backTo, backLabel, NavComponent }) {
         main.style.height = `${vv.height}px`;
         main.style.overflow = 'hidden';
         main.style.zIndex = '10';
-        document.body.classList.add('fanmeet-chat-keyboard-open');
+        document.body.classList.add('fansession-chat-keyboard-open');
       } else {
         main.style.position = '';
         main.style.top = '';
@@ -761,7 +787,7 @@ function ChatConversation({ backTo, backLabel, NavComponent }) {
         main.style.height = '';
         main.style.overflow = '';
         main.style.zIndex = '';
-        document.body.classList.remove('fanmeet-chat-keyboard-open');
+        document.body.classList.remove('fansession-chat-keyboard-open');
       }
     };
 
@@ -780,7 +806,7 @@ function ChatConversation({ backTo, backLabel, NavComponent }) {
       main.style.height = '';
       main.style.overflow = '';
       main.style.zIndex = '';
-      document.body.classList.remove('fanmeet-chat-keyboard-open');
+      document.body.classList.remove('fansession-chat-keyboard-open');
     };
   }, [isReady]);
 

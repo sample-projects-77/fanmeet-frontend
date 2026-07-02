@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback, use
 import { StreamChat } from 'stream-chat';
 import { chatAPI } from '../services/api';
 import { DEFAULT_AVATAR_URL } from '../constants';
+import { getPublicDisplayName } from '../utils/getPublicDisplayName';
 
 const streamApiKey = process.env.REACT_APP_STREAM_API_KEY;
 
@@ -51,14 +52,14 @@ export function ChatProvider({ children }) {
           setClient(chatClient);
           return chatClient;
         }
-        const rawName = (user.userName || user.name || '').trim();
-        const displayName = rawName
-          ? rawName.charAt(0).toUpperCase() + rawName.slice(1)
+        const displayName = getPublicDisplayName(user, 'User');
+        const chatName = displayName
+          ? displayName.charAt(0).toUpperCase() + displayName.slice(1)
           : 'User';
         await chatClient.connectUser(
           {
             id: userId,
-            name: displayName,
+            name: chatName,
             image: user.avatarUrl || DEFAULT_AVATAR_URL,
           },
           streamToken
@@ -111,13 +112,15 @@ export function ChatProvider({ children }) {
     const rawMongoId = prefixed.replace(/^(fan_|creator_)/i, '');
     if (!rawMongoId || rawMongoId !== client.userID) return;
 
-    const rawName = (user.userName || user.name || '').trim();
-    const displayName = rawName ? rawName.charAt(0).toUpperCase() + rawName.slice(1) : 'User';
+    const displayName = getPublicDisplayName(user, 'User');
+    const chatName = displayName
+      ? displayName.charAt(0).toUpperCase() + displayName.slice(1)
+      : 'User';
     try {
       await client.partialUpdateUser({
         id: client.userID,
         set: {
-          name: displayName,
+          name: chatName,
           image: user.avatarUrl || DEFAULT_AVATAR_URL,
         },
       });

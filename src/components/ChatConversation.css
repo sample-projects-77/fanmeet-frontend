@@ -1,11 +1,11 @@
 /* When chat keyboard is open on mobile, hide bottom nav so input sits right above keyboard */
-body.fanmeet-chat-keyboard-open .bottom-nav {
+body.fansession-chat-keyboard-open .bottom-nav {
   display: none !important;
 }
 
 /* When keyboard is open, bottom nav is hidden — remove the 64px bottom clearance from input */
-body.fanmeet-chat-keyboard-open .chat-conversation-stream .str-chat__message-input-wrapper,
-body.fanmeet-chat-keyboard-open .chat-conversation-stream .str-chat__message-input {
+body.fansession-chat-keyboard-open .chat-conversation-stream .str-chat__message-input-wrapper,
+body.fansession-chat-keyboard-open .chat-conversation-stream .str-chat__message-input {
   padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;
 }
 
@@ -258,7 +258,7 @@ body.fanmeet-chat-keyboard-open .chat-conversation-stream .str-chat__message-inp
   white-space: nowrap !important;
 }
 /* Flutter-style date separator pill: dark gray text on lighter gray rounded pill, centered */
-.chat-conversation-stream .fanmeet-date-separator-pill {
+.chat-conversation-stream .fansession-date-separator-pill {
   display: flex !important;
   justify-content: center !important;
   align-items: center !important;
@@ -266,7 +266,7 @@ body.fanmeet-chat-keyboard-open .chat-conversation-stream .str-chat__message-inp
   padding: 10px 0 14px !important;
   background: transparent !important;
 }
-.chat-conversation-stream .fanmeet-date-separator-pill .str-chat__date-separator {
+.chat-conversation-stream .fansession-date-separator-pill .str-chat__date-separator {
   padding: 8px 0 !important;
   background: transparent !important;
   border-radius: 0 !important;
@@ -275,7 +275,7 @@ body.fanmeet-chat-keyboard-open .chat-conversation-stream .str-chat__message-inp
   font-weight: 500 !important;
   white-space: nowrap !important;
 }
-.chat-conversation-stream .fanmeet-date-separator-pill .str-chat__date-separator-date {
+.chat-conversation-stream .fansession-date-separator-pill .str-chat__date-separator-date {
   padding: 0 !important;
   background: transparent !important;
   color: inherit !important;
@@ -566,16 +566,16 @@ body.fanmeet-chat-keyboard-open .chat-conversation-stream .str-chat__message-inp
 
 /* ========== Backdrop when message options are open (blur + darken) ========== */
 /* Backdrop is inside the dialog so it shares stacking with the menu; menu stays on top */
-.fanmeet-message-menu-backdrop {
+.fansession-message-menu-backdrop {
   position: fixed !important;
   inset: 0 !important;
   z-index: 0 !important;
   background: rgba(0, 0, 0, 0.45) !important;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  animation: fanmeet-backdrop-in 0.2s ease-out;
+  animation: fansession-backdrop-in 0.2s ease-out;
 }
-@keyframes fanmeet-backdrop-in {
+@keyframes fansession-backdrop-in {
   from {
     opacity: 0;
   }
@@ -585,7 +585,7 @@ body.fanmeet-chat-keyboard-open .chat-conversation-stream .str-chat__message-inp
 }
 
 /* When menu is open: overlay above other messages; active message row (10003) is above overlay so bubble stays visible */
-body.fanmeet-message-menu-open .str-chat__dialog-overlay {
+body.fansession-message-menu-open .str-chat__dialog-overlay {
   z-index: 10002 !important;
   background: transparent !important;
 }
@@ -593,54 +593,54 @@ body.fanmeet-message-menu-open .str-chat__dialog-overlay {
 /* Keep backdrop blur – message bubble (z-index 10003) and menu (above backdrop) stay sharp; only background is blurred */
 
 /* ========== Scroll lock when message options menu is open ========== */
-body.fanmeet-message-menu-open .chat-conversation-stream .str-chat__list,
-body.fanmeet-message-menu-open .chat-conversation-stream .str-chat__message-list-scroll,
-body.fanmeet-message-menu-open .chat-conversation-stream [data-virtuoso-scroller],
-body.fanmeet-message-menu-open .chat-conversation-stream .str-chat__ul {
+body.fansession-message-menu-open .chat-conversation-stream .str-chat__list,
+body.fansession-message-menu-open .chat-conversation-stream .str-chat__message-list-scroll,
+body.fansession-message-menu-open .chat-conversation-stream [data-virtuoso-scroller],
+body.fansession-message-menu-open .chat-conversation-stream .str-chat__ul {
   overflow: hidden !important;
   touch-action: none !important;
   overscroll-behavior: none !important;
 }
 
 /* When menu is open: let clicks pass through non-active messages so the options menu (Copy, Edit, etc.) receives them */
-body.fanmeet-message-menu-open .chat-conversation-stream .str-chat__message:not(.fanmeet-message-menu-open):not(:has(.fanmeet-message-menu-open)),
-body.fanmeet-message-menu-open .chat-conversation-stream .str-chat__li:not(.fanmeet-message-menu-open):not(:has(.fanmeet-message-menu-open)),
-body.fanmeet-message-menu-open .chat-conversation-stream [class*="virtual-list-message"]:not(.fanmeet-message-menu-open):not(:has(.fanmeet-message-menu-open)) {
+body.fansession-message-menu-open .chat-conversation-stream .str-chat__message:not(.fansession-message-menu-open):not(:has(.fansession-message-menu-open)),
+body.fansession-message-menu-open .chat-conversation-stream .str-chat__li:not(.fansession-message-menu-open):not(:has(.fansession-message-menu-open)),
+body.fansession-message-menu-open .chat-conversation-stream [class*="virtual-list-message"]:not(.fansession-message-menu-open):not(:has(.fansession-message-menu-open)) {
   pointer-events: none !important;
 }
 
 /* ========== Active message above overlay so bubble stays visible; menu opens below ========== */
-.chat-conversation-stream .str-chat__message.fanmeet-message-menu-open,
-.chat-conversation-stream .str-chat__li.fanmeet-message-menu-open,
-.chat-conversation-stream [class*="virtual-list-message"].fanmeet-message-menu-open {
+.chat-conversation-stream .str-chat__message.fansession-message-menu-open,
+.chat-conversation-stream .str-chat__li.fansession-message-menu-open,
+.chat-conversation-stream [class*="virtual-list-message"].fansession-message-menu-open {
   position: relative;
   z-index: 10003 !important; /* above overlay (10002) so message bubble is visible */
 }
 /* Let clicks pass through the active message row so menu options receive clicks */
-.chat-conversation-stream .str-chat__message.fanmeet-message-menu-open,
-.chat-conversation-stream .str-chat__li.fanmeet-message-menu-open,
-.chat-conversation-stream [class*="virtual-list-message"].fanmeet-message-menu-open {
+.chat-conversation-stream .str-chat__message.fansession-message-menu-open,
+.chat-conversation-stream .str-chat__li.fansession-message-menu-open,
+.chat-conversation-stream [class*="virtual-list-message"].fansession-message-menu-open {
   pointer-events: none !important;
 }
-.chat-conversation-stream .fanmeet-message-menu-open .str-chat__message-bubble {
+.chat-conversation-stream .fansession-message-menu-open .str-chat__message-bubble {
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85);
   transition: box-shadow 0.2s ease;
 }
 /* Hide reactions, metadata (timestamp/last seen) & pin indicator on active message when options menu is open (prevents overlap) */
-.chat-conversation-stream .fanmeet-message-menu-open .str-chat__message-reactions-host,
-.chat-conversation-stream .fanmeet-message-menu-open .str-chat__message-metadata,
-.chat-conversation-stream .fanmeet-message-menu-open .str-chat__message-metadata::before {
+.chat-conversation-stream .fansession-message-menu-open .str-chat__message-reactions-host,
+.chat-conversation-stream .fansession-message-menu-open .str-chat__message-metadata,
+.chat-conversation-stream .fansession-message-menu-open .str-chat__message-metadata::before {
   visibility: hidden !important;
 }
 /* Ensure metadata cannot block clicks on the options menu – clicks pass through to Copy/Edit/etc */
-.chat-conversation-stream .fanmeet-message-menu-open .str-chat__message-reactions-host,
-.chat-conversation-stream .fanmeet-message-menu-open .str-chat__message-metadata {
+.chat-conversation-stream .fansession-message-menu-open .str-chat__message-reactions-host,
+.chat-conversation-stream .fansession-message-menu-open .str-chat__message-metadata {
   pointer-events: none !important;
 }
 
 /* ========== Combined message menu (emojis + actions) – opens ABOVE message ========== */
-.chat-conversation-stream .str-chat__dialog-contents:has(.fanmeet-combined-message-menu),
-.str-chat__dialog-contents:has(.fanmeet-combined-message-menu) {
+.chat-conversation-stream .str-chat__dialog-contents:has(.fansession-combined-message-menu),
+.str-chat__dialog-contents:has(.fansession-combined-message-menu) {
   margin-bottom: 8px !important;
   background: transparent !important;
   border: none !important;
@@ -648,7 +648,7 @@ body.fanmeet-message-menu-open .chat-conversation-stream [class*="virtual-list-m
   z-index: 10001 !important; /* above message row (10000) so menu stays on top of reactions & pin */
   overflow: visible !important;
 }
-.fanmeet-combined-message-menu {
+.fansession-combined-message-menu {
   position: relative;
   z-index: 1;
   display: flex;
@@ -656,9 +656,9 @@ body.fanmeet-message-menu-open .chat-conversation-stream [class*="virtual-list-m
   gap: 10px;
   min-width: min(260px, 100vw - 32px);
   max-width: calc(100vw - 32px);
-  animation: fanmeet-menu-in 0.2s ease-out;
+  animation: fansession-menu-in 0.2s ease-out;
 }
-@keyframes fanmeet-menu-in {
+@keyframes fansession-menu-in {
   from {
     opacity: 0;
     transform: translateY(4px);
@@ -670,7 +670,7 @@ body.fanmeet-message-menu-open .chat-conversation-stream [class*="virtual-list-m
 }
 
 /* Reaction bar: separate white card with tail pointing to message */
-.fanmeet-reaction-strip {
+.fansession-reaction-strip {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -683,7 +683,7 @@ body.fanmeet-message-menu-open .chat-conversation-stream [class*="virtual-list-m
   position: relative;
 }
 /* Tail pointing down (menu above message) */
-.fanmeet-reaction-strip::after {
+.fansession-reaction-strip::after {
   content: '';
   position: absolute;
   bottom: -8px;
@@ -695,14 +695,14 @@ body.fanmeet-message-menu-open .chat-conversation-stream [class*="virtual-list-m
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.1));
 }
 /* When menu opens below message: options first (closest to message), tail on options pointing up */
-.fanmeet-combined-message-menu--below .fanmeet-reaction-strip::after,
-.fanmeet-combined-message-menu--below .fanmeet-reaction-strip::before {
+.fansession-combined-message-menu--below .fansession-reaction-strip::after,
+.fansession-combined-message-menu--below .fansession-reaction-strip::before {
   display: none;
 }
-.fanmeet-combined-message-menu--below .fanmeet-message-actions-list {
+.fansession-combined-message-menu--below .fansession-message-actions-list {
   position: relative;
 }
-.fanmeet-combined-message-menu--below .fanmeet-message-actions-list::before {
+.fansession-combined-message-menu--below .fansession-message-actions-list::before {
   content: '';
   position: absolute;
   top: -8px;
@@ -713,7 +713,7 @@ body.fanmeet-message-menu-open .chat-conversation-stream [class*="virtual-list-m
   border-bottom: 8px solid #fff;
   filter: drop-shadow(0 -2px 2px rgba(0, 0, 0, 0.1));
 }
-.fanmeet-reaction-option {
+.fansession-reaction-option {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -727,12 +727,12 @@ body.fanmeet-message-menu-open .chat-conversation-stream [class*="virtual-list-m
   cursor: pointer;
   font-size: 1.25rem;
 }
-.fanmeet-reaction-option:hover {
+.fansession-reaction-option:hover {
   background: rgba(0, 0, 0, 0.06);
 }
 
 /* Actions panel: separate white card (Edit, Copy, Pin, Delete) */
-.fanmeet-message-actions-list {
+.fansession-message-actions-list {
   display: flex !important;
   flex-direction: column !important;
   padding: 6px 0 !important;
@@ -741,7 +741,7 @@ body.fanmeet-message-menu-open .chat-conversation-stream [class*="virtual-list-m
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
   overflow: hidden;
 }
-.fanmeet-message-action {
+.fansession-message-action {
   display: flex !important;
   align-items: center !important;
   gap: 10px !important;
@@ -756,10 +756,10 @@ body.fanmeet-message-menu-open .chat-conversation-stream [class*="virtual-list-m
   text-align: left !important;
   cursor: pointer;
 }
-.fanmeet-message-action:hover {
+.fansession-message-action:hover {
   background: rgba(0, 0, 0, 0.06) !important;
 }
-.fanmeet-message-action--delete {
+.fansession-message-action--delete {
   color: #dc3545 !important;
 }
 
@@ -989,7 +989,7 @@ body.fanmeet-message-menu-open .chat-conversation-stream [class*="virtual-list-m
 }
 
 /* ── Edit message form: banner + Update/Cancel actions ── */
-.chat-conversation-stream .fanmeet-edit-message-form {
+.chat-conversation-stream .fansession-edit-message-form {
   background: var(--bg-secondary, #1c1f26);
   border: 1px solid rgba(244, 192, 70, 0.3);
   border-radius: 12px;
@@ -997,7 +997,7 @@ body.fanmeet-message-menu-open .chat-conversation-stream [class*="virtual-list-m
   margin: 8px 0;
 }
 
-.fanmeet-edit-message-banner {
+.fansession-edit-message-banner {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -1006,15 +1006,15 @@ body.fanmeet-message-menu-open .chat-conversation-stream [class*="virtual-list-m
   color: var(--secondary-color, #f4c046);
 }
 
-.fanmeet-edit-message-banner-icon {
+.fansession-edit-message-banner-icon {
   font-size: 0.85rem;
 }
 
-.fanmeet-edit-message-banner-text {
+.fansession-edit-message-banner-text {
   font-weight: 500;
 }
 
-.fanmeet-edit-message-actions {
+.fansession-edit-message-actions {
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -1022,7 +1022,7 @@ body.fanmeet-message-menu-open .chat-conversation-stream [class*="virtual-list-m
   padding: 8px 4px 0;
 }
 
-.fanmeet-edit-message-cancel {
+.fansession-edit-message-cancel {
   background: none;
   border: none;
   color: rgba(255, 255, 255, 0.6);
@@ -1035,12 +1035,12 @@ body.fanmeet-message-menu-open .chat-conversation-stream [class*="virtual-list-m
   transition: background 0.15s, color 0.15s;
 }
 
-.fanmeet-edit-message-cancel:hover {
+.fansession-edit-message-cancel:hover {
   background: rgba(255, 255, 255, 0.08);
   color: rgba(255, 255, 255, 0.85);
 }
 
-.fanmeet-edit-message-update {
+.fansession-edit-message-update {
   background: var(--secondary-color, #f4c046);
   color: #1a1a1a;
   border: none;
@@ -1053,15 +1053,15 @@ body.fanmeet-message-menu-open .chat-conversation-stream [class*="virtual-list-m
   transition: background 0.15s, transform 0.1s;
 }
 
-.fanmeet-edit-message-update:hover {
+.fansession-edit-message-update:hover {
   background: #ffc933;
 }
 
-.fanmeet-edit-message-update:active {
+.fansession-edit-message-update:active {
   transform: scale(0.97);
 }
 
-.fanmeet-edit-message-update:disabled {
+.fansession-edit-message-update:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
