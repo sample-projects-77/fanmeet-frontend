@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   StreamVideo,
   StreamVideoClient,
@@ -7,6 +8,8 @@ import {
   StreamTheme,
   CallControls,
   SpeakerLayout,
+  ToggleAudioPreviewButton,
+  ToggleVideoPreviewButton,
   useCallStateHooks,
 } from '@stream-io/video-react-sdk';
 import '@stream-io/video-react-sdk/dist/css/styles.css';
@@ -37,6 +40,28 @@ function BothPresentTrigger({ onBothPresent }) {
     }
   }, [participantCount, onBothPresent]);
   return null;
+}
+
+/** Shown in-call when local mic/camera are off so users know why the other side cannot hear/see them. */
+function VideoCallMediaOffReminder() {
+  const { useMicrophoneState, useCameraState } = useCallStateHooks();
+  const { isEnabled: micOn } = useMicrophoneState();
+  const { isEnabled: camOn } = useCameraState();
+
+  if (micOn && camOn) return null;
+
+  const parts = [];
+  if (!micOn) parts.push('microphone');
+  if (!camOn) parts.push('camera');
+
+  return (
+    <div className="video-call-media-off-bar" role="status">
+      <p className="video-call-media-off-bar-text">
+        Your {parts.join(' and ')} {parts.length > 1 ? 'are' : 'is'} off. Use the controls below so the other
+        participant can see and hear you.
+      </p>
+    </div>
+  );
 }
 
 /**
@@ -83,12 +108,171 @@ function VideoCallBrowserPermissionBar() {
   );
 }
 
+/** Live camera preview in the pre-join lobby. */
+function LobbyVideoPreview() {
+  const { useCameraState } = useCallStateHooks();
+  const { mediaStream, isEnabled, hasBrowserPermission, camera } = useCameraState();
+  const videoRef = useRef(null);
+  const [starting, setStarting] = useState(false);
+
+  useEffect(() => {
+    const el = videoRef.current;
+    if (!el || !mediaStream) {
+      if (el) el.srcObject = null;
+      return;
+    }
+    el.srcObject = mediaStream;
+    el.play().catch((e) => {
+      // eslint-disable-next-line no-console
+      console.warn('Lobby preview play:', e);
+    });
+    return () => {
+      el.pause();
+      el.srcObject = null;
+    };
+  }, [mediaStream]);
+
+  const startPreview = async () => {
+    setStarting(true);
+    try {
+      await camera.enable();
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.warn('Start camera preview:', e);
+    } finally {
+      setStarting(false);
+    }
+  };
+
+  if (!hasBrowserPermission) {
+    return (
+      <div className="video-call-lobby-preview-placeholder">
+        Allow camera access below to see your preview.
+      </div>
+    );
+  }
+
+  if (!isEnabled) {
+    return (
+      <button
+        type="button"
+        className="video-call-lobby-preview-start"
+        onClick={startPreview}
+        disabled={starting}
+      >
+        {starting ? 'Starting camera…' : 'Start camera preview'}
+      </button>
+    );
+  }
+
+  if (!mediaStream) {
+    return (
+      <div className="video-call-lobby-preview-placeholder">
+        Starting camera…
+      </div>
+    );
+  }
+
+  return (
+    <div className="video-call-lobby-preview-mirror">
+      <video
+        ref={videoRef}
+        className="video-call-lobby-preview-video"
+        autoPlay
+        playsInline
+        muted
+      />
+    </div>
+  );
+}
+
+/**
+ * Pre-join lobby: mic/camera must be toggled or enabled from a user click on mobile browsers.
+ * Auto-enabling media in useEffect is blocked on iOS Safari and many Android WebViews.
+ */
+function VideoCallLobby({ onJoin, joiningCall, joinError, backUrl, backLabel }) {
+  const { useMicrophoneState, useCameraState } = useCallStateHooks();
+  const { hasBrowserPermission: micOk } = useMicrophoneState();
+  const { hasBrowserPermission: camOk } = useCameraState();
+  const [busy, setBusy] = useState(false);
+
+  const requestAccess = async () => {
+    setBusy(true);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+      stream.getTracks().forEach((t) => t.stop());
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.warn('Media permission request:', e);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="video-call-lobby">
+      <div className="video-call-header">
+        <Link to={backUrl} className="video-call-back">{backLabel}</Link>
+        <h1 className="video-call-title">Video call</h1>
+      </div>
+      <div className="video-call-lobby-body">
+        <p className="video-call-lobby-lead">
+          Check your camera and microphone, then join the meeting.
+        </p>
+        <div className="video-call-lobby-preview">
+          <LobbyVideoPreview />
+        </div>
+        <div className="video-call-lobby-device-row">
+          <ToggleAudioPreviewButton caption="Mic" />
+          <ToggleVideoPreviewButton caption="Camera" />
+        </div>
+        {(!micOk || !camOk) && (
+          <div className="video-call-permission-bar video-call-lobby-permission">
+            <p className="video-call-permission-bar-text">
+              Allow camera and microphone when your browser asks. If you previously blocked access, use the button
+              below or open this page in Safari or Chrome (not an in-app browser such as WhatsApp).
+            </p>
+            <button
+              type="button"
+              className="btn-primary video-call-permission-bar-btn"
+              onClick={requestAccess}
+              disabled={busy}
+            >
+              {busy ? 'Requesting…' : 'Allow microphone & camera'}
+            </button>
+          </div>
+        )}
+        {joinError && (
+          <div className="video-call-session-error" role="alert">
+            {joinError}
+          </div>
+        )}
+        <button
+          type="button"
+          className="btn-primary video-call-lobby-join"
+          onClick={onJoin}
+          disabled={joiningCall}
+        >
+          {joiningCall ? 'Joining…' : 'Join meeting'}
+        </button>
+        <p className="video-call-lobby-tip">
+          Tip: For the best experience on mobile, open fan-session.com in Safari or Chrome instead of an in-app browser.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function VideoCallContent({ bookingId, booking, user, onLeave, backUrl, backLabel, isFan }) {
+  const { t } = useTranslation();
   const [client, setClient] = useState(null);
   const [call, setCall] = useState(null);
   const [error, setError] = useState(null);
   const [sessionError, setSessionError] = useState(null);
   const [joining, setJoining] = useState(true);
+  const [inCall, setInCall] = useState(false);
+  const [joiningCall, setJoiningCall] = useState(false);
+  const [joinError, setJoinError] = useState(null);
   const [bothPresent, setBothPresent] = useState(false);
   const [remainingSeconds, setRemainingSeconds] = useState(null);
   const callRef = useRef(null);
@@ -142,23 +326,6 @@ function VideoCallContent({ bookingId, booking, user, onLeave, backUrl, backLabe
         streamCall = streamClient.call('default', callId);
         callRef.current = streamCall;
 
-        await streamCall.join({ create: true });
-        if (!mounted) {
-          streamCall.leave().catch(() => {});
-          return;
-        }
-
-        try {
-          await streamCall.microphone.enable();
-        } catch {
-          /* User may deny; in-call bar + Stream controls can retry */
-        }
-        try {
-          await streamCall.camera.enable();
-        } catch {
-          /* same */
-        }
-
         setCall(streamCall);
       } catch (err) {
         if (mounted) {
@@ -183,9 +350,68 @@ function VideoCallContent({ bookingId, booking, user, onLeave, backUrl, backLabe
     };
   }, [bookingId, user]);
 
+  const handleJoinMeeting = useCallback(async () => {
+    const streamCall = callRef.current;
+    if (!streamCall || joiningCall) return;
+
+    setJoiningCall(true);
+    setJoinError(null);
+
+    try {
+      // User gesture context — required on mobile for getUserMedia / publish tracks.
+      try {
+        await streamCall.microphone.enable();
+      } catch {
+        /* Permission bar + Stream controls can retry in-call */
+      }
+      try {
+        await streamCall.camera.enable();
+      } catch {
+        /* same */
+      }
+
+      await streamCall.join({ create: true });
+      setInCall(true);
+      bookingAPI.reportParticipation(bookingId).catch(() => {});
+    } catch (err) {
+      setJoinError(err.response?.data?.error || err.message || 'Failed to join call');
+    } finally {
+      setJoiningCall(false);
+    }
+  }, [joiningCall, bookingId]);
+
   const onBothPresent = useCallback(() => {
     setBothPresent(true);
   }, []);
+
+  const disconnectAndNavigate = useCallback(() => {
+    if (callRef.current) {
+      callRef.current.leave().catch(() => {});
+      callRef.current = null;
+    }
+    if (client) {
+      client.disconnectUser().catch(() => {});
+    }
+    onLeave();
+  }, [client, onLeave]);
+
+  const finalizeNoShowAndLeave = useCallback(() => {
+    hasAutoEnded.current = true;
+    setSessionError(null);
+    return bookingAPI
+      .finalizeNoShow(bookingId)
+      .then((res) => {
+        if (res && res.StatusCode !== 200 && res.error) {
+          setSessionError(res.error || t('videoCall.noShowFailed'));
+        }
+      })
+      .catch((err) => {
+        setSessionError(err.response?.data?.error || err.message || t('videoCall.noShowFailed'));
+      })
+      .finally(() => {
+        disconnectAndNavigate();
+      });
+  }, [bookingId, disconnectAndNavigate, t]);
 
   // When both are present: call start session once, then start timer
   useEffect(() => {
@@ -219,36 +445,29 @@ function VideoCallContent({ bookingId, booking, user, onLeave, backUrl, backLabe
     return () => clearInterval(interval);
   }, [call, scheduledEndMs]);
 
-  // Auto-end when timer reaches 0: end session then leave
+  // Auto-end when timer reaches 0: capture if both present, otherwise finalize no-show
   useEffect(() => {
-    if (remainingSeconds !== 0 || hasAutoEnded.current || !bothPresent) return;
+    if (remainingSeconds !== 0 || hasAutoEnded.current || !inCall) return;
     hasAutoEnded.current = true;
     setSessionError(null);
-    bookingAPI
-      .endSession(bookingId)
-      .then((res) => {
-        if (res && res.StatusCode !== 200 && res.error) {
-          setSessionError(res.error || 'Failed to end session');
-        }
-      })
-      .catch((err) => {
-        setSessionError(err.response?.data?.error || err.message || 'Failed to end session');
-      })
-      .finally(() => {
-        onLeave();
-      });
-  }, [remainingSeconds, bothPresent, bookingId, onLeave]);
-
-  const disconnectAndNavigate = useCallback(() => {
-    if (callRef.current) {
-      callRef.current.leave().catch(() => {});
-      callRef.current = null;
+    if (bothPresent) {
+      bookingAPI
+        .endSession(bookingId)
+        .then((res) => {
+          if (res && res.StatusCode !== 200 && res.error) {
+            setSessionError(res.error || t('videoCall.endSessionFailed'));
+          }
+        })
+        .catch((err) => {
+          setSessionError(err.response?.data?.error || err.message || t('videoCall.endSessionFailed'));
+        })
+        .finally(() => {
+          disconnectAndNavigate();
+        });
+    } else {
+      finalizeNoShowAndLeave();
     }
-    if (client) {
-      client.disconnectUser().catch(() => {});
-    }
-    onLeave();
-  }, [client, onLeave]);
+  }, [remainingSeconds, bothPresent, inCall, bookingId, disconnectAndNavigate, finalizeNoShowAndLeave, t]);
 
   /** Creator: leave Stream only; booking stays in_progress until timer auto-end or fan ends session. */
   const handleLeave = useCallback(() => {
@@ -256,26 +475,30 @@ function VideoCallContent({ bookingId, booking, user, onLeave, backUrl, backLabe
   }, [disconnectAndNavigate]);
 
   /**
-   * Fan: same as scheduled auto-end — POST endSession (complete booking + capture), then leave.
-   * Guards with hasAutoEnded so we do not double-call endSession if the timer fires in the same tick.
+   * Fan: endSession when both joined; finalize no-show when alone (no capture).
    */
   const handleFanEndSession = useCallback(() => {
+    if (hasAutoEnded.current) return;
+    if (!bothPresent) {
+      finalizeNoShowAndLeave();
+      return;
+    }
     hasAutoEnded.current = true;
     setSessionError(null);
     bookingAPI
       .endSession(bookingId)
       .then((res) => {
         if (res && res.StatusCode !== 200 && res.error) {
-          setSessionError(res.error || 'Failed to end session');
+          setSessionError(res.error || t('videoCall.endSessionFailed'));
         }
       })
       .catch((err) => {
-        setSessionError(err.response?.data?.error || err.message || 'Failed to end session');
+        setSessionError(err.response?.data?.error || err.message || t('videoCall.endSessionFailed'));
       })
       .finally(() => {
         disconnectAndNavigate();
       });
-  }, [bookingId, disconnectAndNavigate]);
+  }, [bookingId, bothPresent, disconnectAndNavigate, finalizeNoShowAndLeave, t]);
 
   if (error) {
     return (
@@ -300,8 +523,28 @@ function VideoCallContent({ bookingId, booking, user, onLeave, backUrl, backLabe
         </div>
         <div className="video-call-content video-call-loading">
           <LoadingSpinner />
-          <p className="video-call-joining-text">Joining call…</p>
+          <p className="video-call-joining-text">Loading call…</p>
         </div>
+      </div>
+    );
+  }
+
+  if (!inCall) {
+    return (
+      <div className="video-call-page">
+        <StreamVideo client={client}>
+          <StreamCall call={call}>
+            <StreamTheme>
+              <VideoCallLobby
+                onJoin={handleJoinMeeting}
+                joiningCall={joiningCall}
+                joinError={joinError}
+                backUrl={backUrl}
+                backLabel={backLabel}
+              />
+            </StreamTheme>
+          </StreamCall>
+        </StreamVideo>
       </div>
     );
   }
@@ -317,7 +560,7 @@ function VideoCallContent({ bookingId, booking, user, onLeave, backUrl, backLabe
               <div className="video-call-title-row">
                 <h1 className="video-call-title">Video call</h1>
                 {!bothPresent && (
-                  <span className="video-call-waiting">Waiting for other participant…</span>
+                  <span className="video-call-waiting">{t('videoCall.waitingForOther')}</span>
                 )}
                 {remainingSeconds != null && (
                   <span className="video-call-timer" aria-live="polite">
@@ -338,8 +581,14 @@ function VideoCallContent({ bookingId, booking, user, onLeave, backUrl, backLabe
                 {sessionError}
               </div>
             )}
+            {!bothPresent && inCall && (
+              <div className="video-call-no-charge-notice" role="status">
+                {t('videoCall.waitingAlone')}
+              </div>
+            )}
             <div className="video-call-layout">
               <SpeakerLayout participantBarPosition="bottom" />
+              <VideoCallMediaOffReminder />
               <VideoCallBrowserPermissionBar />
               <CallControls onLeave={isFan ? handleFanEndSession : handleLeave} />
             </div>

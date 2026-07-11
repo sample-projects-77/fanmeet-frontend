@@ -96,9 +96,9 @@ export function formatUTCDateToLocalTime(utcDate) {
   if (!utcDate) return '—';
   const d = typeof utcDate === 'string' ? new Date(utcDate) : utcDate;
   if (Number.isNaN(d.getTime())) return '—';
-  const h = d.getHours();
-  const m = d.getMinutes();
-  return m === 0 ? `${h}` : `${h}:${String(m).padStart(2, '0')}`;
+  const h = String(d.getHours()).padStart(2, '0');
+  const m = String(d.getMinutes()).padStart(2, '0');
+  return `${h}:${m}`;
 }
 
 /**

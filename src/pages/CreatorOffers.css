@@ -89,21 +89,45 @@
 
 /* Both tables: outer golden border + rounded corners */
 .creator-offers-table-wrap:not(:has(.creator-offers-table--availability)),
-.creator-offers-table-wrap:has(.creator-offers-table--availability) {
+.creator-offers-table-wrap:has(.creator-offers-table--availability),
+.creator-offers-table-wrap:has(.creator-offers-table--bookable) {
   border: 1px solid rgba(244, 192, 70, 0.45);
   border-radius: 10px;
 }
 
-/* Availability table: no horizontal scroll needed */
+@media (max-width: 767px) {
+  .creator-offers-table--bookable {
+    min-width: 0;
+    width: 100%;
+    table-layout: fixed;
+    box-sizing: border-box;
+  }
+}
+
+/* Availability + fan bookable offers: no horizontal scroll */
 .creator-offers-table-wrap:has(.creator-offers-table--availability) {
   overflow: hidden;
 }
 
+.creator-offers-table-wrap:has(.creator-offers-table--bookable) {
+  overflow-x: hidden;
+}
+
 .creator-offers-table {
   width: 100%;
-  min-width: 480px;
+  min-width: 0;
   border-collapse: collapse;
   font-family: var(--font-sans);
+}
+
+.creator-offers-table--bookable {
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .creator-offers-table--bookable {
+    min-width: 320px;
+  }
 }
 
 /* Mobile: reduced padding and font size so content fits in viewport */
@@ -130,6 +154,11 @@
     min-width: 0;
   }
 
+  .creator-offers-table-wrap:has(.creator-offers-table--bookable) {
+    overflow-x: hidden;
+    box-sizing: border-box;
+  }
+
   /* Availability table only: fixed layout to fit viewport without scroll */
   .creator-offers-table--availability {
     min-width: 0;
@@ -138,32 +167,54 @@
     box-sizing: border-box;
   }
 
-  /* Column widths: Day / Book now / Duration / Price / Time */
+  /* Bookable table: Tag / Zeit / Preis / Buch mich */
   .creator-offers-table--bookable .creator-offers-th-day,
-  .creator-offers-table--bookable td:first-child {
-    width: 19%;
-  }
-
-  .creator-offers-table--bookable .creator-offers-th-action,
-  .creator-offers-table--bookable td.creator-offers-td-action {
-    width: 22%;
-    min-width: 0;
-    box-sizing: border-box;
-  }
-
-  .creator-offers-table--bookable th:nth-child(3),
-  .creator-offers-table--bookable td:nth-child(3) {
-    width: 14%;
-  }
-
-  .creator-offers-table--bookable .creator-offers-th-price,
-  .creator-offers-table--bookable td.creator-offers-price {
-    width: 18%;
+  .creator-offers-table--bookable td.creator-offers-td-day {
+    width: 32%;
   }
 
   .creator-offers-table--bookable .creator-offers-th-time,
   .creator-offers-table--bookable td.creator-offers-td-time {
-    width: 27%;
+    width: 24%;
+  }
+
+  .creator-offers-table--bookable .creator-offers-th-price,
+  .creator-offers-table--bookable td.creator-offers-price {
+    width: 16%;
+  }
+
+  .creator-offers-table--bookable .creator-offers-th-action,
+  .creator-offers-table--bookable td.creator-offers-td-action {
+    width: 28%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .creator-offers-table--bookable td {
+    overflow: visible;
+    text-overflow: clip;
+  }
+
+  .creator-offers-table--bookable td.creator-offers-td-day {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: clamp(10px, 2.7vw, 13px);
+  }
+
+  .creator-offers-table--bookable td.creator-offers-td-time {
+    overflow: visible;
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+
+  .creator-offers-table--bookable .creator-offers-time-range {
+    font-size: clamp(10px, 2.5vw, 12px);
+    line-height: 1.15;
+  }
+
+  .creator-offers-table--bookable .creator-offers-time-duration {
+    font-size: clamp(9px, 2.2vw, 11px);
   }
 
   /* Availability table: card container sizing */
@@ -226,6 +277,21 @@
     text-align: center;
   }
 
+  .creator-offers-table--bookable th {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.15;
+    hyphens: auto;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .creator-offers-table--bookable th.creator-offers-th-day {
+    text-align: left;
+  }
+
   .creator-offers-table .creator-offers-th-day {
     min-width: 0;
   }
@@ -250,11 +316,11 @@
     padding-left: 10px;
   }
 
-  .creator-offers-table--bookable td:first-child,
+  .creator-offers-table--bookable td.creator-offers-td-day,
   .creator-offers-table--bookable th.creator-offers-th-day {
-    text-align: center;
-    padding-left: 10px;
-    padding-right: 10px;
+    text-align: left;
+    padding-left: 6px;
+    padding-right: 4px;
   }
 
   .creator-offers-table:not(.creator-offers-table--bookable):not(.creator-offers-table--availability) td:first-child {
@@ -273,6 +339,16 @@
   .creator-offers-table td:first-child,
   .creator-offers-table td.creator-offers-td-time {
     word-break: break-word;
+    white-space: normal;
+  }
+
+  .creator-offers-table--bookable td.creator-offers-td-day {
+    word-break: normal;
+    white-space: nowrap;
+  }
+
+  .creator-offers-table--bookable td.creator-offers-td-time {
+    word-break: keep-all;
     white-space: normal;
   }
 
@@ -312,7 +388,7 @@
 /* Extra small screens (375px): smaller font, less padding, lighter weight – less odd wrapping */
 @media (max-width: 375px) {
   .creator-offers-main {
-    padding: 10px 12px 40px;
+    padding: 10px 8px 40px;
   }
 
   .creator-offers-header {
@@ -339,9 +415,60 @@
     text-align: center;
   }
 
+  .creator-offers-table--bookable th {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.15;
+    hyphens: auto;
+  }
+
   .creator-offers-th-action {
     padding-right: 2px;
     padding-left: 1px;
+  }
+
+  /* Bookable table (375px): Tag / Zeit / Preis / Buch mich */
+  .creator-offers-table--bookable .creator-offers-th-day,
+  .creator-offers-table--bookable td.creator-offers-td-day {
+    width: 35%;
+  }
+
+  .creator-offers-table--bookable .creator-offers-th-time,
+  .creator-offers-table--bookable td.creator-offers-td-time {
+    width: 27%;
+  }
+
+  .creator-offers-table--bookable .creator-offers-th-price,
+  .creator-offers-table--bookable td.creator-offers-price {
+    width: 16%;
+  }
+
+  .creator-offers-table--bookable .creator-offers-th-action,
+  .creator-offers-table--bookable td.creator-offers-td-action {
+    width: 22%;
+  }
+
+  .creator-offers-table--bookable th {
+    padding: 8px 2px;
+    font-size: 10px;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.15;
+    hyphens: auto;
+  }
+
+  .creator-offers-table--bookable .creator-offers-th-action {
+    font-size: 9px;
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+
+  .creator-offers-table--bookable th.creator-offers-th-day {
+    text-align: left;
   }
 
   /* 4-column availability table (375px) */
@@ -378,13 +505,6 @@
     padding-left: 8px;
   }
 
-  .creator-offers-table--bookable td:first-child,
-  .creator-offers-table--bookable th.creator-offers-th-day {
-    text-align: center;
-    padding-left: 8px;
-    padding-right: 8px;
-  }
-
   .creator-offers-table:not(.creator-offers-table--bookable):not(.creator-offers-table--availability) td:first-child {
     text-align: left;
   }
@@ -402,6 +522,56 @@
   .creator-offers-table td.creator-offers-td-time {
     word-break: break-word;
     white-space: normal;
+  }
+
+  .creator-offers-table--bookable td {
+    overflow: visible;
+    text-overflow: clip;
+    font-size: 11px;
+    padding: 10px 2px;
+  }
+
+  .creator-offers-table--bookable td.creator-offers-td-day,
+  .creator-offers-table--bookable th.creator-offers-th-day {
+    text-align: left;
+    padding-left: 4px;
+    padding-right: 2px;
+    font-size: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: normal;
+  }
+
+  .creator-offers-table--bookable td.creator-offers-td-time {
+    overflow: visible;
+    white-space: normal;
+    word-break: keep-all;
+    padding-left: 1px;
+    padding-right: 1px;
+  }
+
+  .creator-offers-table--bookable .creator-offers-time-range {
+    font-size: 9px;
+    line-height: 1.2;
+    white-space: normal;
+    word-break: keep-all;
+  }
+
+  .creator-offers-table--bookable .creator-offers-time-duration {
+    font-size: 8px;
+    margin-top: 1px;
+  }
+
+  .creator-offers-table--bookable td.creator-offers-price {
+    font-size: 10px;
+    padding-left: 1px;
+    padding-right: 1px;
+  }
+
+  .creator-offers-table--bookable td.creator-offers-td-action {
+    padding: 8px 2px;
+    overflow: visible;
   }
 
   .creator-offers-table td.creator-offers-td-action {
@@ -439,8 +609,8 @@
 
   /* Book now: gradient pill 375px */
   .creator-offers-book-btn {
-    padding: 7px 9px;
-    font-size: 10px !important;
+    padding: 6px 7px;
+    font-size: 9px !important;
     font-weight: 700;
     background: linear-gradient(135deg, #d4a827 0%, #8b6610 60%, #5a420a 100%);
     box-shadow: 0 2px 5px rgba(212, 168, 39, 0.28);
@@ -450,6 +620,12 @@
     justify-content: center;
     -webkit-text-size-adjust: none;
     text-size-adjust: none;
+  }
+
+  .creator-offers-table--bookable .creator-offers-book-btn {
+    padding: 6px 6px;
+    font-size: 8px !important;
+    letter-spacing: 0;
   }
 }
 
@@ -494,9 +670,52 @@
   padding-right: 12px;
 }
 .creator-offers-table--bookable td:first-child {
+  text-align: left;
+  padding-left: 8px;
+  padding-right: 6px;
+}
+
+.creator-offers-table--bookable th.creator-offers-th-day {
+  text-align: left;
+  padding-left: 8px;
+  padding-right: 6px;
+}
+
+.creator-offers-table--bookable td.creator-offers-td-time {
   text-align: center;
-  padding-left: 12px;
-  padding-right: 12px;
+  line-height: 1.35;
+}
+
+.creator-offers-time-range {
+  display: block;
+  white-space: nowrap;
+}
+
+.creator-offers-time-duration {
+  display: block;
+  font-size: 0.92em;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 2px;
+}
+
+.creator-offers-table--bookable .creator-offers-th-action {
+  font-size: clamp(10px, 2.6vw, 12px);
+  padding-left: 6px;
+  padding-right: 6px;
+  min-width: 0;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.15;
+}
+
+.creator-offers-table--bookable th {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.15;
 }
 .creator-offers-table th:last-child,
 .creator-offers-table td:last-child {
@@ -630,12 +849,18 @@
   }
 }
 
-.creator-offers-table td.creator-offers-price {
+.creator-offers-table:not(.creator-offers-table--bookable) td.creator-offers-price {
   text-align: center;
   font-size: 14px;
   font-weight: 500;
   color: #2ecc71;
   letter-spacing: 0.01em;
+}
+
+.creator-offers-table--bookable td.creator-offers-price {
+  color: #2ecc71;
+  font-weight: 400;
+  line-height: 1.2;
 }
 
 /* Availability table: all columns centered at all viewports */

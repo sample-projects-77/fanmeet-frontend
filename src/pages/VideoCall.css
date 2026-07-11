@@ -20,12 +20,11 @@
 }
 
 .video-call-header-in-call {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 10;
-  background: rgba(15, 17, 21, 0.9);
+  position: relative;
+  z-index: 20;
+  flex-shrink: 0;
+  background: rgba(15, 17, 21, 0.95);
+  padding-top: max(16px, env(safe-area-inset-top, 0px));
 }
 
 .video-call-back {
@@ -76,6 +75,17 @@
   border-radius: var(--radius);
   font-size: 14px;
   flex-shrink: 0;
+}
+
+.video-call-no-charge-notice {
+  padding: 12px 16px;
+  margin: 0 20px 12px;
+  background: rgba(100, 149, 237, 0.12);
+  color: var(--secondary-color);
+  border-radius: var(--radius);
+  font-size: 14px;
+  flex-shrink: 0;
+  text-align: center;
 }
 
 /* Shown when browser mic/camera permission is denied (! on Stream controls) */
@@ -130,9 +140,151 @@
   text-align: center;
 }
 
+/* Pre-join lobby — user must tap Join so mobile browsers allow mic/camera */
+.video-call-lobby {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.video-call-lobby-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 20px 32px;
+  gap: 16px;
+}
+
+.video-call-lobby-lead {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+  text-align: center;
+  max-width: 420px;
+}
+
+.video-call-lobby-preview {
+  width: 100%;
+  max-width: 420px;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--card-bg);
+  border: 1px solid var(--light-grey-shade-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-call-lobby-preview-mirror {
+  width: 100%;
+  height: 100%;
+  transform: scaleX(-1);
+}
+
+.video-call-lobby-preview-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  background: #000;
+}
+
+.video-call-lobby-preview-placeholder,
+.video-call-lobby-preview-start {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.video-call-lobby-preview-start {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--secondary-color);
+  font-weight: 600;
+  font-family: var(--font-sans);
+}
+
+.video-call-lobby-preview-start:hover:not(:disabled) {
+  color: var(--white);
+}
+
+.video-call-lobby-preview-start:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.video-call-lobby-device-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.video-call-lobby-permission {
+  width: 100%;
+  max-width: 420px;
+}
+
+.video-call-lobby-join {
+  min-width: 220px;
+  margin-top: 4px;
+}
+
+.video-call-lobby-tip {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+  text-align: center;
+  max-width: 420px;
+}
+
+/* In-call reminder when local mic/camera are still off */
+.video-call-media-off-bar {
+  flex-shrink: 0;
+  margin: 0 16px 8px;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  background: rgba(255, 92, 92, 0.12);
+  border: 1px solid rgba(255, 92, 92, 0.35);
+  text-align: center;
+}
+
+.video-call-media-off-bar-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text-primary);
+}
+
 .video-call-in-call {
   position: relative;
   height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* StreamTheme renders as .str-video; keep header + video in a column (no overlay). */
+.video-call-in-call .str-video {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .video-call-layout {
@@ -140,7 +292,18 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
-  padding-top: 56px;
+  overflow: hidden;
+}
+
+.video-call-layout .str-video__speaker-layout__wrapper {
+  flex: 1;
+  min-height: 0;
+}
+
+.video-call-layout .str-video__speaker-layout {
+  flex: 1;
+  min-height: 0;
+  height: auto;
 }
 
 /* Override Stream SDK theme to match app dark theme */
@@ -150,9 +313,6 @@
 }
 
 @media (max-width: 767px) {
-  .video-call-layout {
-    padding-top: 48px;
-  }
   .video-call-content {
     padding: 16px;
   }

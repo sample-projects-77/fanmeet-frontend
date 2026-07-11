@@ -7,7 +7,6 @@ import EmptyWidget from '../components/EmptyWidget';
 import ErrorWidget from '../components/ErrorWidget';
 import {
   parseOfferSlotToUTC,
-  formatUTCDateToLocalDay,
   formatUTCDateToLocalTime,
   offerSlotStartToUTCISO,
 } from '../utils/dateTimeUtils';
@@ -16,11 +15,9 @@ import { getFriendlyPaymentError } from '../utils/paymentErrors';
 function formatPrice(priceCents, currency = 'EUR') {
   if (priceCents == null) return '—';
   const euros = priceCents / 100;
-  const value = Number.isInteger(euros)
-    ? euros.toString()
-    : euros.toFixed(2).replace('.', ',');
-  const symbol = currency === 'EUR' ? '€' : currency;
-  return `${value}${symbol}`;
+  const value = euros.toFixed(2).replace('.', ',');
+  const code = currency === 'EUR' ? 'EUR' : currency;
+  return `${value} ${code}`;
 }
 
 /** API returns date + startTime/endTime in UTC. Parse as UTC then display in user's local timezone. */
@@ -31,7 +28,17 @@ function formatOfferDay(offer, locale) {
   const dateStr = (offer.date || '').toString().split('T')[0].split(' ')[0].substring(0, 10);
   const utcDate = parseOfferSlotToUTC(dateStr, offer.startTime, OFFER_TIMES_ARE_UTC);
   if (Number.isNaN(utcDate.getTime())) return (offer.date || '').toString();
-  return formatUTCDateToLocalDay(utcDate, locale);
+  return utcDate.toLocaleDateString(locale, {
+    weekday: 'long',
+    month: 'short',
+    day: 'numeric',
+  });
+}
+
+function formatOfferDuration(offer, t) {
+  const minutes = offer.duration ?? offer.durationMinutes;
+  if (minutes == null) return null;
+  return `(${minutes} ${t('offers.minAbbr')})`;
 }
 
 function formatOfferTimeRange(offer) {
@@ -151,37 +158,43 @@ function CreatorOffersContent({ backTo, backState, canBook = true }) {
               <thead>
                 <tr>
                   <th className="creator-offers-th-day">{t('availability.day')}</th>
-                  <th className="creator-offers-th-action" aria-label={t('common.action')} />
-                  <th>{t('offers.duration')}</th>
-                  <th className="creator-offers-th-price">{t('offers.price')}</th>
                   <th className="creator-offers-th-time">{t('offers.time')}</th>
+                  <th className="creator-offers-th-price">{t('offers.price')}</th>
+                  <th className="creator-offers-th-action">{t('offers.bookNow')}</th>
                 </tr>
               </thead>
               <tbody>
-                {bookableOffers.map((offer) => (
-                  <tr key={offer.id}>
-                    <td>{formatOfferDay(offer, locale)}</td>
-                    <td className="creator-offers-td-action">
-                      {canBook && offer.status === 'available' && (
-                        <span
-                          className="creator-offers-book-btn"
-                          role="button"
-                          tabIndex={0}
-                          onClick={() => handleBookNow(offer)}
-                          onKeyDown={(e) => e.key === 'Enter' && handleBookNow(offer)}
-                          aria-busy={bookingInProgress === offer.id}
-                        >
-                          {bookingInProgress === offer.id ? t('offers.booking') : t('offers.bookNow')}
-                        </span>
-                      )}
-                    </td>
-                    <td>{(offer.duration ?? offer.durationMinutes) != null ? `${offer.duration ?? offer.durationMinutes} ${t('availability.minAbbr')}` : '—'}</td>
-                    <td className="creator-offers-price">
-                      {formatPrice(offer.priceCents, offer.currency)}
-                    </td>
-                    <td className="creator-offers-td-time">{formatOfferTimeRange(offer)}</td>
-                  </tr>
-                ))}
+                {bookableOffers.map((offer) => {
+                  const durationLabel = formatOfferDuration(offer, t);
+                  return (
+                    <tr key={offer.id}>
+                      <td className="creator-offers-td-day">{formatOfferDay(offer, locale)}</td>
+                      <td className="creator-offers-td-time">
+                        <span className="creator-offers-time-range">{formatOfferTimeRange(offer)}</span>
+                        {durationLabel && (
+                          <span className="creator-offers-time-duration">{durationLabel}</span>
+                        )}
+                      </td>
+                      <td className="creator-offers-price">
+                        {formatPrice(offer.priceCents, offer.currency)}
+                      </td>
+                      <td className="creator-offers-td-action">
+                        {canBook && offer.status === 'available' && (
+                          <span
+                            className="creator-offers-book-btn"
+                            role="button"
+                            tabIndex={0}
+                            onClick={() => handleBookNow(offer)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleBookNow(offer)}
+                            aria-busy={bookingInProgress === offer.id}
+                          >
+                            {bookingInProgress === offer.id ? t('offers.booking') : t('offers.bookNow')}
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

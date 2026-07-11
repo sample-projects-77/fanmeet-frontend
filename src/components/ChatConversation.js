@@ -433,6 +433,7 @@ function CombinedMessageOptions() {
 }
 
 import { useChat } from '../context/ChatContext';
+import { chatAPI } from '../services/api';
 import { DEFAULT_AVATAR_URL } from '../constants';
 import LoadingSpinner from './LoadingSpinner';
 import './ChatConversation.css';
@@ -562,7 +563,7 @@ function scrollMessageInputIntoView() {
   }
 }
 
-function ChatContent({ channelId, backTo, backLabel, NavComponent }) {
+function ChatContent({ channelId, backTo, backLabel, NavComponent, onReconnect }) {
   const { client } = useChatContext();
   const [channel, setChannel] = useState(null);
   const [loadError, setLoadError] = useState(null);
@@ -576,13 +577,48 @@ function ChatContent({ channelId, backTo, backLabel, NavComponent }) {
 
     (async () => {
       try {
+        const accessRes = await chatAPI.ensureIndividualChannelAccess(channelId);
+        if (cancelled) return;
+        if (accessRes.StatusCode !== 200) {
+          setLoadError(
+            accessRes.error ||
+            tApp("chats.failedToLoad") ||
+            "You are not authorized for this chat."
+          );
+          setChannel(null);
+          return;
+        }
+
         await c.watch();
         if (cancelled) return;
         setChannel(c);
       } catch (err) {
         if (cancelled) return;
         const status = err?.status || err?.response?.status || null;
-        if (status === 403) {
+        if (status === 401 || status === 403) {
+          if (typeof onReconnect === 'function') {
+            const refreshedClient = await onReconnect();
+            if (cancelled) return;
+            if (refreshedClient) {
+              try {
+                await chatAPI.ensureIndividualChannelAccess(channelId);
+                await c.watch();
+                if (cancelled) return;
+                setChannel(c);
+                return;
+              } catch (retryErr) {
+                if (cancelled) return;
+                setLoadError(
+                  retryErr?.response?.data?.error ||
+                  retryErr?.message ||
+                  tApp("chats.failedToLoad") ||
+                  "You are not authorized for this chat."
+                );
+                setChannel(null);
+                return;
+              }
+            }
+          }
           setLoadError(tApp("chats.failedToLoad") || "You are not authorized for this chat.");
         } else {
           setLoadError(
@@ -599,7 +635,7 @@ function ChatContent({ channelId, backTo, backLabel, NavComponent }) {
     return () => {
       cancelled = true;
     };
-  }, [client, channelId, tApp]);
+  }, [client, channelId, tApp, onReconnect]);
 
   /* When returning to the tab, re-watch so member avatars/names match GetStream (e.g. after the other user updates their profile). */
   useEffect(() => {
@@ -611,6 +647,46 @@ function ChatContent({ channelId, backTo, backLabel, NavComponent }) {
     document.addEventListener('visibilitychange', onVisibility);
     return () => document.removeEventListener('visibilitychange', onVisibility);
   }, [channel]);
+
+  /* If a send fails with auth error (expired token / stale socket), reconnect and re-watch. */
+  useEffect(() => {
+    if (!channel || typeof onReconnect !== 'function') return;
+
+    let recovering = false;
+    const onMessageUpdated = async (event) => {
+      const msg = event?.message;
+      if (!msg || msg.status !== 'failed' || recovering) return;
+
+      const errorMessage = String(
+        msg.error?.message || msg.error?.Message || ''
+      ).toLowerCase();
+      const errorCode = msg.error?.code ?? msg.error?.status ?? msg.error?.StatusCode;
+
+      const isAuthError =
+        errorCode === 401 ||
+        errorCode === 403 ||
+        errorMessage.includes('not authorized') ||
+        errorMessage.includes('nicht autorisiert') ||
+        errorMessage.includes('unauthorized');
+
+      if (!isAuthError) return;
+
+      recovering = true;
+      try {
+        await onReconnect();
+        await channel.watch();
+      } catch {
+        /* user can retry the failed message after reconnect */
+      } finally {
+        recovering = false;
+      }
+    };
+
+    channel.on('message.updated', onMessageUpdated);
+    return () => {
+      channel.off('message.updated', onMessageUpdated);
+    };
+  }, [channel, onReconnect]);
 
   /* Mobile: when keyboard opens (visualViewport shrinks), keep input above keyboard. Must be before any early return so hook count is stable. */
   useEffect(() => {
@@ -680,7 +756,7 @@ const KEYBOARD_OPEN_THRESHOLD = 0.85; /* viewport height shrinks when keyboard o
 function ChatConversation({ backTo, backLabel, NavComponent }) {
   const { channelId } = useParams();
   const navigate = useNavigate();
-  const { client, connecting, error, connect, disconnect, isReady } = useChat();
+  const { client, connecting, error, connect, reconnect, disconnect, isReady } = useChat();
   const [user, setUser] = useState(null);
   const streamRef = useRef(null);
   const mainRef = useRef(null);
@@ -881,6 +957,7 @@ function ChatConversation({ backTo, backLabel, NavComponent }) {
                 channelId={channelId}
                 backTo={backTo}
                 backLabel={backLabel}
+                onReconnect={reconnect}
               />
             </Chat>
           </div>
