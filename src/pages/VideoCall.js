@@ -556,25 +556,31 @@ function VideoCallContent({ bookingId, booking, user, onLeave, backUrl, backLabe
           <BothPresentTrigger onBothPresent={onBothPresent} />
           <StreamTheme>
             <div className="video-call-header video-call-header-in-call">
-              <Link to={backUrl} className="video-call-back">← Back</Link>
-              <div className="video-call-title-row">
-                <h1 className="video-call-title">Video call</h1>
-                {!bothPresent && (
-                  <span className="video-call-waiting">{t('videoCall.waitingForOther')}</span>
-                )}
+              <div className="video-call-header-top">
+                <Link to={backUrl} className="video-call-back">
+                  ← {t('common.back')}
+                </Link>
+                <button
+                  type="button"
+                  className="video-call-leave-btn btn-primary"
+                  onClick={isFan ? handleFanEndSession : handleLeave}
+                >
+                  {isFan ? t('videoCall.endSession') : t('videoCall.leaveCall')}
+                </button>
+              </div>
+              <div className="video-call-header-meta">
+                <h1 className="video-call-title">{t('videoCall.title')}</h1>
                 {remainingSeconds != null && (
                   <span className="video-call-timer" aria-live="polite">
                     {formatTimeLeft(remainingSeconds)}
                   </span>
                 )}
               </div>
-              <button
-                type="button"
-                className="video-call-leave-btn btn-primary"
-                onClick={isFan ? handleFanEndSession : handleLeave}
-              >
-                {isFan ? 'End Session' : 'Leave call'}
-              </button>
+              {!bothPresent && (
+                <span className="video-call-waiting video-call-waiting--header">
+                  {t('videoCall.waitingForOther')}
+                </span>
+              )}
             </div>
             {sessionError && (
               <div className="video-call-session-error" role="alert">

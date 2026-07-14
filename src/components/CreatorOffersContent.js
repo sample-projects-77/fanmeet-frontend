@@ -53,9 +53,14 @@ function formatOfferTimeRange(offer) {
 
 /**
  * Shared offers list for a creator. Used by both fan and creator (viewing another creator).
- * @param {{ backTo: string, backState?: object, canBook?: boolean }} props - backTo: URL for the back link; optional backState for nav tab
+ * @param {{ backTo: string, backState?: object, canBook?: boolean, bookingsBasePath?: string }} props
  */
-function CreatorOffersContent({ backTo, backState, canBook = true }) {
+function CreatorOffersContent({
+  backTo,
+  backState,
+  canBook = true,
+  bookingsBasePath = '/fan/bookings',
+}) {
   const { t, i18n } = useTranslation();
   const { creatorId } = useParams();
   const navigate = useNavigate();
@@ -64,6 +69,7 @@ function CreatorOffersContent({ backTo, backState, canBook = true }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [bookingInProgress, setBookingInProgress] = useState(null);
+  const [creatorCanReceivePayments, setCreatorCanReceivePayments] = useState(true);
 
   const fetchOffers = useCallback(async () => {
     if (!creatorId) return;
@@ -76,6 +82,7 @@ function CreatorOffersContent({ backTo, backState, canBook = true }) {
         (res.StatusCode === 200 || res.statusCode === 200) && res.data;
       if (ok) {
         setOffers(res.data.offers || []);
+        setCreatorCanReceivePayments(res.data.creatorCanReceivePayments !== false);
       } else {
         setError(res.error || t('offers.failedToLoad'));
         setOffers([]);
@@ -114,7 +121,7 @@ function CreatorOffersContent({ backTo, backState, canBook = true }) {
         setError(t('offers.slotTemporarilyReserved'));
         return;
       }
-      navigate(`/fan/bookings/${createRes.data.id}/pay`, {
+      navigate(`${bookingsBasePath}/${createRes.data.id}/pay`, {
         replace: true,
         state: { creatorId: rawCreatorId },
       });
@@ -128,6 +135,8 @@ function CreatorOffersContent({ backTo, backState, canBook = true }) {
   const bookableOffers = (offers || []).filter(
     (offer) => offer.status === 'available'
   );
+
+  const fanCanBook = canBook && creatorCanReceivePayments;
 
   return (
     <main className="creator-offers-main">
@@ -151,7 +160,13 @@ function CreatorOffersContent({ backTo, backState, canBook = true }) {
         ) : loading ? (
           <LoadingSpinner />
         ) : bookableOffers.length === 0 ? (
-          <EmptyWidget text={t('offers.noOffers')} />
+          <EmptyWidget
+            text={
+              canBook && !creatorCanReceivePayments
+                ? t('offers.creatorPayoutNotReadyForFans')
+                : t('offers.noOffers')
+            }
+          />
         ) : (
           <div className="creator-offers-table-wrap">
             <table className="creator-offers-table creator-offers-table--bookable">
@@ -179,7 +194,7 @@ function CreatorOffersContent({ backTo, backState, canBook = true }) {
                         {formatPrice(offer.priceCents, offer.currency)}
                       </td>
                       <td className="creator-offers-td-action">
-                        {canBook && offer.status === 'available' && (
+                        {fanCanBook && offer.status === 'available' && (
                           <span
                             className="creator-offers-book-btn"
                             role="button"

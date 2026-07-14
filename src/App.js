@@ -38,6 +38,7 @@ import { CreatorChatConversationWithProvider } from './components/ChatConversati
 import CreatorSearch from './pages/CreatorSearch';
 import CreatorChats from './pages/CreatorChats';
 import CreatorProfile from './pages/CreatorProfile';
+import CreatorPayoutGuide from './pages/CreatorPayoutGuide';
 import CreatorEditProfile from './pages/CreatorEditProfile';
 import CreatorCreatorProfile from './pages/CreatorCreatorProfile';
 import CreatorLayout from './layouts/CreatorLayout';
@@ -130,8 +131,11 @@ function App() {
             <Route path="profile/change-password" element={<CreatorProfileChangePassword />} />
             <Route path="profile/language" element={<CreatorProfileLanguage />} />
             <Route path="profile/blocked" element={<CreatorProfileBlocked />} />
+            <Route path="profile/payout-guide" element={<CreatorPayoutGuide />} />
             <Route path="reviews" element={<CreatorMyReviews />} />
             <Route path="bookings" element={<CreatorAllSessions />} />
+            <Route path="bookings/payment-return" element={<FanBookingPaymentReturn />} />
+            <Route path="bookings/:bookingId/pay" element={<FanBookingPayment />} />
             <Route path="bookings/:bookingId" element={<Navigate to="/creator/bookings" replace />} />
             <Route path="bookings/:bookingId/call" element={<CreatorVideoCall />} />
           </Route>

@@ -13,26 +13,62 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   padding: 16px 20px;
   background: var(--card-bg);
   border-bottom: 1px solid var(--light-grey-shade-3);
   flex-shrink: 0;
 }
 
+/* In-call: stacked on mobile, single row on larger screens */
 .video-call-header-in-call {
   position: relative;
   z-index: 20;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "back leave"
+    "meta meta";
+  align-items: center;
+  column-gap: 12px;
+  row-gap: 10px;
   flex-shrink: 0;
   background: rgba(15, 17, 21, 0.95);
-  padding-top: max(16px, env(safe-area-inset-top, 0px));
+  padding: max(12px, env(safe-area-inset-top, 0px)) 12px 12px;
+  border-bottom: 1px solid var(--light-grey-shade-3);
+}
+
+.video-call-header-top {
+  display: contents;
+}
+
+.video-call-header-top .video-call-back {
+  grid-area: back;
+  justify-self: start;
+}
+
+.video-call-header-top .video-call-leave-btn {
+  grid-area: leave;
+  justify-self: end;
+}
+
+.video-call-header-meta {
+  grid-area: meta;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
 }
 
 .video-call-back {
   color: var(--white);
-  font-size: 18px;
+  font-size: 16px;
   text-decoration: none;
-  padding: 4px 8px;
+  padding: 6px 8px;
   border-radius: 8px;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .video-call-back:hover {
@@ -44,27 +80,52 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
 }
 
 .video-call-title {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   margin: 0;
   color: var(--white);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .video-call-waiting {
   font-size: 14px;
   color: var(--text-secondary);
   font-weight: 400;
+  line-height: 1.35;
+}
+
+/* Banner below already covers this on small screens */
+.video-call-waiting--header {
+  display: none;
+  grid-area: wait;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .video-call-timer {
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--secondary-color);
   font-variant-numeric: tabular-nums;
-  min-width: 3ch;
+  flex-shrink: 0;
+  letter-spacing: 0.02em;
+}
+
+.video-call-leave-btn {
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .video-call-session-error {
@@ -108,11 +169,6 @@
 
 .video-call-permission-bar-btn {
   min-width: 220px;
-}
-
-.video-call-leave-btn {
-  padding: 8px 16px;
-  font-size: 14px;
 }
 
 .video-call-content {
@@ -315,5 +371,45 @@
 @media (max-width: 767px) {
   .video-call-content {
     padding: 16px;
+  }
+
+  .video-call-no-charge-notice {
+    margin: 0 12px 10px;
+    padding: 10px 12px;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+}
+
+@media (min-width: 768px) {
+  .video-call-header-in-call {
+    grid-template-columns: auto minmax(0, auto) minmax(0, 1fr) auto auto;
+    grid-template-areas: "back meta wait timer leave";
+    column-gap: 16px;
+    row-gap: 0;
+    padding: max(16px, env(safe-area-inset-top, 0px)) 20px 16px;
+  }
+
+  .video-call-header-meta {
+    display: contents;
+  }
+
+  .video-call-header-meta .video-call-title {
+    grid-area: meta;
+    font-size: 18px;
+  }
+
+  .video-call-header-meta .video-call-timer {
+    grid-area: timer;
+    font-size: 18px;
+  }
+
+  .video-call-waiting--header {
+    display: block;
+  }
+
+  .video-call-leave-btn {
+    padding: 8px 16px;
+    font-size: 14px;
   }
 }

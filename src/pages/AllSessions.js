@@ -373,19 +373,58 @@ export function CreatorAllSessions() {
     setLoading(true);
     setError(null);
     try {
-      const res = await bookingAPI.getCreatorBookings({ page: 1, itemsPerPage: 100 });
-      if (res.StatusCode !== 200 || !res.data) {
-        setError(res.error || t('sessions.failedToLoad'));
+      // Host sessions = fans booked this creator. Guest = creator booked another creator.
+      // Fetch separately so a guest-API failure never hides the creator's own sessions.
+      let hostBookings = [];
+      let guestBookings = [];
+      let hostError = null;
+
+      try {
+        const hostRes = await bookingAPI.getCreatorBookings({ page: 1, itemsPerPage: 100 });
+        if (hostRes.StatusCode === 200 && hostRes.data) {
+          hostBookings = (hostRes.data.bookings || []).map((b) => ({
+            ...b,
+            _participantRole: 'host',
+          }));
+        } else {
+          hostError = hostRes.error || t('sessions.failedToLoad');
+        }
+      } catch (err) {
+        hostError = err.response?.data?.error || err.message || t('sessions.failedToLoad');
+      }
+
+      try {
+        const guestRes = await bookingAPI.getFanBookings({ page: 1, itemsPerPage: 100 });
+        if (guestRes.StatusCode === 200 && guestRes.data) {
+          guestBookings = (guestRes.data.bookings || []).map((b) => ({
+            ...b,
+            _participantRole: 'guest',
+          }));
+        }
+      } catch {
+        // Guest list is optional for creators; ignore failures.
+      }
+
+      if (hostError && hostBookings.length === 0 && guestBookings.length === 0) {
+        setError(hostError);
         setUpcoming([]);
         setCompleted([]);
         return;
       }
-      const allBookings = res.data.bookings || [];
+
+      const byId = new Map();
+      [...hostBookings, ...guestBookings].forEach((b) => {
+        const key = String(b.id || '');
+        if (!key) return;
+        if (!byId.has(key) || b._participantRole === 'host') {
+          byId.set(key, b);
+        }
+      });
+      const allBookings = Array.from(byId.values());
       const now = new Date();
-      const upcomingList = allBookings.filter((b) => isUpcomingSlotBooking(b, now));
-      const completedList = allBookings.filter((b) => isHistoryBooking(b));
-      setUpcoming(upcomingList);
-      setCompleted(completedList);
+      setUpcoming(allBookings.filter((b) => isUpcomingSlotBooking(b, now)));
+      setCompleted(allBookings.filter((b) => isHistoryBooking(b)));
+      setError(null);
     } catch (err) {
       setError(err.response?.data?.error || err.message || t('sessions.failedToLoad'));
       setUpcoming([]);
@@ -407,7 +446,13 @@ export function CreatorAllSessions() {
 
   const handleJoin = (session) => {
     const countdown = getJoinCountdown(session.startTime, session.durationMinutes, t);
-    if (countdown.canJoin) navigate(`/creator/bookings/${session.id}/call`);
+    if (!countdown.canJoin) return;
+    // Guest bookings (creator booked another creator) join as fan/participant
+    if (session._participantRole === 'guest') {
+      navigate(`/fan/bookings/${session.id}/call`);
+      return;
+    }
+    navigate(`/creator/bookings/${session.id}/call`);
   };
 
   if (!user) return null;

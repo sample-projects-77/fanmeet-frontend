@@ -951,6 +951,60 @@
   transform: scale(0.98);
 }
 
+.creator-offers-add-slot-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.creator-offers-payout-banner {
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(244, 192, 70, 0.35);
+  background: rgba(244, 192, 70, 0.08);
+  color: var(--tertiary-color);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.creator-offers-payout-banner p {
+  margin: 0 0 10px;
+}
+
+.creator-offers-payout-whatsapp {
+  color: var(--accent-yellow);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.creator-offers-payout-whatsapp:hover {
+  text-decoration: underline;
+}
+
+.creator-offers-payout-banner-link {
+  display: inline-block;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--accent-yellow);
+  font-weight: 600;
+  font-size: inherit;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.creator-offers-payout-banner-link:hover:not(:disabled) {
+  text-decoration: none;
+}
+
+.creator-offers-payout-banner-link:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
 @media (min-width: 600px) {
   .creator-offers-table th,
   .creator-offers-table td {

@@ -7,6 +7,7 @@ import CreatorNav from '../components/CreatorNav';
 import LoadingSpinner from '../components/LoadingSpinner';
 import EmptyWidget from '../components/EmptyWidget';
 import ErrorWidget from '../components/ErrorWidget';
+import useCreatorPayoutStatus from '../hooks/useCreatorPayoutStatus';
 import {
   parseOfferSlotToUTC,
   formatUTCDateToLocalDay,
@@ -78,6 +79,8 @@ function CreatorOffers() {
   const currentPageRef = useRef(1);
   const sentinelRef = useRef(null);
   const isFetchingRef = useRef(false);
+  const { canReceivePayments, loading: payoutStatusLoading, payoutLoading, setupPayout } =
+    useCreatorPayoutStatus(!!user?.id);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -220,6 +223,12 @@ function CreatorOffers() {
     navigate('/', { replace: true });
   };
 
+  const handleSetupPayoutClick = () => {
+    setupPayout({
+      error: t('profile.payoutSetupError'),
+    });
+  };
+
   if (!user) return null;
 
   return (
@@ -235,6 +244,32 @@ function CreatorOffers() {
           </header>
 
           <div className="creator-offers-divider" aria-hidden />
+
+          {!payoutStatusLoading && !canReceivePayments && (
+            <div className="creator-offers-payout-banner" role="status">
+              <p>{t('availability.payoutRequiredMessage')}</p>
+              <p>
+                {t('availability.payoutRequiredHelpPrefix')}
+                <a
+                  href="https://wa.me/4915510206772"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="creator-offers-payout-whatsapp"
+                >
+                  {t('availability.payoutRequiredWhatsApp')}
+                </a>
+              </p>
+              <p>{t('availability.payoutRequiredHelpClosing')}</p>
+              <button
+                type="button"
+                className="creator-offers-payout-banner-link"
+                onClick={handleSetupPayoutClick}
+                disabled={payoutLoading}
+              >
+                {payoutLoading ? t('profile.payoutSetupLoading') : t('availability.payoutSetupCta')}
+              </button>
+            </div>
+          )}
 
           {error ? (
             <ErrorWidget errorText={error} onRetry={() => fetchOffers(1)} />
@@ -291,6 +326,8 @@ function CreatorOffers() {
               type="button"
               className="creator-offers-add-slot-button"
               onClick={() => navigate('/creator/offers/add-time-slot')}
+              disabled={!canReceivePayments || payoutStatusLoading}
+              title={!canReceivePayments ? t('availability.payoutRequiredMessage') : undefined}
             >
               {t('availability.addTimeSlot')}
             </button>
