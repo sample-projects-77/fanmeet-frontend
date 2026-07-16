@@ -289,7 +289,7 @@
   }
 
   .creator-offers-table--bookable th.creator-offers-th-day {
-    text-align: left;
+    text-align: center;
   }
 
   .creator-offers-table .creator-offers-th-day {
@@ -318,8 +318,8 @@
 
   .creator-offers-table--bookable td.creator-offers-td-day,
   .creator-offers-table--bookable th.creator-offers-th-day {
-    text-align: left;
-    padding-left: 6px;
+    text-align: center;
+    padding-left: 4px;
     padding-right: 4px;
   }
 
@@ -468,7 +468,7 @@
   }
 
   .creator-offers-table--bookable th.creator-offers-th-day {
-    text-align: left;
+    text-align: center;
   }
 
   /* 4-column availability table (375px) */
@@ -533,8 +533,8 @@
 
   .creator-offers-table--bookable td.creator-offers-td-day,
   .creator-offers-table--bookable th.creator-offers-th-day {
-    text-align: left;
-    padding-left: 4px;
+    text-align: center;
+    padding-left: 2px;
     padding-right: 2px;
     font-size: 10px;
     white-space: nowrap;
@@ -670,14 +670,14 @@
   padding-right: 12px;
 }
 .creator-offers-table--bookable td:first-child {
-  text-align: left;
-  padding-left: 8px;
+  text-align: center;
+  padding-left: 6px;
   padding-right: 6px;
 }
 
 .creator-offers-table--bookable th.creator-offers-th-day {
-  text-align: left;
-  padding-left: 8px;
+  text-align: center;
+  padding-left: 6px;
   padding-right: 6px;
 }
 

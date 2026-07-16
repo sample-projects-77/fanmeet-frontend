@@ -78,13 +78,13 @@ function Welcome() {
           </div>
 
           <div className="welcome-actions">
-            <Link to="/signup/fan" className="welcome-btn welcome-btn--primary">
-              <PersonOutline className="welcome-btn-icon" aria-hidden />
-              {t('welcome.signUpFan')}
-            </Link>
-            <Link to="/signup/creator" className="welcome-btn welcome-btn--secondary">
+            <Link to="/signup/creator" className="welcome-btn welcome-btn--primary">
               <PersonOutline className="welcome-btn-icon" aria-hidden />
               {t('welcome.signUpCreator')}
+            </Link>
+            <Link to="/signup/fan" className="welcome-btn welcome-btn--secondary">
+              <PersonOutline className="welcome-btn-icon" aria-hidden />
+              {t('welcome.signUpFan')}
             </Link>
           </div>
           <p className="welcome-login">
