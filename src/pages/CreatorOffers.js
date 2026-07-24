@@ -79,7 +79,7 @@ function CreatorOffers() {
   const currentPageRef = useRef(1);
   const sentinelRef = useRef(null);
   const isFetchingRef = useRef(false);
-  const { canReceivePayments, loading: payoutStatusLoading, payoutLoading, setupPayout } =
+  const { canReceivePayments, loading: payoutStatusLoading, hasLoaded, payoutLoading, setupPayout } =
     useCreatorPayoutStatus(!!user?.id);
 
   useEffect(() => {
@@ -245,7 +245,7 @@ function CreatorOffers() {
 
           <div className="creator-offers-divider" aria-hidden />
 
-          {!payoutStatusLoading && !canReceivePayments && (
+          {hasLoaded && !canReceivePayments && (
             <div className="creator-offers-payout-banner" role="status">
               <p>{t('availability.payoutRequiredMessage')}</p>
               <p>
@@ -326,7 +326,7 @@ function CreatorOffers() {
               type="button"
               className="creator-offers-add-slot-button"
               onClick={() => navigate('/creator/offers/add-time-slot')}
-              disabled={!canReceivePayments || payoutStatusLoading}
+              disabled={!canReceivePayments || !hasLoaded || payoutStatusLoading}
               title={!canReceivePayments ? t('availability.payoutRequiredMessage') : undefined}
             >
               {t('availability.addTimeSlot')}

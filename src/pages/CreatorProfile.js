@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { authAPI, profileAPI } from '../services/api';
 import { getCached, setCached } from '../utils/routeDataCache';
@@ -14,6 +14,7 @@ import './FanProfile.css';
 function CreatorProfile({ embedded, user: userProp, onLogout: onLogoutProp }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [userState, setUserState] = useState(null);
   const user = embedded ? userProp : userState;
@@ -27,10 +28,19 @@ function CreatorProfile({ embedded, user: userProp, onLogout: onLogoutProp }) {
   const [deleting, setDeleting] = useState(false);
   const {
     connectStatus,
+    loading: connectStatusLoading,
     payoutLoading,
     setupPayout,
     refresh: refreshConnectStatus,
   } = useCreatorPayoutStatus(!!user?.id);
+
+  // Profile tab stays mounted in CreatorLayout — refresh when it becomes visible again.
+  const isProfileVisible = !embedded || location.pathname === '/creator/profile';
+  useEffect(() => {
+    if (isProfileVisible && user?.id) {
+      refreshConnectStatus();
+    }
+  }, [isProfileVisible, user?.id, refreshConnectStatus]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -198,9 +208,11 @@ function CreatorProfile({ embedded, user: userProp, onLogout: onLogoutProp }) {
                   ? (t('profile.payoutsDevBypass') || 'Payouts (dev bypass)')
                   : connectStatus?.canReceivePayments
                   ? (t('profile.payoutsConnected') || 'Payouts connected')
-                  : payoutLoading
+                  : connectStatusLoading || payoutLoading
                     ? (t('profile.payoutSetupLoading') || 'Loading...')
-                    : (t('profile.setupPayout') || 'Setup payout')}
+                    : connectStatus?.onboarded
+                      ? (t('profile.payoutSetupPending') || 'Complete Mollie verification')
+                      : (t('profile.setupPayout') || 'Setup payout')}
               </span>
               <span className="fan-profile-setting-arrow">›</span>
             </button>

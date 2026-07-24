@@ -4,15 +4,22 @@ import { startCreatorPayoutSetup } from '../utils/creatorPayoutSetup';
 
 /**
  * Loads Mollie Connect / payout readiness for the logged-in creator.
+ * Same source of truth used by Profile and Offers: GET /api/connect/status → canReceivePayments.
  */
 export function useCreatorPayoutStatus(enabled = true) {
   const [connectStatus, setConnectStatus] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(Boolean(enabled));
+  const [hasLoaded, setHasLoaded] = useState(false);
   const [payoutLoading, setPayoutLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const refresh = useCallback(async () => {
-    if (!enabled) return;
+    if (!enabled) {
+      setLoading(false);
+      setHasLoaded(false);
+      setConnectStatus(null);
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
@@ -29,12 +36,31 @@ export function useCreatorPayoutStatus(enabled = true) {
       setError(err.response?.data?.error || err.message || 'Failed to load payout status');
     } finally {
       setLoading(false);
+      setHasLoaded(true);
     }
   }, [enabled]);
 
   useEffect(() => {
     refresh();
   }, [refresh]);
+
+  // Keep status fresh when returning to the tab/app (Profile stays mounted in layout).
+  useEffect(() => {
+    if (!enabled) return undefined;
+
+    const handleRefresh = () => {
+      if (document.visibilityState === 'visible') {
+        refresh();
+      }
+    };
+
+    window.addEventListener('focus', handleRefresh);
+    document.addEventListener('visibilitychange', handleRefresh);
+    return () => {
+      window.removeEventListener('focus', handleRefresh);
+      document.removeEventListener('visibilitychange', handleRefresh);
+    };
+  }, [enabled, refresh]);
 
   const setupPayout = useCallback(
     async (messages = {}) => {
@@ -64,6 +90,7 @@ export function useCreatorPayoutStatus(enabled = true) {
     [connectStatus?.devBypass, refresh]
   );
 
+  // Same rule as Profile label: connected only when Mollie canReceivePayments (or local bypass).
   const canReceivePayments = Boolean(
     connectStatus?.canReceivePayments || connectStatus?.devBypass
   );
@@ -71,6 +98,7 @@ export function useCreatorPayoutStatus(enabled = true) {
   return {
     connectStatus,
     loading,
+    hasLoaded,
     payoutLoading,
     error,
     refresh,

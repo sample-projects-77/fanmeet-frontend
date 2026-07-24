@@ -23,7 +23,7 @@ const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    role: 'fan',
+    role: 'creator',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
