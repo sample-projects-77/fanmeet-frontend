@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { connectAPI } from '../services/api';
 import { startCreatorPayoutSetup } from '../utils/creatorPayoutSetup';
 
@@ -12,53 +12,60 @@ export function useCreatorPayoutStatus(enabled = true) {
   const [hasLoaded, setHasLoaded] = useState(false);
   const [payoutLoading, setPayoutLoading] = useState(false);
   const [error, setError] = useState(null);
+  const hasLoadedRef = useRef(false);
 
-  const refresh = useCallback(async () => {
+  const refresh = useCallback(async ({ silent = false } = {}) => {
     if (!enabled) {
       setLoading(false);
       setHasLoaded(false);
+      hasLoadedRef.current = false;
       setConnectStatus(null);
       return;
     }
-    setLoading(true);
+
+    // Only block the UI on the first load. Background refresh must not remount forms
+    // (e.g. closing the iOS keyboard fires focus and was wiping the add-slot form).
+    const showLoader = !silent && !hasLoadedRef.current;
+    if (showLoader) setLoading(true);
     setError(null);
+
     try {
       const res = await connectAPI.getConnectStatus();
       const ok = res.StatusCode === 200 || res.statusCode === 200;
       if (ok && res.data) {
         setConnectStatus(res.data);
       } else {
-        setConnectStatus(null);
+        // Keep last known status so a flaky refresh doesn't flip canReceivePayments off mid-submit
         setError(res.error || 'Failed to load payout status');
+        if (!hasLoadedRef.current) setConnectStatus(null);
       }
     } catch (err) {
-      setConnectStatus(null);
       setError(err.response?.data?.error || err.message || 'Failed to load payout status');
+      if (!hasLoadedRef.current) setConnectStatus(null);
     } finally {
       setLoading(false);
       setHasLoaded(true);
+      hasLoadedRef.current = true;
     }
   }, [enabled]);
 
   useEffect(() => {
-    refresh();
+    refresh({ silent: false });
   }, [refresh]);
 
-  // Keep status fresh when returning to the tab/app (Profile stays mounted in layout).
+  // Refresh when app returns to foreground — not on every input focus (mobile keyboard).
   useEffect(() => {
     if (!enabled) return undefined;
 
-    const handleRefresh = () => {
+    const handleVisibility = () => {
       if (document.visibilityState === 'visible') {
-        refresh();
+        refresh({ silent: true });
       }
     };
 
-    window.addEventListener('focus', handleRefresh);
-    document.addEventListener('visibilitychange', handleRefresh);
+    document.addEventListener('visibilitychange', handleVisibility);
     return () => {
-      window.removeEventListener('focus', handleRefresh);
-      document.removeEventListener('visibilitychange', handleRefresh);
+      document.removeEventListener('visibilitychange', handleVisibility);
     };
   }, [enabled, refresh]);
 
@@ -68,7 +75,7 @@ export function useCreatorPayoutStatus(enabled = true) {
       setPayoutLoading(true);
       try {
         const result = await startCreatorPayoutSetup({
-          refreshStatus: refresh,
+          refreshStatus: () => refresh({ silent: true }),
           onDevBypass: (message) => {
             alert(message || messages.devBypass || 'Local dev: Mollie onboarding bypassed.');
           },
@@ -95,6 +102,8 @@ export function useCreatorPayoutStatus(enabled = true) {
     connectStatus?.canReceivePayments || connectStatus?.devBypass
   );
 
+  const needsReconnect = Boolean(connectStatus?.needsReconnect && !canReceivePayments);
+
   return {
     connectStatus,
     loading,
@@ -104,6 +113,7 @@ export function useCreatorPayoutStatus(enabled = true) {
     refresh,
     setupPayout,
     canReceivePayments,
+    needsReconnect,
     devBypass: Boolean(connectStatus?.devBypass),
   };
 }

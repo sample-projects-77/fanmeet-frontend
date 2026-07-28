@@ -79,8 +79,14 @@ function CreatorOffers() {
   const currentPageRef = useRef(1);
   const sentinelRef = useRef(null);
   const isFetchingRef = useRef(false);
-  const { canReceivePayments, loading: payoutStatusLoading, hasLoaded, payoutLoading, setupPayout } =
-    useCreatorPayoutStatus(!!user?.id);
+  const {
+    canReceivePayments,
+    needsReconnect,
+    loading: payoutStatusLoading,
+    hasLoaded,
+    payoutLoading,
+    setupPayout,
+  } = useCreatorPayoutStatus(!!user?.id);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -149,6 +155,17 @@ function CreatorOffers() {
           // the newly created offer may not yet be returned by the API (e.g. status lag).
           if (isBackgroundRefresh && newOffers.length === 0) {
             // Keep current state; skip cache update so stale injected offer stays visible.
+          } else if (isBackgroundRefresh) {
+            // Merge so a just-created (cache-injected) offer is not dropped if API omits it briefly
+            setOffers((prev) => {
+              const apiIds = new Set(newOffers.map((o) => o.id));
+              const merged = [
+                ...newOffers,
+                ...prev.filter((o) => o?.id && !apiIds.has(o.id)),
+              ];
+              setCached(CACHE_KEY, { offers: merged, pagination: pag });
+              return merged;
+            });
           } else {
             setCached(CACHE_KEY, { offers: newOffers, pagination: pag });
             setOffers(newOffers);
@@ -247,7 +264,11 @@ function CreatorOffers() {
 
           {hasLoaded && !canReceivePayments && (
             <div className="creator-offers-payout-banner" role="status">
-              <p>{t('availability.payoutRequiredMessage')}</p>
+              <p>
+                {needsReconnect
+                  ? t('availability.payoutReconnectMessage')
+                  : t('availability.payoutRequiredMessage')}
+              </p>
               <p>
                 {t('availability.payoutRequiredHelpPrefix')}
                 <a
@@ -266,7 +287,11 @@ function CreatorOffers() {
                 onClick={handleSetupPayoutClick}
                 disabled={payoutLoading}
               >
-                {payoutLoading ? t('profile.payoutSetupLoading') : t('availability.payoutSetupCta')}
+                {payoutLoading
+                  ? t('profile.payoutSetupLoading')
+                  : needsReconnect
+                    ? t('availability.payoutReconnectCta')
+                    : t('availability.payoutSetupCta')}
               </button>
             </div>
           )}

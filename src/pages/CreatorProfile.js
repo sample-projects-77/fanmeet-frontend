@@ -31,6 +31,7 @@ function CreatorProfile({ embedded, user: userProp, onLogout: onLogoutProp }) {
     loading: connectStatusLoading,
     payoutLoading,
     setupPayout,
+    needsReconnect,
     refresh: refreshConnectStatus,
   } = useCreatorPayoutStatus(!!user?.id);
 
@@ -210,6 +211,8 @@ function CreatorProfile({ embedded, user: userProp, onLogout: onLogoutProp }) {
                   ? (t('profile.payoutsConnected') || 'Payouts connected')
                   : connectStatusLoading || payoutLoading
                     ? (t('profile.payoutSetupLoading') || 'Loading...')
+                    : needsReconnect
+                      ? (t('profile.reconnectPayout') || 'Reconnect Mollie')
                     : connectStatus?.onboarded
                       ? (t('profile.payoutSetupPending') || 'Complete Mollie verification')
                       : (t('profile.setupPayout') || 'Setup payout')}

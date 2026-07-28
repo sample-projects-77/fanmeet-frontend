@@ -31,8 +31,13 @@ function CreatorAddTimeSlot() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [showEndTimePicker, setShowEndTimePicker] = useState(false);
-  const { canReceivePayments, loading: payoutStatusLoading, payoutLoading, setupPayout } =
-    useCreatorPayoutStatus(!!user);
+  const {
+    canReceivePayments,
+    needsReconnect,
+    loading: payoutStatusLoading,
+    payoutLoading,
+    setupPayout,
+  } = useCreatorPayoutStatus(!!user);
 
   const handleSetupPayoutClick = () => {
     setupPayout({
@@ -90,6 +95,10 @@ function CreatorAddTimeSlot() {
     e.preventDefault();
     setError('');
 
+    if (submitting || payoutStatusLoading) {
+      return;
+    }
+
     if (!canReceivePayments) {
       setError(t('availability.payoutRequiredMessage'));
       return;
@@ -146,12 +155,17 @@ function CreatorAddTimeSlot() {
       });
       if (res.StatusCode === 200 && res.data) {
         // Inject the new offer into the cache so the list shows it immediately
+        // API returns the offer object directly as `data` (not `{ offer: ... }`)
         const newOffer = res.data.offer || res.data;
+        if (!newOffer?.id && !newOffer?._id) {
+          setError(t('availability.failedToAdd'));
+          return;
+        }
         const cached = getCached('creatorOffers', Infinity);
         if (cached?.offers) {
           setCached('creatorOffers', {
             ...cached,
-            offers: [newOffer, ...cached.offers],
+            offers: [newOffer, ...cached.offers.filter((o) => o.id !== newOffer.id)],
           });
         } else {
           setCached('creatorOffers', { offers: [newOffer], pagination: null });
@@ -202,7 +216,11 @@ function CreatorAddTimeSlot() {
             <LoadingSpinner />
           ) : !canReceivePayments ? (
             <div className="creator-add-slot-error creator-add-slot-error--payout">
-              <p>{t('availability.payoutRequiredMessage')}</p>
+              <p>
+                {needsReconnect
+                  ? t('availability.payoutReconnectMessage')
+                  : t('availability.payoutRequiredMessage')}
+              </p>
               <p>
                 {t('availability.payoutRequiredHelpPrefix')}
                 <a
@@ -221,7 +239,11 @@ function CreatorAddTimeSlot() {
                 onClick={handleSetupPayoutClick}
                 disabled={payoutLoading}
               >
-                {payoutLoading ? t('profile.payoutSetupLoading') : t('availability.payoutSetupCta')}
+                {payoutLoading
+                  ? t('profile.payoutSetupLoading')
+                  : needsReconnect
+                    ? t('availability.payoutReconnectCta')
+                    : t('availability.payoutSetupCta')}
               </button>
             </div>
           ) : (
