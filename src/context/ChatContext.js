@@ -9,62 +9,92 @@ const streamApiKey = process.env.REACT_APP_STREAM_API_KEY;
 
 const ChatContext = createContext(null);
 
+async function fetchStreamTokenWithRetry(maxAttempts = 3) {
+  let lastError;
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    try {
+      const res = await chatAPI.getChatToken();
+      if (res.StatusCode !== 200 || !res.data?.token) {
+        throw new Error(res.error || 'Failed to get chat token');
+      }
+      return res.data.token;
+    } catch (err) {
+      lastError = err;
+      if (attempt < maxAttempts - 1) {
+        await new Promise((resolve) => {
+          setTimeout(resolve, 1000 * (attempt + 1));
+        });
+      }
+    }
+  }
+  throw lastError;
+}
+
+function getChatUserFromStorage() {
+  const token = getAccessToken();
+  const userJson = localStorage.getItem('user');
+  if (!token || !userJson) return null;
+  try {
+    return JSON.parse(userJson);
+  } catch {
+    return null;
+  }
+}
+
 export function ChatProvider({ children }) {
   const [client, setClient] = useState(null);
   const [connecting, setConnecting] = useState(false);
   const [error, setError] = useState(null);
   const connectPromiseRef = useRef(null);
 
-  const connect = useCallback(async () => {
-    if (client) return client;
-    if (connectPromiseRef.current) return connectPromiseRef.current;
+  const connectUserToStream = useCallback(async (chatClient, user) => {
+    const res = await chatAPI.getChatToken();
+    if (res.StatusCode !== 200 || !res.data?.token || !res.data?.userId) {
+      throw new Error(res.error || 'Failed to get chat token');
+    }
+    const { userId } = res.data;
+
+    if (chatClient.userID && chatClient.userID !== userId) {
+      await chatClient.disconnectUser();
+    }
+
+    const displayName = getPublicDisplayName(user, 'User');
+    const chatName = displayName
+      ? displayName.charAt(0).toUpperCase() + displayName.slice(1)
+      : 'User';
+
+    await chatClient.connectUser(
+      {
+        id: userId,
+        name: chatName,
+        image: user.avatarUrl || DEFAULT_AVATAR_URL,
+      },
+      fetchStreamTokenWithRetry
+    );
+
+    return chatClient;
+  }, []);
+
+  const connect = useCallback(async (options = {}) => {
+    const { force = false } = options;
+
+    if (!force && client?.userID) return client;
+    if (!force && connectPromiseRef.current) return connectPromiseRef.current;
 
     if (!streamApiKey) {
       setError('REACT_APP_STREAM_API_KEY is not set');
       return null;
     }
-    const token = getAccessToken();
-    const userJson = localStorage.getItem('user');
-    if (!token || !userJson) return null;
 
-    let user;
-    try {
-      user = JSON.parse(userJson);
-    } catch {
-      return null;
-    }
+    const user = getChatUserFromStorage();
+    if (!user) return null;
 
     const connectTask = (async () => {
       setConnecting(true);
       setError(null);
       try {
-        const res = await chatAPI.getChatToken();
-        if (res.StatusCode !== 200 || !res.data?.token || !res.data?.userId) {
-          setError(res.error || 'Failed to get chat token');
-          return null;
-        }
-        const { token: streamToken, userId } = res.data;
         const chatClient = StreamChat.getInstance(streamApiKey);
-        if (chatClient.userID && chatClient.userID !== userId) {
-          // Account switched in the app but old Stream session is still alive.
-          await chatClient.disconnectUser();
-        }
-        if (chatClient.userID === userId) {
-          setClient(chatClient);
-          return chatClient;
-        }
-        const displayName = getPublicDisplayName(user, 'User');
-        const chatName = displayName
-          ? displayName.charAt(0).toUpperCase() + displayName.slice(1)
-          : 'User';
-        await chatClient.connectUser(
-          {
-            id: userId,
-            name: chatName,
-            image: user.avatarUrl || DEFAULT_AVATAR_URL,
-          },
-          streamToken
-        );
+        await connectUserToStream(chatClient, user);
         setClient(chatClient);
         return chatClient;
       } catch (err) {
@@ -79,7 +109,38 @@ export function ChatProvider({ children }) {
 
     connectPromiseRef.current = connectTask;
     return connectTask;
-  }, [client]);
+  }, [client, connectUserToStream]);
+
+  const reconnect = useCallback(async () => {
+    if (!streamApiKey) {
+      setClient(null);
+      connectPromiseRef.current = null;
+      return null;
+    }
+
+    const user = getChatUserFromStorage();
+    if (!user) return null;
+
+    connectPromiseRef.current = null;
+    setConnecting(true);
+    setError(null);
+
+    try {
+      const chatClient = StreamChat.getInstance(streamApiKey);
+      if (chatClient.userID) {
+        await chatClient.disconnectUser().catch(() => {});
+      }
+      await connectUserToStream(chatClient, user);
+      setClient(chatClient);
+      return chatClient;
+    } catch (err) {
+      setError(err.response?.data?.error || err.message || 'Failed to reconnect to chat');
+      setClient(null);
+      return null;
+    } finally {
+      setConnecting(false);
+    }
+  }, [connectUserToStream]);
 
   const disconnect = useCallback(async () => {
     if (!streamApiKey) {
@@ -138,11 +199,43 @@ export function ChatProvider({ children }) {
     }
   }, [connect]);
 
+  useEffect(() => {
+    if (!client) return undefined;
+
+    const onConnectionChanged = (event) => {
+      if (event?.online === false) {
+        // eslint-disable-next-line no-console
+        console.warn('Stream chat connection offline');
+      }
+    };
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState !== 'visible' || !client.userID) return;
+      try {
+        const maybePromise = client.openConnection?.();
+        if (maybePromise && typeof maybePromise.then === 'function') {
+          maybePromise.catch(() => {});
+        }
+      } catch {
+        /* ignore reconnect errors */
+      }
+    };
+
+    client.on('connection.changed', onConnectionChanged);
+    document.addEventListener('visibilitychange', onVisibilityChange);
+
+    return () => {
+      client.off('connection.changed', onConnectionChanged);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+    };
+  }, [client]);
+
   const value = {
     client,
     connecting,
     error,
     connect,
+    reconnect,
     disconnect,
     syncProfileToConnectedChat,
     isReady: !!client && !connecting,

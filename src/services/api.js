@@ -308,6 +308,11 @@ export const chatAPI = {
     const response = await api.post('/chat/individual', { otherUserId });
     return response.data;
   },
+  ensureIndividualChannelAccess: async (channelId) => {
+    const safeId = String(channelId);
+    const response = await api.post(`/chat/individual/${encodeURIComponent(safeId)}/access`);
+    return response.data;
+  },
   /** Removes the chat from this user's list only (other member keeps full Stream history). */
   deleteIndividualChannel: async (channelId) => {
     const safeId = String(channelId);
@@ -438,6 +443,16 @@ export const bookingAPI = {
   endSession: async (bookingId) => {
     const id = String(bookingId).replace(/^booking_/, '');
     const response = await api.post(`/bookings/${encodeURIComponent(id)}/end`);
+    return response.data;
+  },
+  reportParticipation: async (bookingId) => {
+    const id = String(bookingId).replace(/^booking_/, '');
+    const response = await api.post(`/bookings/${encodeURIComponent(id)}/participation`);
+    return response.data;
+  },
+  finalizeNoShow: async (bookingId) => {
+    const id = String(bookingId).replace(/^booking_/, '');
+    const response = await api.post(`/bookings/${encodeURIComponent(id)}/finalize-no-show`);
     return response.data;
   },
   cancelBooking: async (bookingId, reason) => {

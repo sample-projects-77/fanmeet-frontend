@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { paymentAPI, bookingAPI } from '../services/api';
 import FanNav from '../components/FanNav';
+import CreatorNav from '../components/CreatorNav';
 import LoadingSpinner, { ButtonLoadingSpinner } from '../components/LoadingSpinner';
 import { getFriendlyPaymentError } from '../utils/paymentErrors';
 import './FanBookingPayment.css';
@@ -23,8 +24,11 @@ function FanBookingPayment() {
   const navigate = useNavigate();
   const location = useLocation();
   const creatorId = location.state?.creatorId;
+  const isCreatorBooker = location.pathname.startsWith('/creator/');
+  const bookingsBase = isCreatorBooker ? '/creator/bookings' : '/fan/bookings';
+  const offersBase = isCreatorBooker ? '/creator/creators' : '/fan/creators';
   const offersPath = creatorId
-    ? `/fan/creators/${String(creatorId).replace(/^creator_/, '')}/offers`
+    ? `${offersBase}/${String(creatorId).replace(/^creator_/, '')}/offers`
     : null;
   const [user, setUser] = useState(null);
   const [paymentData, setPaymentData] = useState(null);
@@ -90,7 +94,7 @@ function FanBookingPayment() {
           });
 
           if (payRes.data.paymentIntentStatus === 'authorized' || payRes.data.paymentIntentStatus === 'paid') {
-            navigate(`/fan/bookings/payment-return?bookingId=${encodeURIComponent(bookingId)}`, { replace: true });
+            navigate(`${bookingsBase}/payment-return?bookingId=${encodeURIComponent(bookingId)}`, { replace: true });
           }
         }
       } catch (err) {
@@ -105,7 +109,7 @@ function FanBookingPayment() {
 
     init();
     return () => { cancelled = true; };
-  }, [bookingId, user, navigate, t]);
+  }, [bookingId, user, navigate, t, bookingsBase]);
 
   const handlePayWithMollie = () => {
     if (!paymentData?.checkoutUrl) return;
@@ -113,23 +117,25 @@ function FanBookingPayment() {
     window.location.href = paymentData.checkoutUrl;
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/', { replace: true });
+  };
+
   if (!user) return null;
 
   return (
     <div className="fan-booking-payment-page">
-      <FanNav
-        active="bookings"
-        userName={user.userName}
-        onLogout={() => {
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          navigate('/', { replace: true });
-        }}
-      />
+      {isCreatorBooker ? (
+        <CreatorNav active="creator" user={user} onLogout={handleLogout} />
+      ) : (
+        <FanNav active="bookings" userName={user.userName} onLogout={handleLogout} />
+      )}
       <main className="fan-booking-payment-main">
         <div className="fan-booking-payment-container">
           <header className="fan-booking-payment-header">
-            <Link to="/fan/bookings" className="fan-booking-payment-back" aria-label={t('booking.goToMyBookings')}>
+            <Link to={bookingsBase} className="fan-booking-payment-back" aria-label={t('booking.goToMyBookings')}>
               {t('booking.backToBookings')}
             </Link>
             <h1 className="fan-booking-payment-title">{t('booking.completePayment')}</h1>
@@ -143,7 +149,7 @@ function FanBookingPayment() {
                   {t('booking.backToOffers')}
                 </Link>
               ) : (
-                <Link to="/fan/bookings" className="fan-booking-payment-link">{t('booking.goToMyBookings')}</Link>
+                <Link to={bookingsBase} className="fan-booking-payment-link">{t('booking.goToMyBookings')}</Link>
               )}
             </div>
           )}

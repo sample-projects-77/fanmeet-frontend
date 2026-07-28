@@ -133,6 +133,7 @@
   align-items: center;
   gap: 14px;
   width: 100%;
+  min-width: 0;
   padding: 0;
   background: none;
   border: none;
@@ -145,6 +146,7 @@
   cursor: pointer;
   transition: background 0.15s;
   border-radius: 12px;
+  overflow: visible;
 }
 
 .fan-profile-setting-row:hover {
@@ -212,9 +214,14 @@
 
 .fan-profile-setting-label {
   flex: 1;
+  min-width: 0;
+  line-height: 1.35;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .fan-profile-setting-arrow {
+  flex-shrink: 0;
   color: var(--light-grey);
   font-size: 1.25rem;
   font-weight: 300;
@@ -232,5 +239,25 @@
   }
   .fan-profile-settings {
     padding: 24px;
+  }
+}
+
+@media (max-width: 375px) {
+  .fan-profile-main {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .fan-profile-card,
+  .fan-profile-settings {
+    padding: 16px;
+  }
+
+  .fan-profile-setting-row {
+    gap: 10px;
+  }
+
+  .fan-profile-setting-label {
+    font-size: 0.95rem;
   }
 }

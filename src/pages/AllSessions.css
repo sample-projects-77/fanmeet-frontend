@@ -192,6 +192,11 @@
   color: var(--red);
 }
 
+.all-sessions-card-status--no_show {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--dark-grey-text);
+}
+
 .all-sessions-card-row {
   display: flex;
   align-items: center;

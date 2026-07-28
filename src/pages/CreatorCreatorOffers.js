@@ -6,7 +6,8 @@ import { navTabFromLocationState } from '../utils/navTabFromLocationState';
 import './CreatorOffers.css';
 
 /**
- * Creator viewing another creator's offers — same content as fan "See offers", with creator nav and back link.
+ * Creator viewing another creator's offers — same content as fan "See offers",
+ * including booking (creators can book other creators).
  */
 function CreatorCreatorOffers() {
   const { creatorId } = useParams();
@@ -40,7 +41,12 @@ function CreatorCreatorOffers() {
   return (
     <div className="creator-offers-page">
       <CreatorNav active={navTab} user={user} onLogout={handleLogout} />
-      <CreatorOffersContent backTo={`/creator/creators/${creatorId}`} backState={{ navTab }} canBook={false} />
+      <CreatorOffersContent
+        backTo={`/creator/creators/${creatorId}`}
+        backState={{ navTab }}
+        canBook
+        bookingsBasePath="/creator/bookings"
+      />
     </div>
   );
 }

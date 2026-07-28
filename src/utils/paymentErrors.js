@@ -23,7 +23,7 @@ export function getFriendlyPaymentError(rawError, t) {
   if (msg.includes('already authorized')) {
     return t('booking.paymentAlreadyAuthorized');
   }
-  if (msg.includes('mollie payout') || msg.includes('payout setup')) {
+  if (msg.includes('mollie payout') || msg.includes('payout setup') || msg.includes('offering sessions')) {
     return t('booking.creatorPayoutNotReady');
   }
   if (msg.includes('not configured') || msg.includes('api key')) {

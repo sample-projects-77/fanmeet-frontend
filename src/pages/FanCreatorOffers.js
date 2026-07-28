@@ -37,7 +37,11 @@ function FanCreatorOffers() {
   return (
     <div className="creator-offers-page">
       <FanNav active={navTab} user={user} onLogout={handleLogout} />
-      <CreatorOffersContent backTo={`/fan/creators/${creatorId}`} backState={{ navTab }} />
+      <CreatorOffersContent
+        backTo={`/fan/creators/${creatorId}`}
+        backState={{ navTab }}
+        bookingsBasePath="/fan/bookings"
+      />
     </div>
   );
 }

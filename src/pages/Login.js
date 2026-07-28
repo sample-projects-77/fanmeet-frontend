@@ -23,7 +23,7 @@ const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    role: 'fan',
+    role: 'creator',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -88,17 +88,17 @@ const Login = () => {
             <div className="auth-role-selector">
               <button
                 type="button"
-                className={`auth-role-btn ${formData.role === 'fan' ? 'active' : ''}`}
-                onClick={() => setFormData({ ...formData, role: 'fan' })}
-              >
-                {t('auth.fan')}
-              </button>
-              <button
-                type="button"
                 className={`auth-role-btn ${formData.role === 'creator' ? 'active' : ''}`}
                 onClick={() => setFormData({ ...formData, role: 'creator' })}
               >
                 {t('auth.creator')}
+              </button>
+              <button
+                type="button"
+                className={`auth-role-btn ${formData.role === 'fan' ? 'active' : ''}`}
+                onClick={() => setFormData({ ...formData, role: 'fan' })}
+              >
+                {t('auth.fan')}
               </button>
             </div>
           </div>

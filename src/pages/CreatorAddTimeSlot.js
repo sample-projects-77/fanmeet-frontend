@@ -10,6 +10,8 @@ import { TimePickerDialog } from '../components/TimePickerDialog';
 import { localSlotToUtcPayload, formatTimeToAMPM, getEndTimeFromStartAndDuration } from '../utils/dateTimeUtils';
 import { getCached, setCached, clearCached } from '../utils/routeDataCache';
 import { appToast } from '../utils/toast';
+import { getFriendlyPaymentError } from '../utils/paymentErrors';
+import useCreatorPayoutStatus from '../hooks/useCreatorPayoutStatus';
 import './CreatorAddTimeSlot.css';
 
 function CreatorAddTimeSlot() {
@@ -29,6 +31,19 @@ function CreatorAddTimeSlot() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [showEndTimePicker, setShowEndTimePicker] = useState(false);
+  const {
+    canReceivePayments,
+    needsReconnect,
+    loading: payoutStatusLoading,
+    payoutLoading,
+    setupPayout,
+  } = useCreatorPayoutStatus(!!user);
+
+  const handleSetupPayoutClick = () => {
+    setupPayout({
+      error: t('profile.payoutSetupError'),
+    });
+  };
 
   const computeDurationFromTimes = (start, end) => {
     if (!start || !end) return null;
@@ -79,6 +94,15 @@ function CreatorAddTimeSlot() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (submitting || payoutStatusLoading) {
+      return;
+    }
+
+    if (!canReceivePayments) {
+      setError(t('availability.payoutRequiredMessage'));
+      return;
+    }
 
     if (!date || !startTime || !duration || !price) {
       setError(t('availability.fillAllFields'));
@@ -131,12 +155,17 @@ function CreatorAddTimeSlot() {
       });
       if (res.StatusCode === 200 && res.data) {
         // Inject the new offer into the cache so the list shows it immediately
+        // API returns the offer object directly as `data` (not `{ offer: ... }`)
         const newOffer = res.data.offer || res.data;
+        if (!newOffer?.id && !newOffer?._id) {
+          setError(t('availability.failedToAdd'));
+          return;
+        }
         const cached = getCached('creatorOffers', Infinity);
         if (cached?.offers) {
           setCached('creatorOffers', {
             ...cached,
-            offers: [newOffer, ...cached.offers],
+            offers: [newOffer, ...cached.offers.filter((o) => o.id !== newOffer.id)],
           });
         } else {
           setCached('creatorOffers', { offers: [newOffer], pagination: null });
@@ -144,12 +173,11 @@ function CreatorAddTimeSlot() {
         appToast.success(t('availability.slotAdded'));
         navigate('/creator/offers', { replace: true });
       } else {
-        setError(res.error || t('availability.failedToAdd'));
+        setError(getFriendlyPaymentError(res.error, t) || t('availability.failedToAdd'));
       }
     } catch (err) {
       setError(
-        err.response?.data?.error ||
-          err.message ||
+        getFriendlyPaymentError(err.response?.data?.error || err.message, t) ||
           t('common.errorGeneric')
       );
     } finally {
@@ -184,6 +212,41 @@ function CreatorAddTimeSlot() {
             {t('availability.addSlotSubtitle')}
           </p>
 
+          {payoutStatusLoading ? (
+            <LoadingSpinner />
+          ) : !canReceivePayments ? (
+            <div className="creator-add-slot-error creator-add-slot-error--payout">
+              <p>
+                {needsReconnect
+                  ? t('availability.payoutReconnectMessage')
+                  : t('availability.payoutRequiredMessage')}
+              </p>
+              <p>
+                {t('availability.payoutRequiredHelpPrefix')}
+                <a
+                  href="https://wa.me/4915510206772"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="creator-add-slot-whatsapp"
+                >
+                  {t('availability.payoutRequiredWhatsApp')}
+                </a>
+              </p>
+              <p>{t('availability.payoutRequiredHelpClosing')}</p>
+              <button
+                type="button"
+                className="creator-add-slot-payout-link"
+                onClick={handleSetupPayoutClick}
+                disabled={payoutLoading}
+              >
+                {payoutLoading
+                  ? t('profile.payoutSetupLoading')
+                  : needsReconnect
+                    ? t('availability.payoutReconnectCta')
+                    : t('availability.payoutSetupCta')}
+              </button>
+            </div>
+          ) : (
           <form className="creator-add-slot-form" onSubmit={handleSubmit}>
             {error && (
               <div className="creator-add-slot-error">
@@ -400,6 +463,7 @@ function CreatorAddTimeSlot() {
               </button>
             </div>
           </form>
+          )}
         </div>
       </main>
     </div>
