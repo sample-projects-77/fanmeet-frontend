@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { profileAPI, chatAPI, userAPI } from '../services/api';
 import { DEFAULT_AVATAR_URL } from '../constants';
@@ -7,13 +7,15 @@ import CreatorNav from '../components/CreatorNav';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorWidget from '../components/ErrorWidget';
 import DeleteAccountDialog from '../components/DeleteAccountDialog';
-import { clearCached } from '../utils/routeDataCache';
+import { removeCreatorFromDiscoveryCaches } from '../utils/removeCreatorFromDiscoveryCaches';
+import { navTabFromLocationState } from '../utils/navTabFromLocationState';
 import './FanCreatorProfile.css';
 
 function CreatorCreatorProfile() {
   const { t } = useTranslation();
   const { creatorId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [user, setUser] = useState(null);
   const [creator, setCreator] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -23,6 +25,8 @@ function CreatorCreatorProfile() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [blockDialogOpen, setBlockDialogOpen] = useState(false);
   const menuRef = React.useRef(null);
+  const navTab = navTabFromLocationState(location, 'creator');
+  const backListPath = navTab === 'search' ? '/creator/search' : '/creator/home';
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -47,14 +51,14 @@ function CreatorCreatorProfile() {
       if (res.StatusCode === 200 && res.data) {
         setCreator(res.data);
       } else {
-        setError(res.error || 'Creator not found');
+        setError(res.error || t('creatorProfile.creatorNotFound'));
       }
     } catch (err) {
-      setError(err.response?.data?.error || err.message || 'Something went wrong');
+      setError(err.response?.data?.error || err.message || t('common.errorGeneric'));
     } finally {
       setLoading(false);
     }
-  }, [creatorId]);
+  }, [creatorId, t]);
 
   useEffect(() => {
     fetchCreator();
@@ -76,8 +80,8 @@ function CreatorCreatorProfile() {
       const res = await userAPI.blockUser(userIdToBlock);
       if (res.StatusCode === 201) {
         setBlockDialogOpen(false);
-        clearCached('searchDefault');
-        navigate('/creator/search', { replace: true });
+        removeCreatorFromDiscoveryCaches(userIdToBlock);
+        navigate(backListPath, { replace: true });
       } else {
         setError(res.error || t('creatorProfile.couldNotBlock'));
       }
@@ -86,7 +90,7 @@ function CreatorCreatorProfile() {
     } finally {
       setBlocking(false);
     }
-  }, [creator, creatorId, navigate, t]);
+  }, [creator, creatorId, navigate, t, backListPath]);
 
   const handleMessageClick = useCallback(async () => {
     if (!creator) return;
@@ -130,20 +134,20 @@ function CreatorCreatorProfile() {
 
   return (
     <div className="fan-creator-details-page">
-      <CreatorNav active="search" user={user} onLogout={handleLogout} />
+      <CreatorNav active={navTab} user={user} onLogout={handleLogout} />
       <main className="fan-creator-details-main">
         {loading && !creator ? (
           <LoadingSpinner />
         ) : error ? (
           <div className="fan-creator-details-error-wrap">
             <ErrorWidget errorText={error} onRetry={fetchCreator} />
-            <Link to="/creator/search" className="fan-creator-details-back-link">{t('creatorProfile.backToSearch')}</Link>
+            <Link to={backListPath} className="fan-creator-details-back-link">{t('creatorProfile.backToSearch')}</Link>
           </div>
         ) : creator ? (
           <div className="fan-creator-details-container">
             <header className="fan-creator-details-header">
               <div className="fan-creator-details-top-bar">
-                <Link to="/creator/search" className="fan-creator-details-back" aria-label={t('common.back')}>←</Link>
+                <Link to={backListPath} className="fan-creator-details-back" aria-label={t('common.back')}>←</Link>
                 <div className="fan-creator-details-menu-wrap" ref={menuRef}>
                   <button
                     type="button"
@@ -185,7 +189,9 @@ function CreatorCreatorProfile() {
               <div className="fan-creator-details-meta">
                 <h1 className="fan-creator-details-name">{creator.displayName || t('home.creator')}</h1>
                 <p className="fan-creator-details-category">{creator.category || ''}</p>
-                <p className="fan-creator-details-bio-line">{creator.bio?.trim() || t('creatorProfile.noDescription')}</p>
+                {creator.bio?.trim() ? (
+                  <p className="fan-creator-details-bio-line">{creator.bio.trim()}</p>
+                ) : null}
               </div>
             </header>
 
@@ -216,7 +222,7 @@ function CreatorCreatorProfile() {
                   <ArrowIcon />
                 </span>
               </button>
-              <Link to={`/creator/creators/${creatorId}/offers`} className="fan-creator-details-action-btn">
+              <Link to={`/creator/creators/${creatorId}/offers`} state={{ navTab }} className="fan-creator-details-action-btn">
                 <span className="fan-creator-details-action-icon-wrap">
                   <OffersIcon />
                 </span>
@@ -225,7 +231,7 @@ function CreatorCreatorProfile() {
                   <ArrowIcon />
                 </span>
               </Link>
-              <Link to={`/creator/creators/${creatorId}/reviews`} className="fan-creator-details-action-btn">
+              <Link to={`/creator/creators/${creatorId}/reviews`} state={{ navTab }} className="fan-creator-details-action-btn">
                 <span className="fan-creator-details-action-icon-wrap">
                   <StarIcon />
                 </span>

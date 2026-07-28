@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { bookingAPI } from '../services/api';
 import FanNav from '../components/FanNav';
 import CreatorNav from '../components/CreatorNav';
@@ -32,7 +33,28 @@ function formatPrice(priceCents, currency = 'EUR') {
   return `${value} ${currency}`;
 }
 
+function canJoinBooking(booking) {
+  if (!booking) return false;
+  const status = (booking.status || '').toLowerCase();
+  if (status === 'completed' || status === 'no_show' || status === 'cancelled') return false;
+  if (!['paid', 'confirmed', 'in_progress'].includes(status)) return false;
+  const end = booking.endTime ? new Date(booking.endTime) : null;
+  if (end && !Number.isNaN(end.getTime()) && end <= new Date()) return false;
+  return true;
+}
+
+function sessionStatusLabel(t, booking) {
+  const s = (booking.status || '').toLowerCase();
+  if (s === 'no_show') return t('sessions.noShow');
+  if (s === 'paid') return t('sessions.paid');
+  if (s === 'confirmed') return t('sessions.confirmed');
+  if (s === 'in_progress') return t('sessions.inProgress');
+  if (s === 'completed') return t('sessions.completed');
+  return (booking.status || '').replace(/_/g, ' ');
+}
+
 export function FanSessionDetail() {
+  const { t } = useTranslation();
   const { bookingId } = useParams();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -85,10 +107,7 @@ export function FanSessionDetail() {
     navigate('/', { replace: true });
   };
 
-  const canJoin =
-    booking &&
-    (booking.status === 'paid' || booking.status === 'confirmed' || booking.status === 'in_progress') &&
-    booking.status !== 'completed';
+  const canJoin = canJoinBooking(booking);
 
   const handleJoinMeeting = () => {
     navigate(`/fan/bookings/${booking.id}/call`);
@@ -98,7 +117,7 @@ export function FanSessionDetail() {
 
   return (
     <div className="session-detail-page">
-      <FanNav active="home" user={user} onLogout={handleLogout} />
+      <FanNav active="fan" user={user} onLogout={handleLogout} />
       <main className="session-detail-main">
         <header className="session-detail-header">
           <Link to="/fan/bookings" className="session-detail-back" aria-label="Back to sessions">
@@ -149,13 +168,16 @@ export function FanSessionDetail() {
             <div className="session-detail-row">
               <span className="session-detail-label">Status</span>
               <span className={`session-detail-status session-detail-status--${booking.status}`}>
-                {booking.status.replace(/_/g, ' ')}
+                {sessionStatusLabel(t, booking)}
               </span>
             </div>
+            {booking.status === 'no_show' && (
+              <p className="session-detail-no-show-notice">{t('sessionDetail.noShowNoCharge')}</p>
+            )}
             {canJoin && (
               <div className="session-detail-actions">
                 <button type="button" className="btn-primary session-detail-join" onClick={handleJoinMeeting}>
-                  Join meeting
+                  {t('sessionDetail.joinMeeting')}
                 </button>
               </div>
             )}
@@ -167,6 +189,7 @@ export function FanSessionDetail() {
 }
 
 export function CreatorSessionDetail() {
+  const { t } = useTranslation();
   const { bookingId } = useParams();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -219,10 +242,7 @@ export function CreatorSessionDetail() {
     navigate('/', { replace: true });
   };
 
-  const canJoin =
-    booking &&
-    (booking.status === 'paid' || booking.status === 'confirmed' || booking.status === 'in_progress') &&
-    booking.status !== 'completed';
+  const canJoin = canJoinBooking(booking);
 
   const handleJoinMeeting = () => {
     navigate(`/creator/bookings/${booking.id}/call`);
@@ -232,7 +252,7 @@ export function CreatorSessionDetail() {
 
   return (
     <div className="session-detail-page">
-      <CreatorNav active="home" user={user} onLogout={handleLogout} />
+      <CreatorNav active="creator" user={user} onLogout={handleLogout} />
       <main className="session-detail-main">
         <header className="session-detail-header">
           <Link to="/creator/bookings" className="session-detail-back" aria-label="Back to sessions">
@@ -283,13 +303,16 @@ export function CreatorSessionDetail() {
             <div className="session-detail-row">
               <span className="session-detail-label">Status</span>
               <span className={`session-detail-status session-detail-status--${booking.status}`}>
-                {booking.status.replace(/_/g, ' ')}
+                {sessionStatusLabel(t, booking)}
               </span>
             </div>
+            {booking.status === 'no_show' && (
+              <p className="session-detail-no-show-notice">{t('sessionDetail.noShowNoCharge')}</p>
+            )}
             {canJoin && (
               <div className="session-detail-actions">
                 <button type="button" className="btn-primary session-detail-join" onClick={handleJoinMeeting}>
-                  Join meeting
+                  {t('sessionDetail.joinMeeting')}
                 </button>
               </div>
             )}

@@ -6,6 +6,7 @@ import { DEFAULT_AVATAR_URL } from '../constants';
 import FanNav from '../components/FanNav';
 import { SettingsIcon, KeyIcon, OutlinedUserIcon, OutgoingIcon, DeleteAccountIcon, BlockedIcon, PrivacyIcon } from '../components/ProfileIcons';
 import DeleteAccountDialog from '../components/DeleteAccountDialog';
+import { getPublicDisplayName } from '../utils/getPublicDisplayName';
 import './FanProfile.css';
 
 function FanProfile({ embedded, user: userProp, onLogout: onLogoutProp }) {
@@ -79,7 +80,7 @@ function FanProfile({ embedded, user: userProp, onLogout: onLogoutProp }) {
                 />
               </div>
               <div className="fan-profile-info">
-                <span className="fan-profile-username">{user.userName || t('home.fan')}</span>
+                <span className="fan-profile-username">{getPublicDisplayName(user, t('home.fan'))}</span>
                 <span className="fan-profile-email">{user.email || ''}</span>
               </div>
             </div>

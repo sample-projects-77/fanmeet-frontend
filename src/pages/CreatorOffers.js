@@ -7,11 +7,11 @@ import CreatorNav from '../components/CreatorNav';
 import LoadingSpinner from '../components/LoadingSpinner';
 import EmptyWidget from '../components/EmptyWidget';
 import ErrorWidget from '../components/ErrorWidget';
+import useCreatorPayoutStatus from '../hooks/useCreatorPayoutStatus';
 import {
   parseOfferSlotToUTC,
   formatUTCDateToLocalDay,
   formatUTCDateToLocalTime,
-  filterActiveOffers,
 } from '../utils/dateTimeUtils';
 import './CreatorOffers.css';
 
@@ -78,10 +78,15 @@ function CreatorOffers() {
   const [hasMore, setHasMore] = useState(true);
   const currentPageRef = useRef(1);
   const sentinelRef = useRef(null);
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  const isFetchingRef = useRef(false);
+  const {
+    canReceivePayments,
+    needsReconnect,
+    loading: payoutStatusLoading,
+    hasLoaded,
+    payoutLoading,
+    setupPayout,
+  } = useCreatorPayoutStatus(!!user?.id);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -107,6 +112,8 @@ function CreatorOffers() {
 
   const fetchOffers = useCallback(async (page = 1, isBackgroundRefresh = false) => {
     if (!user?.id) return;
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
     if (page === 1 && !isBackgroundRefresh) {
       setLoading(true);
       setError(null);
@@ -121,14 +128,48 @@ function CreatorOffers() {
         itemsPerPage: ITEMS_PER_PAGE,
         status: 'available',
       });
-      if (res.StatusCode === 200 && res.data) {
+      const ok =
+        (res.StatusCode === 200 || res.statusCode === 200) && res.data;
+      if (ok) {
         const newOffers = sortOffers(res.data.offers || []);
         const pag = res.data.pagination || null;
-        const totalPages = pag?.totalPages || pag?.pages || 1;
+        let totalPages = pag?.totalPages ?? pag?.pages;
+        if (typeof totalPages !== "number" || Number.isNaN(totalPages)) {
+          const ti = pag?.totalItems;
+          totalPages =
+            typeof ti === "number" && ti >= 0
+              ? ti === 0
+                ? 0
+                : Math.ceil(ti / ITEMS_PER_PAGE)
+              : (newOffers?.length || 0) === 0
+                ? 0
+                : 1;
+        }
+        const hasNext =
+          typeof pag?.hasNextPage === "boolean"
+            ? pag.hasNextPage
+            : page < totalPages;
 
         if (page === 1) {
-          setCached(CACHE_KEY, { offers: newOffers, pagination: pag });
-          setOffers(newOffers);
+          // During background refresh, don't replace existing offers with an empty list —
+          // the newly created offer may not yet be returned by the API (e.g. status lag).
+          if (isBackgroundRefresh && newOffers.length === 0) {
+            // Keep current state; skip cache update so stale injected offer stays visible.
+          } else if (isBackgroundRefresh) {
+            // Merge so a just-created (cache-injected) offer is not dropped if API omits it briefly
+            setOffers((prev) => {
+              const apiIds = new Set(newOffers.map((o) => o.id));
+              const merged = [
+                ...newOffers,
+                ...prev.filter((o) => o?.id && !apiIds.has(o.id)),
+              ];
+              setCached(CACHE_KEY, { offers: merged, pagination: pag });
+              return merged;
+            });
+          } else {
+            setCached(CACHE_KEY, { offers: newOffers, pagination: pag });
+            setOffers(newOffers);
+          }
         } else {
           setOffers((prev) => {
             const existingIds = new Set(prev.map((o) => o.id));
@@ -139,7 +180,7 @@ function CreatorOffers() {
           });
         }
 
-        setHasMore(page < totalPages && newOffers.length > 0);
+        setHasMore(Boolean(hasNext));
         currentPageRef.current = page;
       } else {
         if (page === 1 && !isBackgroundRefresh) {
@@ -155,6 +196,7 @@ function CreatorOffers() {
       }
       setHasMore(false);
     } finally {
+      isFetchingRef.current = false;
       setLoading(false);
       setLoadingMore(false);
     }
@@ -180,16 +222,16 @@ function CreatorOffers() {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loadingMore && !loading) {
+        if (entries[0].isIntersecting && hasMore && !isFetchingRef.current) {
           fetchOffers(currentPageRef.current + 1);
         }
       },
-      { rootMargin: '200px' }
+      { rootMargin: '0px' }
     );
 
     observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [hasMore, loadingMore, loading, fetchOffers]);
+  }, [hasMore, fetchOffers]);
 
   const handleLogout = () => {
     clearAllCached();
@@ -198,9 +240,13 @@ function CreatorOffers() {
     navigate('/', { replace: true });
   };
 
-  if (!user) return null;
+  const handleSetupPayoutClick = () => {
+    setupPayout({
+      error: t('profile.payoutSetupError'),
+    });
+  };
 
-  const activeOffers = filterActiveOffers(offers);
+  if (!user) return null;
 
   return (
     <div className="creator-offers-page">
@@ -216,11 +262,45 @@ function CreatorOffers() {
 
           <div className="creator-offers-divider" aria-hidden />
 
+          {hasLoaded && !canReceivePayments && (
+            <div className="creator-offers-payout-banner" role="status">
+              <p>
+                {needsReconnect
+                  ? t('availability.payoutReconnectMessage')
+                  : t('availability.payoutRequiredMessage')}
+              </p>
+              <p>
+                {t('availability.payoutRequiredHelpPrefix')}
+                <a
+                  href="https://wa.me/4915510206772"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="creator-offers-payout-whatsapp"
+                >
+                  {t('availability.payoutRequiredWhatsApp')}
+                </a>
+              </p>
+              <p>{t('availability.payoutRequiredHelpClosing')}</p>
+              <button
+                type="button"
+                className="creator-offers-payout-banner-link"
+                onClick={handleSetupPayoutClick}
+                disabled={payoutLoading}
+              >
+                {payoutLoading
+                  ? t('profile.payoutSetupLoading')
+                  : needsReconnect
+                    ? t('availability.payoutReconnectCta')
+                    : t('availability.payoutSetupCta')}
+              </button>
+            </div>
+          )}
+
           {error ? (
             <ErrorWidget errorText={error} onRetry={() => fetchOffers(1)} />
           ) : loading ? (
             <LoadingSpinner />
-          ) : activeOffers.length === 0 ? (
+          ) : offers.length === 0 ? (
             <EmptyWidget text={t('availability.noSlots')} />
           ) : (
             <>
@@ -235,7 +315,7 @@ function CreatorOffers() {
                     </tr>
                   </thead>
                   <tbody>
-                    {activeOffers.map((offer) => (
+                    {offers.map((offer) => (
                       <tr
                         key={offer.id}
                         className="creator-offers-row-clickable"
@@ -271,6 +351,8 @@ function CreatorOffers() {
               type="button"
               className="creator-offers-add-slot-button"
               onClick={() => navigate('/creator/offers/add-time-slot')}
+              disabled={!canReceivePayments || !hasLoaded || payoutStatusLoading}
+              title={!canReceivePayments ? t('availability.payoutRequiredMessage') : undefined}
             >
               {t('availability.addTimeSlot')}
             </button>

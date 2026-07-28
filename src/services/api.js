@@ -1,11 +1,16 @@
 import axios from 'axios';
+import {
+  clearAuthSession,
+  getAccessToken,
+  getRefreshToken,
+  saveAuthSession,
+} from '../utils/authStorage';
 
 // Get API URL from environment variable, default to localhost
 let API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 // Ensure the URL ends with /api if it doesn't already
 if (!API_BASE_URL.endsWith('/api')) {
-  // Remove trailing slash if present, then add /api
   API_BASE_URL = API_BASE_URL.replace(/\/$/, '') + '/api';
 }
 
@@ -17,17 +22,101 @@ const api = axios.create({
   },
 });
 
+let isRefreshing = false;
+let refreshQueue = [];
+
+function processRefreshQueue(error, token = null) {
+  refreshQueue.forEach(({ resolve, reject }) => {
+    if (error) reject(error);
+    else resolve(token);
+  });
+  refreshQueue = [];
+}
+
+function shouldSkipRefresh(url = '') {
+  const path = String(url);
+  return (
+    path.includes('/auth/refresh') ||
+    path.includes('/auth/login') ||
+    path.includes('/auth/fans/register') ||
+    path.includes('/auth/creators/register')
+  );
+}
+
+async function refreshAccessToken() {
+  const refreshToken = getRefreshToken();
+  if (!refreshToken) {
+    throw new Error('No refresh token available');
+  }
+
+  const response = await axios.post(`${API_BASE_URL}/auth/refresh`, { refreshToken });
+  const payload = response.data?.data;
+  if (response.data?.StatusCode !== 200 || !payload?.token || !payload?.refreshToken) {
+    throw new Error(response.data?.error || 'Failed to refresh session');
+  }
+
+  saveAuthSession({
+    token: payload.token,
+    refreshToken: payload.refreshToken,
+  });
+
+  return payload.token;
+}
+
 // Add token to requests if available
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = getAccessToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    if (typeof FormData !== 'undefined' && config.data instanceof FormData) {
+      if (config.headers && typeof config.headers.delete === 'function') {
+        config.headers.delete('Content-Type');
+      } else if (config.headers) {
+        delete config.headers['Content-Type'];
+      }
+    }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
+  (error) => Promise.reject(error)
+);
+
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    if (!originalRequest || originalRequest._retry || error.response?.status !== 401) {
+      return Promise.reject(error);
+    }
+    if (shouldSkipRefresh(originalRequest.url)) {
+      return Promise.reject(error);
+    }
+
+    if (isRefreshing) {
+      return new Promise((resolve, reject) => {
+        refreshQueue.push({ resolve, reject });
+      }).then((token) => {
+        originalRequest.headers.Authorization = `Bearer ${token}`;
+        return api(originalRequest);
+      });
+    }
+
+    originalRequest._retry = true;
+    isRefreshing = true;
+
+    try {
+      const newToken = await refreshAccessToken();
+      processRefreshQueue(null, newToken);
+      originalRequest.headers.Authorization = `Bearer ${newToken}`;
+      return api(originalRequest);
+    } catch (refreshError) {
+      processRefreshQueue(refreshError, null);
+      clearAuthSession();
+      return Promise.reject(refreshError);
+    } finally {
+      isRefreshing = false;
+    }
   }
 );
 
@@ -43,23 +132,27 @@ export const authAPI = {
     return response.data;
   },
 
+  refresh: async () => {
+    const refreshToken = getRefreshToken();
+    const response = await api.post('/auth/refresh', { refreshToken });
+    return response.data;
+  },
+
+  logout: async () => {
+    const refreshToken = getRefreshToken();
+    const response = await api.post('/auth/logout', { refreshToken });
+    return response.data;
+  },
+
   // Register Fan
   registerFan: async (formData) => {
-    const response = await api.post('/auth/fans/register', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    const response = await api.post('/auth/fans/register', formData);
     return response.data;
   },
 
   // Register Creator
   registerCreator: async (formData) => {
-    const response = await api.post('/auth/creators/register', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    const response = await api.post('/auth/creators/register', formData);
     return response.data;
   },
 
@@ -170,21 +263,13 @@ export const profileAPI = {
 
   // Update fan profile (multipart: userName, avatarUrl file)
   updateFanProfile: async (formData) => {
-    const response = await api.patch('/fans/me', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    const response = await api.patch('/fans/me', formData);
     return response.data;
   },
 
   // Update creator profile (multipart: userName, avatarUrl file)
   updateCreatorProfile: async (formData) => {
-    const response = await api.patch('/creators/me', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    const response = await api.patch('/creators/me', formData);
     return response.data;
   },
 
@@ -223,6 +308,12 @@ export const chatAPI = {
     const response = await api.post('/chat/individual', { otherUserId });
     return response.data;
   },
+  ensureIndividualChannelAccess: async (channelId) => {
+    const safeId = String(channelId);
+    const response = await api.post(`/chat/individual/${encodeURIComponent(safeId)}/access`);
+    return response.data;
+  },
+  /** Removes the chat from this user's list only (other member keeps full Stream history). */
   deleteIndividualChannel: async (channelId) => {
     const safeId = String(channelId);
     const response = await api.delete(`/chat/individual/${encodeURIComponent(safeId)}`);
@@ -336,7 +427,7 @@ export const bookingAPI = {
     const response = await api.get(`/bookings/${encodeURIComponent(id)}`);
     return response.data;
   },
-  confirmBooking: async (bookingId, { paymentProvider = 'stripe', paymentIntentId } = {}) => {
+  confirmBooking: async (bookingId, { paymentProvider = 'mollie', paymentIntentId } = {}) => {
     const id = String(bookingId).replace(/^booking_/, '');
     const response = await api.post(`/bookings/${encodeURIComponent(id)}/confirm`, {
       paymentProvider,
@@ -354,6 +445,16 @@ export const bookingAPI = {
     const response = await api.post(`/bookings/${encodeURIComponent(id)}/end`);
     return response.data;
   },
+  reportParticipation: async (bookingId) => {
+    const id = String(bookingId).replace(/^booking_/, '');
+    const response = await api.post(`/bookings/${encodeURIComponent(id)}/participation`);
+    return response.data;
+  },
+  finalizeNoShow: async (bookingId) => {
+    const id = String(bookingId).replace(/^booking_/, '');
+    const response = await api.post(`/bookings/${encodeURIComponent(id)}/finalize-no-show`);
+    return response.data;
+  },
   cancelBooking: async (bookingId, reason) => {
     const id = String(bookingId).replace(/^booking_/, '');
     const response = await api.post(`/bookings/${encodeURIComponent(id)}/cancel`, { reason });
@@ -361,10 +462,10 @@ export const bookingAPI = {
   },
 };
 
-// Payments – Stripe (requires auth; fan creates payment for booking)
+// Payments – Mollie (requires auth; fan creates payment for booking)
 export const paymentAPI = {
-  getStripePublishableKey: async () => {
-    const response = await api.get('/payments/stripe-key');
+  getPaymentConfig: async () => {
+    const response = await api.get('/payments/config');
     return response.data;
   },
   createPayment: async (bookingId) => {
@@ -379,7 +480,7 @@ export const paymentAPI = {
   },
 };
 
-// Connect – Stripe Connect onboarding for creators (payout setup)
+// Connect – Mollie Connect OAuth onboarding for creators (payout setup)
 export const connectAPI = {
   getOnboardingLink: async (body = {}) => {
     const response = await api.post('/connect/onboarding-link', body);
@@ -400,5 +501,3 @@ export const contactAPI = {
 };
 
 export default api;
-
-

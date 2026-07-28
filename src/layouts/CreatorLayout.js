@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate, Outlet } from 'react-router-dom';
 import CreatorNav from '../components/CreatorNav';
+import { authAPI } from '../services/api';
 import { clearAllCached } from '../utils/routeDataCache';
+import { clearAuthSession, hasAuthSession } from '../utils/authStorage';
 import { preloadCreatorData } from '../utils/prefetch';
+import { useChat } from '../context/ChatContext';
 import CreatorHome from '../pages/CreatorHome';
 import CreatorSearch from '../pages/CreatorSearch';
 import CreatorDashboard from '../pages/CreatorDashboard';
@@ -39,6 +42,7 @@ const TAB_COMPONENTS = {
 export default function CreatorLayout() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { disconnect } = useChat();
   const pathname = location.pathname;
 
   const [user, setUser] = useState(null);
@@ -52,9 +56,8 @@ export default function CreatorLayout() {
   const navActive = currentTabKey ? TAB_TO_NAV_ACTIVE[currentTabKey] : 'home';
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
     const userJson = localStorage.getItem('user');
-    if (!token || !userJson) {
+    if (!hasAuthSession() || !userJson) {
       navigate('/login', { replace: true });
       return;
     }
@@ -80,13 +83,20 @@ export default function CreatorLayout() {
   React.useLayoutEffect(() => {
     if (currentTabKey) {
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
     }
   }, [currentTabKey]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await authAPI.logout();
+    } catch (_) {
+      // ignore network/auth errors during logout
+    }
+    await disconnect();
     clearAllCached();
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    clearAuthSession();
     navigate('/', { replace: true });
   };
 

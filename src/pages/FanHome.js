@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { profileAPI } from '../services/api';
 import { getCached, setCached } from '../utils/routeDataCache';
 import { DEFAULT_AVATAR_URL } from '../constants';
+import { getPublicDisplayName } from '../utils/getPublicDisplayName';
 import FanNav from '../components/FanNav';
 import LoadingSpinner from '../components/LoadingSpinner';
 import EmptyWidget from '../components/EmptyWidget';
@@ -114,7 +115,7 @@ function FanHome({ embedded, user: userProp, onLogout: onLogoutProp }) {
 
   if (!user) return null;
 
-  const displayName = user?.userName ?? t('home.fan');
+  const displayName = getPublicDisplayName(user, t('home.fan'));
   const priceStr = (cents) => (cents != null ? `${(cents / 100).toFixed(0)} €` : '—');
   const durationStr = (durations) =>
     durations?.length ? `${Math.min(...durations)} ${t('common.min')}` : '—';
@@ -144,7 +145,7 @@ function FanHome({ embedded, user: userProp, onLogout: onLogoutProp }) {
                 <ul className="fan-home-creator-list" aria-label={t('home.popularCreators')}>
                   {creators.map((c) => (
                     <li key={c.id}>
-                      <Link to={`/fan/creators/${c.id}`} className="fan-creator-card">
+                      <Link to={`/fan/creators/${c.id}`} state={{ navTab: 'home' }} className="fan-creator-card">
                         <div className="fan-creator-avatar-wrap">
                           <img
                             src={c.avatarUrl || DEFAULT_AVATAR_URL}

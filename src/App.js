@@ -38,6 +38,7 @@ import { CreatorChatConversationWithProvider } from './components/ChatConversati
 import CreatorSearch from './pages/CreatorSearch';
 import CreatorChats from './pages/CreatorChats';
 import CreatorProfile from './pages/CreatorProfile';
+import CreatorPayoutGuide from './pages/CreatorPayoutGuide';
 import CreatorEditProfile from './pages/CreatorEditProfile';
 import CreatorCreatorProfile from './pages/CreatorCreatorProfile';
 import CreatorLayout from './layouts/CreatorLayout';
@@ -52,17 +53,18 @@ import './App.css';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
-  React.useEffect(() => {
-    // Disable browser's automatic scroll restoration so it doesn't
-    // override our manual scrollTo(0,0) after navigation.
-    if ('scrollRestoration' in window.history) {
-      window.history.scrollRestoration = 'manual';
-    }
-  }, []);
   // useLayoutEffect fires before the browser paints, so the user never
   // sees the new page rendered at the old scroll position.
   React.useLayoutEffect(() => {
+    // Disable browser's automatic scroll restoration on every navigation
+    // (not just once) so the browser never overrides our manual scroll.
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    // Fallback for Safari / older WebKit where scrollTo on window may be ignored
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
   }, [pathname]);
   return null;
 }
@@ -129,8 +131,11 @@ function App() {
             <Route path="profile/change-password" element={<CreatorProfileChangePassword />} />
             <Route path="profile/language" element={<CreatorProfileLanguage />} />
             <Route path="profile/blocked" element={<CreatorProfileBlocked />} />
+            <Route path="profile/payout-guide" element={<CreatorPayoutGuide />} />
             <Route path="reviews" element={<CreatorMyReviews />} />
             <Route path="bookings" element={<CreatorAllSessions />} />
+            <Route path="bookings/payment-return" element={<FanBookingPaymentReturn />} />
+            <Route path="bookings/:bookingId/pay" element={<FanBookingPayment />} />
             <Route path="bookings/:bookingId" element={<Navigate to="/creator/bookings" replace />} />
             <Route path="bookings/:bookingId/call" element={<CreatorVideoCall />} />
           </Route>

@@ -3,12 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { profileAPI } from '../services/api';
 import { getCached, setCached } from '../utils/routeDataCache';
+import { filterCreatorsExcludingSelf } from '../utils/filterCreatorsExcludingSelf';
 import { DEFAULT_AVATAR_URL } from '../constants';
 import CreatorNav from '../components/CreatorNav';
 import LoadingSpinner from '../components/LoadingSpinner';
 import EmptyWidget from '../components/EmptyWidget';
 import ErrorWidget from '../components/ErrorWidget';
 import './CreatorHome.css';
+import { getPublicDisplayName } from '../utils/getPublicDisplayName';
 import './CreatorSearch.css';
 
 const ITEMS_PER_PAGE = 20;
@@ -56,12 +58,13 @@ function CreatorHome({ embedded, user: userProp, onLogout: onLogoutProp }) {
     try {
       const res = await profileAPI.getCreators({ page, itemsPerPage: ITEMS_PER_PAGE });
       if (res.StatusCode === 200 && res.data) {
-        const list = res.data.creators || [];
+        const rawList = res.data.creators || [];
+        const list = filterCreatorsExcludingSelf(rawList, user);
         setCreators((prev) => (append ? [...prev, ...list] : list));
         const pagination = res.data.pagination || {};
         setHasNextPage(!!pagination.hasNextPage);
         setCurrentPage(pagination.currentPage ?? page);
-        if (!append) setCached(CACHE_KEY, { creators: list, pagination });
+        if (!append) setCached(CACHE_KEY, { creators: rawList, pagination });
       } else {
         if (!append) {
           setError(res.error || t('search.failedToLoad'));
@@ -80,13 +83,13 @@ function CreatorHome({ embedded, user: userProp, onLogout: onLogoutProp }) {
         setLoading(false);
       }
     }
-  }, [t]);
+  }, [t, user]);
 
   useEffect(() => {
     if (!user) return;
     const cached = getCached(CACHE_KEY);
     if (cached?.creators) {
-      setCreators(cached.creators);
+      setCreators(filterCreatorsExcludingSelf(cached.creators, user));
       setHasNextPage(!!cached.pagination?.hasNextPage);
       setCurrentPage(cached.pagination?.currentPage ?? 1);
       setLoading(false);
@@ -114,7 +117,7 @@ function CreatorHome({ embedded, user: userProp, onLogout: onLogoutProp }) {
 
   if (!user) return null;
 
-  const displayName = user?.userName ?? t('home.creator');
+  const displayName = getPublicDisplayName(user, t('home.creator'));
   const priceStr = (cents) => (cents != null ? `${(cents / 100).toFixed(0)} €` : '—');
   const durationStr = (durations) =>
     durations?.length ? `${Math.min(...durations)} ${t('common.min')}` : '—';
@@ -144,7 +147,7 @@ function CreatorHome({ embedded, user: userProp, onLogout: onLogoutProp }) {
                 <ul className="creator-home-creator-list" aria-label={t('home.popularCreators')}>
                   {creators.map((c) => (
                     <li key={c.id}>
-                      <Link to={`/creator/creators/${c.id}`} className="creator-search-creator-card">
+                      <Link to={`/creator/creators/${c.id}`} state={{ navTab: 'home' }} className="creator-search-creator-card">
                         <div className="creator-search-avatar-wrap">
                           <img
                             src={c.avatarUrl || DEFAULT_AVATAR_URL}

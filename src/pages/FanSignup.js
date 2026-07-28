@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Trans, useTranslation } from 'react-i18next';
 import { authAPI } from '../services/api';
+import { saveAuthSession } from '../utils/authStorage';
 import { ButtonLoadingSpinner } from '../components/LoadingSpinner';
 import './AuthForm.css';
 
@@ -65,8 +66,11 @@ function FanSignup() {
 
       const response = await authAPI.registerFan(submitData);
       if (response.StatusCode === 200 && response.data && !response.error) {
-        if (response.data.token) localStorage.setItem('token', response.data.token);
-        if (response.data.user) localStorage.setItem('user', JSON.stringify(response.data.user));
+        saveAuthSession({
+          token: response.data.token,
+          refreshToken: response.data.refreshToken,
+          user: response.data.user,
+        });
         navigate('/fan/home', { replace: true });
       } else {
         setError(response.error || response.message || t('auth.signupFailed'));
@@ -117,7 +121,7 @@ function FanSignup() {
               value={formData.email}
               onChange={handleChange}
               required
-              placeholder="fan@example.com"
+              placeholder={t('auth.emailExampleUser')}
               autoComplete="email"
             />
           </div>

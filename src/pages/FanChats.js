@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { chatAPI } from '../services/api';
 import { getCached, setCached, clearCached } from '../utils/routeDataCache';
@@ -30,6 +30,7 @@ const PHOTO_PLACEHOLDER_KEYS = ['photo', 'foto', 'image', 'bild'];
 
 function FanChats({ embedded, user: userProp, onLogout: onLogoutProp }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
   const { client, connect, disconnect, connecting } = useChat();
   const [userState, setUserState] = useState(null);
@@ -50,6 +51,7 @@ function FanChats({ embedded, user: userProp, onLogout: onLogoutProp }) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [channelToDelete, setChannelToDelete] = useState(null);
   const hasEnrichedNamesOnce = useRef(false);
+  const hasRequestedChatConnect = useRef(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -115,7 +117,9 @@ function FanChats({ embedded, user: userProp, onLogout: onLogoutProp }) {
 
   // Connect Stream client when on this page so we can fetch member names/avatars
   useEffect(() => {
-    if (!client && !connecting) connect();
+    if (client || connecting || hasRequestedChatConnect.current) return;
+    hasRequestedChatConnect.current = true;
+    connect();
   }, [client, connecting, connect]);
 
   // Enrich channel list with usernames and avatars from Stream (same source as conversation header).
@@ -148,7 +152,7 @@ function FanChats({ embedded, user: userProp, onLogout: onLogoutProp }) {
       .finally(() => {
         setNamesLoading(false);
       });
-  }, [client, channels]);
+  }, [client, channels, location.key]);
 
   const refetch = useCallback(async () => {
     setLoading(true);

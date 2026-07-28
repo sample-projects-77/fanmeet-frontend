@@ -1,6 +1,6 @@
-# FanMeet Frontend
+# Fan Session Frontend
 
-React.js frontend application for FanMeet platform.
+React.js frontend application for Fan Session platform.
 
 ## Features
 
@@ -37,7 +37,7 @@ The app will open at `http://localhost:3000`
 
 ## API Integration
 
-The frontend connects to the FanMeet backend API. Make sure the backend is running on port 5000 (or update the API URL in `.env`).
+The frontend connects to the Fan Session backend API. Make sure the backend is running on port 5000 (or update the API URL in `.env`).
 
 ### Available Endpoints Used:
 - `POST /api/auth/login` - User login

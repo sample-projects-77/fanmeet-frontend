@@ -12,6 +12,43 @@ import './AllSessions.css';
 
 const JOIN_ENABLE_MINUTES = 5;
 
+/** Bookings that can appear under Upcoming until the slot end time (rejoin while in_progress). */
+const UPCOMING_BOOKING_STATUSES = new Set(['paid', 'confirmed', 'in_progress']);
+
+function isUpcomingSlotBooking(b, now) {
+  const status = (b.status || '').toLowerCase();
+  if (status === 'no_show') return false;
+  if (!UPCOMING_BOOKING_STATUSES.has(status)) return false;
+  const start = new Date(b.startTime);
+  if (Number.isNaN(start.getTime())) return false;
+  const end = new Date(start.getTime() + (b.durationMinutes || 0) * 60 * 1000);
+  return end > now;
+}
+
+function upcomingStatusLabel(t, rawStatus) {
+  const s = (rawStatus || 'paid').toLowerCase();
+  if (s === 'paid') return t('sessions.paid');
+  if (s === 'confirmed') return t('sessions.confirmed');
+  if (s === 'in_progress') return t('sessions.inProgress');
+  return (rawStatus || 'paid').replace(/_/g, ' ');
+}
+
+function historyStatusLabel(t, session) {
+  const s = (session.status || '').toLowerCase();
+  if (s === 'no_show') {
+    const party = (session.noShowParty || '').toLowerCase();
+    if (party === 'creator') return t('sessions.noShowCreator');
+    if (party === 'fan') return t('sessions.noShowFan');
+    return t('sessions.noShow');
+  }
+  return (session.status || 'completed').replace(/_/g, ' ');
+}
+
+function isHistoryBooking(b) {
+  const status = (b.status || '').toLowerCase();
+  return status === 'completed' || status === 'no_show';
+}
+
 const CalendarIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
     <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
@@ -149,17 +186,8 @@ export function FanAllSessions() {
       }
       const allBookings = res.data.bookings || [];
       const now = new Date();
-      const upcomingList = allBookings.filter((b) => {
-        const status = (b.status || '').toLowerCase();
-        if (status !== 'paid') return false;
-        const start = new Date(b.startTime);
-        const end = new Date(start.getTime() + (b.durationMinutes || 0) * 60 * 1000);
-        return end > now;
-      });
-      const completedList = allBookings.filter((b) => {
-        const status = (b.status || '').toLowerCase();
-        return status === 'completed';
-      });
+      const upcomingList = allBookings.filter((b) => isUpcomingSlotBooking(b, now));
+      const completedList = allBookings.filter((b) => isHistoryBooking(b));
       setUpcoming(upcomingList);
       setCompleted(completedList);
     } catch (err) {
@@ -194,7 +222,7 @@ export function FanAllSessions() {
 
   return (
     <div className="all-sessions-page">
-      <FanNav active="home" user={user} onLogout={handleLogout} />
+      <FanNav active="fan" user={user} onLogout={handleLogout} />
       <main className="all-sessions-main">
         <header className="all-sessions-header">
           <Link to="/fan/home" className="all-sessions-back" aria-label={t('common.back')}>
@@ -236,15 +264,16 @@ export function FanAllSessions() {
           {!error && !loading && list.length > 0 && (
             <ul className="all-sessions-list" aria-label="Sessions">
               {list.map((session) => {
-                const countdown = activeTab === 'upcoming' ? getJoinCountdown(session.startTime, session.durationMinutes) : null;
+                const countdown = activeTab === 'upcoming' ? getJoinCountdown(session.startTime, session.durationMinutes, t) : null;
+                const statusKey = (session.status || (activeTab === 'upcoming' ? 'paid' : 'completed')).toLowerCase().replace(/\s+/g, '_');
                 return (
                   <li key={session.id}>
                     <div className="all-sessions-card">
                       <div className="all-sessions-card-inner">
                         <div className="all-sessions-card-top">
                           <span className="all-sessions-card-name">{session.creatorName}</span>
-                          <span className={`all-sessions-card-status all-sessions-card-status--${activeTab === 'upcoming' ? 'paid' : (session.status || 'completed')}`}>
-                            {activeTab === 'upcoming' ? t('sessions.paid') : (session.status || 'completed').replace(/_/g, ' ')}
+                          <span className={`all-sessions-card-status all-sessions-card-status--${statusKey}`}>
+                            {activeTab === 'upcoming' ? upcomingStatusLabel(t, session.status) : historyStatusLabel(t, session)}
                           </span>
                         </div>
                         <div className="all-sessions-card-row">
@@ -344,28 +373,58 @@ export function CreatorAllSessions() {
     setLoading(true);
     setError(null);
     try {
-      const res = await bookingAPI.getCreatorBookings({ page: 1, itemsPerPage: 100 });
-      if (res.StatusCode !== 200 || !res.data) {
-        setError(res.error || t('sessions.failedToLoad'));
+      // Host sessions = fans booked this creator. Guest = creator booked another creator.
+      // Fetch separately so a guest-API failure never hides the creator's own sessions.
+      let hostBookings = [];
+      let guestBookings = [];
+      let hostError = null;
+
+      try {
+        const hostRes = await bookingAPI.getCreatorBookings({ page: 1, itemsPerPage: 100 });
+        if (hostRes.StatusCode === 200 && hostRes.data) {
+          hostBookings = (hostRes.data.bookings || []).map((b) => ({
+            ...b,
+            _participantRole: 'host',
+          }));
+        } else {
+          hostError = hostRes.error || t('sessions.failedToLoad');
+        }
+      } catch (err) {
+        hostError = err.response?.data?.error || err.message || t('sessions.failedToLoad');
+      }
+
+      try {
+        const guestRes = await bookingAPI.getFanBookings({ page: 1, itemsPerPage: 100 });
+        if (guestRes.StatusCode === 200 && guestRes.data) {
+          guestBookings = (guestRes.data.bookings || []).map((b) => ({
+            ...b,
+            _participantRole: 'guest',
+          }));
+        }
+      } catch {
+        // Guest list is optional for creators; ignore failures.
+      }
+
+      if (hostError && hostBookings.length === 0 && guestBookings.length === 0) {
+        setError(hostError);
         setUpcoming([]);
         setCompleted([]);
         return;
       }
-      const allBookings = res.data.bookings || [];
+
+      const byId = new Map();
+      [...hostBookings, ...guestBookings].forEach((b) => {
+        const key = String(b.id || '');
+        if (!key) return;
+        if (!byId.has(key) || b._participantRole === 'host') {
+          byId.set(key, b);
+        }
+      });
+      const allBookings = Array.from(byId.values());
       const now = new Date();
-      const upcomingList = allBookings.filter((b) => {
-        const status = (b.status || '').toLowerCase();
-        if (status !== 'paid') return false;
-        const start = new Date(b.startTime);
-        const end = new Date(start.getTime() + (b.durationMinutes || 0) * 60 * 1000);
-        return end > now;
-      });
-      const completedList = allBookings.filter((b) => {
-        const status = (b.status || '').toLowerCase();
-        return status === 'completed';
-      });
-      setUpcoming(upcomingList);
-      setCompleted(completedList);
+      setUpcoming(allBookings.filter((b) => isUpcomingSlotBooking(b, now)));
+      setCompleted(allBookings.filter((b) => isHistoryBooking(b)));
+      setError(null);
     } catch (err) {
       setError(err.response?.data?.error || err.message || t('sessions.failedToLoad'));
       setUpcoming([]);
@@ -387,7 +446,13 @@ export function CreatorAllSessions() {
 
   const handleJoin = (session) => {
     const countdown = getJoinCountdown(session.startTime, session.durationMinutes, t);
-    if (countdown.canJoin) navigate(`/creator/bookings/${session.id}/call`);
+    if (!countdown.canJoin) return;
+    // Guest bookings (creator booked another creator) join as fan/participant
+    if (session._participantRole === 'guest') {
+      navigate(`/fan/bookings/${session.id}/call`);
+      return;
+    }
+    navigate(`/creator/bookings/${session.id}/call`);
   };
 
   if (!user) return null;
@@ -398,7 +463,7 @@ export function CreatorAllSessions() {
 
   return (
     <div className="all-sessions-page">
-      <CreatorNav active="home" user={user} onLogout={handleLogout} />
+      <CreatorNav active="creator" user={user} onLogout={handleLogout} />
       <main className="all-sessions-main">
         <header className="all-sessions-header">
           <Link to="/creator/dashboard" className="all-sessions-back" aria-label={t('common.back')}>
@@ -441,14 +506,15 @@ export function CreatorAllSessions() {
             <ul className="all-sessions-list" aria-label={t('sessions.ariaSessions')}>
               {list.map((session) => {
                 const countdown = activeTab === 'upcoming' ? getJoinCountdown(session.startTime, session.durationMinutes, t) : null;
+                const statusKey = (session.status || (activeTab === 'upcoming' ? 'paid' : 'completed')).toLowerCase().replace(/\s+/g, '_');
                 return (
                   <li key={session.id}>
                     <div className="all-sessions-card">
                       <div className="all-sessions-card-inner">
                         <div className="all-sessions-card-top">
                           <span className="all-sessions-card-name">{session.fanName}</span>
-                          <span className={`all-sessions-card-status all-sessions-card-status--${activeTab === 'upcoming' ? 'paid' : (session.status || 'completed')}`}>
-                            {activeTab === 'upcoming' ? t('sessions.paid') : (session.status || 'completed').replace(/_/g, ' ')}
+                          <span className={`all-sessions-card-status all-sessions-card-status--${statusKey}`}>
+                            {activeTab === 'upcoming' ? upcomingStatusLabel(t, session.status) : historyStatusLabel(t, session)}
                           </span>
                         </div>
                         <div className="all-sessions-card-row">

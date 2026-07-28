@@ -1,19 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { paymentAPI } from '../services/api';
 import FanNav from '../components/FanNav';
+import CreatorNav from '../components/CreatorNav';
+import LoadingSpinner from '../components/LoadingSpinner';
 import './FanBookingPaymentReturn.css';
 
 /**
- * Handles return from Stripe after confirmPayment redirect.
- * Stripe adds ?payment_intent_client_secret=...&redirect_status=succeeded|failed
+ * Handles return from Mollie checkout redirect.
+ * Mollie may append bookingId via redirectUrl configured on the backend.
  */
 function FanBookingPaymentReturn() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const [user, setUser] = useState(null);
-  const [status, setStatus] = useState(null);
+  const [status, setStatus] = useState('loading');
+
+  const isCreator =
+    location.pathname.startsWith('/creator/') ||
+    String(user?.role || '').toLowerCase() === 'creator';
+  const bookingsBase = isCreator ? '/creator/bookings' : '/fan/bookings';
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -30,39 +39,78 @@ function FanBookingPaymentReturn() {
   }, [navigate]);
 
   useEffect(() => {
-    const redirectStatus = searchParams.get('redirect_status');
-    if (redirectStatus === 'succeeded') {
-      setStatus('succeeded');
-    } else if (redirectStatus === 'failed' || redirectStatus === 'processing') {
-      setStatus(redirectStatus);
-    } else {
-      setStatus('unknown');
+    const bookingId = searchParams.get('bookingId');
+    if (!bookingId || !user) return;
+
+    let cancelled = false;
+
+    async function verifyPayment() {
+      try {
+        const res = await paymentAPI.getPaymentStatus(bookingId);
+        if (cancelled) return;
+
+        const paymentStatus = res.data?.status;
+        const paymentIntentStatus = res.data?.paymentIntentStatus;
+        const bookingStatus = res.data?.bookingStatus;
+
+        if (
+          paymentStatus === 'authorized' ||
+          paymentStatus === 'captured' ||
+          paymentIntentStatus === 'authorized' ||
+          paymentIntentStatus === 'paid' ||
+          bookingStatus === 'paid'
+        ) {
+          setStatus('succeeded');
+          return;
+        }
+
+        if (paymentStatus === 'failed' || paymentIntentStatus === 'failed' || paymentIntentStatus === 'expired') {
+          setStatus('failed');
+          return;
+        }
+
+        if (paymentStatus === 'cancelled' || paymentIntentStatus === 'canceled') {
+          setStatus('failed');
+          return;
+        }
+
+        setStatus('processing');
+      } catch {
+        if (!cancelled) setStatus('unknown');
+      }
     }
-  }, [searchParams]);
+
+    verifyPayment();
+    return () => { cancelled = true; };
+  }, [searchParams, user]);
 
   useEffect(() => {
-    if (status === null) return;
-    const t = setTimeout(() => {
-      navigate('/fan/bookings', { replace: true });
+    if (status === 'loading' || !user) return;
+    const timer = setTimeout(() => {
+      navigate(bookingsBase, { replace: true });
     }, 4000);
-    return () => clearTimeout(t);
-  }, [status, navigate]);
+    return () => clearTimeout(timer);
+  }, [status, navigate, bookingsBase, user]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/', { replace: true });
+  };
 
   if (!user) return null;
 
   return (
     <div className="fan-booking-payment-return-page">
-      <FanNav
-        active="bookings"
-        userName={user.userName}
-        onLogout={() => {
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          navigate('/', { replace: true });
-        }}
-      />
+      {isCreator ? (
+        <CreatorNav active="creator" user={user} onLogout={handleLogout} />
+      ) : (
+        <FanNav active="bookings" userName={user.userName} onLogout={handleLogout} />
+      )}
       <main className="fan-booking-payment-return-main">
         <div className="fan-booking-payment-return-container">
+          {status === 'loading' && <LoadingSpinner />}
+
           {status === 'succeeded' && (
             <>
               <div className="fan-booking-payment-return-icon success" aria-hidden>✓</div>
@@ -72,6 +120,7 @@ function FanBookingPaymentReturn() {
               </p>
             </>
           )}
+
           {status === 'failed' && (
             <>
               <div className="fan-booking-payment-return-icon failed" aria-hidden>✕</div>
@@ -81,6 +130,7 @@ function FanBookingPaymentReturn() {
               </p>
             </>
           )}
+
           {status === 'processing' && (
             <>
               <div className="fan-booking-payment-return-icon processing" aria-hidden>⋯</div>
@@ -90,6 +140,7 @@ function FanBookingPaymentReturn() {
               </p>
             </>
           )}
+
           {status === 'unknown' && (
             <>
               <h1 className="fan-booking-payment-return-title">{t('booking.bookingTitle')}</h1>
@@ -98,10 +149,13 @@ function FanBookingPaymentReturn() {
               </p>
             </>
           )}
-          <Link to="/fan/bookings" className="fan-booking-payment-return-link">
+
+          <Link to={bookingsBase} className="fan-booking-payment-return-link">
             {t('booking.goToMyBookings')}
           </Link>
-          <p className="fan-booking-payment-return-redirect">{t('booking.redirecting')}</p>
+          {status !== 'loading' && (
+            <p className="fan-booking-payment-return-redirect">{t('booking.redirecting')}</p>
+          )}
         </div>
       </main>
     </div>
@@ -109,4 +163,3 @@ function FanBookingPaymentReturn() {
 }
 
 export default FanBookingPaymentReturn;
-

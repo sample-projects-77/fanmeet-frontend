@@ -45,17 +45,17 @@ function CustomEditMessageForm() {
   const hasContent = text && text.trim().length > 0;
 
   return (
-    <form autoComplete="off" className="str-chat__edit-message-form fanmeet-edit-message-form" onSubmit={handleSubmit}>
-      <div className="fanmeet-edit-message-banner">
-        <span className="fanmeet-edit-message-banner-icon">✎</span>
-        <span className="fanmeet-edit-message-banner-text">{tApp('chat.editingMessage')}</span>
+    <form autoComplete="off" className="str-chat__edit-message-form fansession-edit-message-form" onSubmit={handleSubmit}>
+      <div className="fansession-edit-message-banner">
+        <span className="fansession-edit-message-banner-icon">✎</span>
+        <span className="fansession-edit-message-banner-text">{tApp('chat.editingMessage')}</span>
       </div>
       <MessageInputFlat />
-      <div className="fanmeet-edit-message-actions">
-        <button type="button" className="fanmeet-edit-message-cancel" onClick={cancel}>
+      <div className="fansession-edit-message-actions">
+        <button type="button" className="fansession-edit-message-cancel" onClick={cancel}>
           {tApp('chat.cancelEdit')}
         </button>
-        <button type="submit" className="fanmeet-edit-message-update" disabled={!hasContent}>
+        <button type="submit" className="fansession-edit-message-update" disabled={!hasContent}>
           {tApp('chat.updateMessage')}
         </button>
       </div>
@@ -111,7 +111,7 @@ function formatDateForSeparator(date) {
 /** Date separator: Flutter-style pill – "Feb 16", "Feb 18", "Today", "Friday" */
 function CustomDateSeparator(props) {
   return (
-    <div className="fanmeet-date-separator-pill">
+    <div className="fansession-date-separator-pill">
       <DateSeparator {...props} formatDate={formatDateForSeparator} position="center" />
     </div>
   );
@@ -122,24 +122,52 @@ function CustomMessageTimestamp(props) {
   return <MessageTimestamp {...props} calendar={false} format="h:mm A" />;
 }
 
-/** Copy text to clipboard; works on mobile (Clipboard API + execCommand fallback) */
-function copyToClipboard(text) {
-  if (!text) return;
-  if (navigator.clipboard?.writeText) {
-    navigator.clipboard.writeText(text).catch(() => {
-      fallbackCopy(text);
-    });
-    return;
+/** Plain text to copy from a Stream message (body or stripped HTML). */
+function getMessageTextForCopy(message) {
+  if (!message) return '';
+  const raw = message.text;
+  if (raw != null && String(raw).trim() !== '') return String(raw);
+  if (message.html && typeof message.html === 'string') {
+    try {
+      const div = document.createElement('div');
+      div.innerHTML = message.html;
+      const plain = (div.textContent || div.innerText || '').trim();
+      if (plain) return plain;
+    } catch {
+      /* ignore */
+    }
   }
-  fallbackCopy(text);
+  return '';
 }
+
+/**
+ * Copy to clipboard. Must be awaited before closing menus/dialogs — otherwise the
+ * async Clipboard API runs after the user gesture ends and the write is blocked.
+ */
+async function copyToClipboard(text) {
+  if (text == null || String(text) === '') return;
+  const str = String(text);
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(str);
+      return;
+    }
+  } catch {
+    /* fall through */
+  }
+  fallbackCopy(str);
+}
+
 function fallbackCopy(text) {
-  if (!document.queryCommandSupported?.('copy')) return;
   const el = document.createElement('textarea');
   el.value = text;
-  el.style.cssText = 'position:fixed;left:-9999px;top:0;';
+  el.setAttribute('readonly', '');
+  el.style.cssText =
+    'position:fixed;top:0;left:0;opacity:0;width:2px;height:2px;padding:0;border:none;outline:none;';
   document.body.appendChild(el);
+  el.focus();
   el.select();
+  el.setSelectionRange(0, text.length);
   try {
     document.execCommand('copy');
   } finally {
@@ -148,10 +176,7 @@ function fallbackCopy(text) {
 }
 
 const CUSTOM_MESSAGE_ACTIONS = {
-  'Copy Message': (message) => {
-    const text = message?.text || '';
-    copyToClipboard(text);
-  },
+  'Copy Message': (message) => copyToClipboard(getMessageTextForCopy(message)),
 };
 
 /**
@@ -209,7 +234,7 @@ function CombinedMessageOptions() {
   useEffect(() => {
     const row = buttonRef.current?.closest('li') || buttonRef.current?.closest('.str-chat__message') || buttonRef.current?.closest('[class*="virtual-list-message"]');
     if (!row) return;
-    const className = 'fanmeet-message-menu-open';
+    const className = 'fansession-message-menu-open';
     if (isOpen) {
       row.classList.add(className);
     } else {
@@ -222,7 +247,7 @@ function CombinedMessageOptions() {
   useEffect(() => {
     if (!isOpen) return;
     const scrollY = window.scrollY;
-    document.body.classList.add('fanmeet-message-menu-open');
+    document.body.classList.add('fansession-message-menu-open');
     document.body.style.overflow = 'hidden';
     document.body.style.touchAction = 'none';
     document.body.style.position = 'fixed';
@@ -230,7 +255,7 @@ function CombinedMessageOptions() {
     document.body.style.left = '0';
     document.body.style.right = '0';
     return () => {
-      document.body.classList.remove('fanmeet-message-menu-open');
+      document.body.classList.remove('fansession-message-menu-open');
       document.body.style.overflow = '';
       document.body.style.touchAction = '';
       document.body.style.position = '';
@@ -274,22 +299,22 @@ function CombinedMessageOptions() {
       >
         <>
           <div
-            className="fanmeet-message-menu-backdrop"
+            className="fansession-message-menu-backdrop"
             onClick={() => dialog?.close()}
             onKeyDown={(e) => e.key === 'Escape' && dialog?.close()}
             role="presentation"
             aria-hidden
           />
-          <div className={`fanmeet-combined-message-menu ${placement === 'bottom-end' ? 'fanmeet-combined-message-menu--below' : ''}`}>
+          <div className={`fansession-combined-message-menu ${placement === 'bottom-end' ? 'fansession-combined-message-menu--below' : ''}`}>
           {placement === 'bottom-end' ? (
             <>
-              <div className="fanmeet-message-actions-list">
+              <div className="fansession-message-actions-list">
                 {customMessageActions?.['Copy Message'] && (
                   <button
                     type="button"
-                    className="fanmeet-message-action"
-                    onClick={() => {
-                      customMessageActions['Copy Message'](message);
+                    className="fansession-message-action"
+                    onClick={async () => {
+                      await customMessageActions['Copy Message']?.(message);
                       close();
                     }}
                   >
@@ -297,31 +322,31 @@ function CombinedMessageOptions() {
                   </button>
                 )}
                 {hasEdit && (
-                  <button type="button" className="fanmeet-message-action" onClick={() => { setEditingState?.(); close(); }}>
+                  <button type="button" className="fansession-message-action" onClick={() => { setEditingState?.(); close(); }}>
                     {tApp('chat.editMessage')}
                   </button>
                 )}
                 {hasPin && !message.parent_id && (
-                  <button type="button" className="fanmeet-message-action" onClick={(e) => { handlePin?.(e); close(); }}>
+                  <button type="button" className="fansession-message-action" onClick={(e) => { handlePin?.(e); close(); }}>
                     {message.pinned ? tApp('chat.unpin') : tApp('chat.pinToConversation')}
                   </button>
                 )}
                 {hasDelete && (
                   <button
                     type="button"
-                    className="fanmeet-message-action fanmeet-message-action--delete"
+                    className="fansession-message-action fansession-message-action--delete"
                     onClick={(e) => { handleDelete?.(e); close(); }}
                   >
                     {tApp('chat.deleteMessage')}
                   </button>
                 )}
               </div>
-              <div className="fanmeet-reaction-strip fanmeet-reaction-strip--below">
+              <div className="fansession-reaction-strip fansession-reaction-strip--below">
                 {CHAT_REACTION_OPTIONS.map(({ type, Component }) => (
                   <button
                     key={type}
                     type="button"
-                    className="fanmeet-reaction-option"
+                    className="fansession-reaction-option"
                     onClick={(e) => {
                       handleReaction?.(type, e);
                       close();
@@ -335,12 +360,12 @@ function CombinedMessageOptions() {
             </>
           ) : (
             <>
-              <div className="fanmeet-reaction-strip">
+              <div className="fansession-reaction-strip">
                 {CHAT_REACTION_OPTIONS.map(({ type, Component }) => (
                   <button
                     key={type}
                     type="button"
-                    className="fanmeet-reaction-option"
+                    className="fansession-reaction-option"
                     onClick={(e) => {
                       handleReaction?.(type, e);
                       close();
@@ -351,13 +376,13 @@ function CombinedMessageOptions() {
                   </button>
                 ))}
               </div>
-              <div className="fanmeet-message-actions-list">
+              <div className="fansession-message-actions-list">
                 {customMessageActions?.['Copy Message'] && (
                   <button
                     type="button"
-                    className="fanmeet-message-action"
-                    onClick={() => {
-                      customMessageActions['Copy Message'](message);
+                    className="fansession-message-action"
+                    onClick={async () => {
+                      await customMessageActions['Copy Message']?.(message);
                       close();
                     }}
                   >
@@ -365,19 +390,19 @@ function CombinedMessageOptions() {
                   </button>
                 )}
                 {hasEdit && (
-                  <button type="button" className="fanmeet-message-action" onClick={() => { setEditingState?.(); close(); }}>
+                  <button type="button" className="fansession-message-action" onClick={() => { setEditingState?.(); close(); }}>
                     {tApp('chat.editMessage')}
                   </button>
                 )}
                 {hasPin && !message.parent_id && (
-                  <button type="button" className="fanmeet-message-action" onClick={(e) => { handlePin?.(e); close(); }}>
+                  <button type="button" className="fansession-message-action" onClick={(e) => { handlePin?.(e); close(); }}>
                     {message.pinned ? tApp('chat.unpin') : tApp('chat.pinToConversation')}
                   </button>
                 )}
                 {hasDelete && (
                   <button
                     type="button"
-                    className="fanmeet-message-action fanmeet-message-action--delete"
+                    className="fansession-message-action fansession-message-action--delete"
                     onClick={(e) => { handleDelete?.(e); close(); }}
                   >
                     {tApp('chat.deleteMessage')}
@@ -408,6 +433,7 @@ function CombinedMessageOptions() {
 }
 
 import { useChat } from '../context/ChatContext';
+import { chatAPI } from '../services/api';
 import { DEFAULT_AVATAR_URL } from '../constants';
 import LoadingSpinner from './LoadingSpinner';
 import './ChatConversation.css';
@@ -537,7 +563,7 @@ function scrollMessageInputIntoView() {
   }
 }
 
-function ChatContent({ channelId, backTo, backLabel, NavComponent }) {
+function ChatContent({ channelId, backTo, backLabel, NavComponent, onReconnect }) {
   const { client } = useChatContext();
   const [channel, setChannel] = useState(null);
   const [loadError, setLoadError] = useState(null);
@@ -545,10 +571,122 @@ function ChatContent({ channelId, backTo, backLabel, NavComponent }) {
 
   useEffect(() => {
     if (!client || !channelId) return;
-    const c = client.channel('messaging', channelId);
-    setChannel(c);
+    let cancelled = false;
+    const c = client.channel("messaging", channelId);
     setLoadError(null);
-  }, [client, channelId]);
+
+    (async () => {
+      try {
+        const accessRes = await chatAPI.ensureIndividualChannelAccess(channelId);
+        if (cancelled) return;
+        if (accessRes.StatusCode !== 200) {
+          setLoadError(
+            accessRes.error ||
+            tApp("chats.failedToLoad") ||
+            "You are not authorized for this chat."
+          );
+          setChannel(null);
+          return;
+        }
+
+        await c.watch();
+        if (cancelled) return;
+        setChannel(c);
+      } catch (err) {
+        if (cancelled) return;
+        const status = err?.status || err?.response?.status || null;
+        if (status === 401 || status === 403) {
+          if (typeof onReconnect === 'function') {
+            const refreshedClient = await onReconnect();
+            if (cancelled) return;
+            if (refreshedClient) {
+              try {
+                await chatAPI.ensureIndividualChannelAccess(channelId);
+                await c.watch();
+                if (cancelled) return;
+                setChannel(c);
+                return;
+              } catch (retryErr) {
+                if (cancelled) return;
+                setLoadError(
+                  retryErr?.response?.data?.error ||
+                  retryErr?.message ||
+                  tApp("chats.failedToLoad") ||
+                  "You are not authorized for this chat."
+                );
+                setChannel(null);
+                return;
+              }
+            }
+          }
+          setLoadError(tApp("chats.failedToLoad") || "You are not authorized for this chat.");
+        } else {
+          setLoadError(
+            err?.response?.data?.error ||
+            err?.message ||
+            tApp("chats.failedToLoad") ||
+            "Failed to load chat."
+          );
+        }
+        setChannel(null);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [client, channelId, tApp, onReconnect]);
+
+  /* When returning to the tab, re-watch so member avatars/names match GetStream (e.g. after the other user updates their profile). */
+  useEffect(() => {
+    if (!channel) return;
+    const onVisibility = () => {
+      if (document.visibilityState !== 'visible') return;
+      channel.watch().catch(() => {});
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => document.removeEventListener('visibilitychange', onVisibility);
+  }, [channel]);
+
+  /* If a send fails with auth error (expired token / stale socket), reconnect and re-watch. */
+  useEffect(() => {
+    if (!channel || typeof onReconnect !== 'function') return;
+
+    let recovering = false;
+    const onMessageUpdated = async (event) => {
+      const msg = event?.message;
+      if (!msg || msg.status !== 'failed' || recovering) return;
+
+      const errorMessage = String(
+        msg.error?.message || msg.error?.Message || ''
+      ).toLowerCase();
+      const errorCode = msg.error?.code ?? msg.error?.status ?? msg.error?.StatusCode;
+
+      const isAuthError =
+        errorCode === 401 ||
+        errorCode === 403 ||
+        errorMessage.includes('not authorized') ||
+        errorMessage.includes('nicht autorisiert') ||
+        errorMessage.includes('unauthorized');
+
+      if (!isAuthError) return;
+
+      recovering = true;
+      try {
+        await onReconnect();
+        await channel.watch();
+      } catch {
+        /* user can retry the failed message after reconnect */
+      } finally {
+        recovering = false;
+      }
+    };
+
+    channel.on('message.updated', onMessageUpdated);
+    return () => {
+      channel.off('message.updated', onMessageUpdated);
+    };
+  }, [channel, onReconnect]);
 
   /* Mobile: when keyboard opens (visualViewport shrinks), keep input above keyboard. Must be before any early return so hook count is stable. */
   useEffect(() => {
@@ -618,10 +756,11 @@ const KEYBOARD_OPEN_THRESHOLD = 0.85; /* viewport height shrinks when keyboard o
 function ChatConversation({ backTo, backLabel, NavComponent }) {
   const { channelId } = useParams();
   const navigate = useNavigate();
-  const { client, connecting, error, connect, disconnect, isReady } = useChat();
+  const { client, connecting, error, connect, reconnect, disconnect, isReady } = useChat();
   const [user, setUser] = useState(null);
   const streamRef = useRef(null);
   const mainRef = useRef(null);
+  const hasRequestedChatConnect = useRef(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -638,7 +777,9 @@ function ChatConversation({ backTo, backLabel, NavComponent }) {
   }, [navigate]);
 
   useEffect(() => {
-    if (!client && !connecting) connect();
+    if (client || connecting || hasRequestedChatConnect.current) return;
+    hasRequestedChatConnect.current = true;
+    connect();
   }, [client, connecting, connect]);
 
   /* Mobile: tap on message bubble opens options menu (three-dots hidden by CSS on small screens).
@@ -712,7 +853,7 @@ function ChatConversation({ backTo, backLabel, NavComponent }) {
         main.style.height = `${vv.height}px`;
         main.style.overflow = 'hidden';
         main.style.zIndex = '10';
-        document.body.classList.add('fanmeet-chat-keyboard-open');
+        document.body.classList.add('fansession-chat-keyboard-open');
       } else {
         main.style.position = '';
         main.style.top = '';
@@ -722,7 +863,7 @@ function ChatConversation({ backTo, backLabel, NavComponent }) {
         main.style.height = '';
         main.style.overflow = '';
         main.style.zIndex = '';
-        document.body.classList.remove('fanmeet-chat-keyboard-open');
+        document.body.classList.remove('fansession-chat-keyboard-open');
       }
     };
 
@@ -741,7 +882,7 @@ function ChatConversation({ backTo, backLabel, NavComponent }) {
       main.style.height = '';
       main.style.overflow = '';
       main.style.zIndex = '';
-      document.body.classList.remove('fanmeet-chat-keyboard-open');
+      document.body.classList.remove('fansession-chat-keyboard-open');
     };
   }, [isReady]);
 
@@ -816,6 +957,7 @@ function ChatConversation({ backTo, backLabel, NavComponent }) {
                 channelId={channelId}
                 backTo={backTo}
                 backLabel={backLabel}
+                onReconnect={reconnect}
               />
             </Chat>
           </div>

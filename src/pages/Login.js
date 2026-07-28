@@ -4,7 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { authAPI } from '../services/api';
 import { setAppLanguage, SUPPORTED } from '../i18n';
 import { clearAllCached } from '../utils/routeDataCache';
+import { saveAuthSession } from '../utils/authStorage';
 import { ButtonLoadingSpinner } from '../components/LoadingSpinner';
+import { useChat } from '../context/ChatContext';
 import './AuthForm.css';
 
 let isSubmitting = false;
@@ -12,6 +14,7 @@ let isSubmitting = false;
 const Login = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { disconnect } = useChat();
 
   useEffect(() => {
     clearAllCached();
@@ -20,7 +23,7 @@ const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    role: 'fan',
+    role: 'creator',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -38,14 +41,16 @@ const Login = () => {
     setError('');
     setLoading(true);
     try {
+      await disconnect();
       const response = await authAPI.login(formData.email, formData.password, formData.role);
       if (response.StatusCode === 200 && response.data && !response.error) {
-        if (response.data.token) localStorage.setItem('token', response.data.token);
-        if (response.data.user) {
-          localStorage.setItem('user', JSON.stringify(response.data.user));
-          const lang = response.data.user.language;
-          if (lang && SUPPORTED.includes(lang)) setAppLanguage(lang, true);
-        }
+        saveAuthSession({
+          token: response.data.token,
+          refreshToken: response.data.refreshToken,
+          user: response.data.user,
+        });
+        const lang = response.data.user?.language;
+        if (lang && SUPPORTED.includes(lang)) setAppLanguage(lang, true);
         const role = response.data.user?.role || formData.role;
         navigate(role === 'creator' ? '/creator/home' : '/fan/home', { replace: true });
       } else {
@@ -72,7 +77,7 @@ const Login = () => {
       </header>
       <div className="auth-body">
         <div className="auth-logo-wrap">
-          <img src={`${process.env.PUBLIC_URL || ''}/logo.png`} alt="FanMeet" className="auth-logo" />
+          <img src={`${process.env.PUBLIC_URL || ''}/logo.png`} alt="Fan Session" className="auth-logo" />
         </div>
         <h1 className="auth-heading">{t('auth.welcomeBack')}</h1>
         <p className="auth-subtitle">{t('auth.signInSubtitle')}</p>
@@ -83,17 +88,17 @@ const Login = () => {
             <div className="auth-role-selector">
               <button
                 type="button"
-                className={`auth-role-btn ${formData.role === 'fan' ? 'active' : ''}`}
-                onClick={() => setFormData({ ...formData, role: 'fan' })}
-              >
-                {t('auth.fan')}
-              </button>
-              <button
-                type="button"
                 className={`auth-role-btn ${formData.role === 'creator' ? 'active' : ''}`}
                 onClick={() => setFormData({ ...formData, role: 'creator' })}
               >
                 {t('auth.creator')}
+              </button>
+              <button
+                type="button"
+                className={`auth-role-btn ${formData.role === 'fan' ? 'active' : ''}`}
+                onClick={() => setFormData({ ...formData, role: 'fan' })}
+              >
+                {t('auth.fan')}
               </button>
             </div>
           </div>

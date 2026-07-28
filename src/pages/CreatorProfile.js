@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { authAPI, profileAPI, connectAPI } from '../services/api';
+import { authAPI, profileAPI } from '../services/api';
 import { getCached, setCached } from '../utils/routeDataCache';
 import { DEFAULT_AVATAR_URL } from '../constants';
 import CreatorNav from '../components/CreatorNav';
-import { SettingsIcon, KeyIcon, OutlinedUserIcon, OutgoingIcon, DeleteAccountIcon, BlockedIcon, PayoutIcon, PrivacyIcon } from '../components/ProfileIcons';
+import { SettingsIcon, KeyIcon, OutlinedUserIcon, OutgoingIcon, DeleteAccountIcon, BlockedIcon, PayoutIcon, PrivacyIcon, GuideIcon } from '../components/ProfileIcons';
 import DeleteAccountDialog from '../components/DeleteAccountDialog';
+import { getPublicDisplayName } from '../utils/getPublicDisplayName';
+import useCreatorPayoutStatus from '../hooks/useCreatorPayoutStatus';
 import './FanProfile.css';
 
 function CreatorProfile({ embedded, user: userProp, onLogout: onLogoutProp }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [userState, setUserState] = useState(null);
   const user = embedded ? userProp : userState;
   const handleLogout = embedded ? onLogoutProp : () => {
@@ -22,8 +26,22 @@ function CreatorProfile({ embedded, user: userProp, onLogout: onLogoutProp }) {
   const [profile, setProfile] = useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [payoutLoading, setPayoutLoading] = useState(false);
-  const [connectStatus, setConnectStatus] = useState(null);
+  const {
+    connectStatus,
+    loading: connectStatusLoading,
+    payoutLoading,
+    setupPayout,
+    needsReconnect,
+    refresh: refreshConnectStatus,
+  } = useCreatorPayoutStatus(!!user?.id);
+
+  // Profile tab stays mounted in CreatorLayout — refresh when it becomes visible again.
+  const isProfileVisible = !embedded || location.pathname === '/creator/profile';
+  useEffect(() => {
+    if (isProfileVisible && user?.id) {
+      refreshConnectStatus();
+    }
+  }, [isProfileVisible, user?.id, refreshConnectStatus]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -60,36 +78,30 @@ function CreatorProfile({ embedded, user: userProp, onLogout: onLogoutProp }) {
     fetchProfile();
   }, [user?.id]);
 
-  const fetchConnectStatus = async () => {
-    if (!user?.id) return;
-    try {
-      const res = await connectAPI.getConnectStatus();
-      if (res.StatusCode === 200 && res.data) setConnectStatus(res.data);
-    } catch {
-      // ignore
-    }
-  };
-
   useEffect(() => {
-    fetchConnectStatus();
-  }, [user?.id]);
+    const mollieConnect = searchParams.get('mollieConnect');
+    if (!mollieConnect) return;
 
-  const handleSetupPayout = async () => {
-    setPayoutLoading(true);
-    try {
-      const returnUrl = window.location.origin + '/creator/profile';
-      const refreshUrl = window.location.origin + '/creator/profile';
-      const res = await connectAPI.getOnboardingLink({ returnUrl, refreshUrl });
-      if (res.StatusCode === 200 && res.data?.url) {
-        window.location.href = res.data.url;
-        return;
-      }
-      alert(res.error || t('profile.payoutSetupError') || 'Could not open payout setup.');
-    } catch (err) {
-      alert(err.response?.data?.error || err.message || 'Could not open payout setup.');
-    } finally {
-      setPayoutLoading(false);
+    if (mollieConnect === 'success') {
+      refreshConnectStatus();
+      alert(t('profile.payoutSetupComplete') || 'Payout setup completed. You can now receive bookings.');
+    } else if (mollieConnect === 'pending') {
+      refreshConnectStatus();
+      alert(t('profile.payoutSetupPending') || 'Mollie account linked. Complete verification in Mollie to receive payouts.');
+    } else if (mollieConnect === 'error') {
+      const message = searchParams.get('message');
+      alert(message || t('profile.payoutSetupError') || 'Payout setup failed.');
     }
+
+    searchParams.delete('mollieConnect');
+    searchParams.delete('message');
+    setSearchParams(searchParams, { replace: true });
+  }, [searchParams, setSearchParams, t, refreshConnectStatus]);
+
+  const handleSetupPayout = () => {
+    setupPayout({
+      error: t('profile.payoutSetupError') || 'Could not open payout setup.',
+    });
   };
 
   const handleDeleteAccountClick = () => {
@@ -119,7 +131,11 @@ function CreatorProfile({ embedded, user: userProp, onLogout: onLogoutProp }) {
 
   if (!user) return null;
 
-  const displayName = profile?.displayName || profile?.userName || user.userName || t('home.creator');
+  const displayName = getPublicDisplayName(
+    user,
+    t('home.creator'),
+    profile?.displayName || profile?.userName
+  );
   const avatarUrl = profile?.avatarUrl || user.avatarUrl;
 
   return (
@@ -171,21 +187,35 @@ function CreatorProfile({ embedded, user: userProp, onLogout: onLogoutProp }) {
               <span className="fan-profile-setting-label">{t('profile.blockedUsers')}</span>
               <span className="fan-profile-setting-arrow">›</span>
             </Link>
+            <Link to="/creator/profile/payout-guide" className="fan-profile-setting-row">
+              <span className="fan-profile-setting-icon fan-profile-setting-icon--yellow">
+                <GuideIcon />
+              </span>
+              <span className="fan-profile-setting-label">{t('payoutGuide.menuLabel')}</span>
+              <span className="fan-profile-setting-arrow">›</span>
+            </Link>
             <button
               type="button"
               className="fan-profile-setting-row fan-profile-setting-row--button"
               onClick={handleSetupPayout}
-              disabled={payoutLoading}
+              disabled={payoutLoading || connectStatus?.devBypass}
+              title={connectStatus?.devBypass ? (connectStatus.message || 'Local dev: Mollie onboarding bypassed') : undefined}
             >
               <span className="fan-profile-setting-icon fan-profile-setting-icon--green">
                 <PayoutIcon />
               </span>
               <span className="fan-profile-setting-label">
-                {connectStatus?.canReceivePayments
+                {connectStatus?.devBypass
+                  ? (t('profile.payoutsDevBypass') || 'Payouts (dev bypass)')
+                  : connectStatus?.canReceivePayments
                   ? (t('profile.payoutsConnected') || 'Payouts connected')
-                  : payoutLoading
+                  : connectStatusLoading || payoutLoading
                     ? (t('profile.payoutSetupLoading') || 'Loading...')
-                    : (t('profile.setupPayout') || 'Setup payout')}
+                    : needsReconnect
+                      ? (t('profile.reconnectPayout') || 'Reconnect Mollie')
+                    : connectStatus?.onboarded
+                      ? (t('profile.payoutSetupPending') || 'Complete Mollie verification')
+                      : (t('profile.setupPayout') || 'Setup payout')}
               </span>
               <span className="fan-profile-setting-arrow">›</span>
             </button>

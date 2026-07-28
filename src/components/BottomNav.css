@@ -71,10 +71,27 @@
   }
 
   .bottom-nav-label {
+    min-width: 0;
+    width: 100%;
+    text-align: center;
+    line-height: 1.15;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%;
+  }
+
+  @media (max-width: 375px) {
+    .bottom-nav-inner {
+      padding: 0 4px;
+      gap: 2px;
+    }
+
+    .bottom-nav-item {
+      padding: 8px 2px;
+      font-size: 10px;
+      gap: 3px;
+    }
   }
 
   /* Reserve space so main content is not hidden behind the bar, plus breathing room */

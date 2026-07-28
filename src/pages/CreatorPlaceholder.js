@@ -50,7 +50,7 @@ export function CreatorProfileEdit() {
       <BackLink to="/creator/profile" label="Profile" />
       <main className="fan-placeholder-main">
         <h1>Edit profile</h1>
-        <p>Edit your creator profile. Coming soon.</p>
+        <p>Edit your session provider profile. Coming soon.</p>
         <Link to="/creator/profile" className="fan-placeholder-back">Back to Profile</Link>
       </main>
     </div>

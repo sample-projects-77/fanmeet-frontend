@@ -2,7 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { profileAPI } from '../services/api';
-import { getCached, setCached } from '../utils/routeDataCache';
+import { getCached, setCached, clearCached } from '../utils/routeDataCache';
+import { useChat } from '../context/ChatContext';
 import { ButtonLoadingSpinner } from '../components/LoadingSpinner';
 import ImageSourcePickerModal from '../components/ImageSourcePickerModal';
 import ImageCropperModal from '../components/ImageCropperModal';
@@ -12,8 +13,15 @@ function FanProfileEdit() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
+  const { syncProfileToConnectedChat } = useChat();
   const isCreator = location.pathname.startsWith('/creator');
   const profilePath = isCreator ? '/creator/profile' : '/fan/profile';
+
+  const refreshChatIdentityCaches = useCallback(async () => {
+    clearCached('fanChatMemberInfo');
+    clearCached('creatorChatMemberInfo');
+    await syncProfileToConnectedChat();
+  }, [syncProfileToConnectedChat]);
 
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -33,6 +41,7 @@ function FanProfileEdit() {
   const [rawImageSrc, setRawImageSrc] = useState(null);
   const [avatarUploading, setAvatarUploading] = useState(false);
   const [avatarRemoving, setAvatarRemoving] = useState(false);
+  const [coverRemoved, setCoverRemoved] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -148,6 +157,7 @@ function FanProfileEdit() {
         };
         setUser(updated);
         localStorage.setItem('user', JSON.stringify(updated));
+        await refreshChatIdentityCaches();
         // Update preview to server URL
         if (d.avatarUrl) {
           setAvatarPreview(d.avatarUrl);
@@ -165,7 +175,7 @@ function FanProfileEdit() {
     } finally {
       setAvatarUploading(false);
     }
-  }, [userName, user, isCreator, t]);
+  }, [userName, user, isCreator, t, refreshChatIdentityCaches]);
 
   // ── Cover: crop done → store locally (upload on form save) ──
   const handleCoverCropDone = useCallback((croppedFile) => {
@@ -212,6 +222,7 @@ function FanProfileEdit() {
         const updated = { ...user, avatarUrl: null };
         setUser(updated);
         localStorage.setItem('user', JSON.stringify(updated));
+        await refreshChatIdentityCaches();
       } else {
         // Restore preview on failure
         setAvatarPreview(user?.avatarUrl || null);
@@ -228,7 +239,14 @@ function FanProfileEdit() {
     } finally {
       setAvatarRemoving(false);
     }
-  }, [user, t]);
+  }, [user, t, refreshChatIdentityCaches]);
+
+  // ── Remove cover photo (local only — sent as removeCoverPhoto flag on save) ──
+  const handleRemoveCover = useCallback(() => {
+    setCoverPreview(null);
+    setCoverFile(null);
+    setCoverRemoved(true);
+  }, []);
 
   // ── Form submit (cover uploads here) ──
   const handleSubmit = async (e) => {
@@ -245,8 +263,9 @@ function FanProfileEdit() {
       // Avatar: only include if not yet uploaded (edge case)
       if (avatarFile) formData.append('avatarUrl', avatarFile);
       if (isCreator) {
-        // Cover photo uploads on save
+        // Cover photo: upload new file, or signal removal
         if (coverFile) formData.append('coverPhoto', coverFile);
+        else if (coverRemoved) formData.append('coverPhoto', '');
         const cents =
           hourlyRateEur.trim() === ''
             ? ''
@@ -267,6 +286,7 @@ function FanProfileEdit() {
           avatarUrl: d.avatarUrl ?? user.avatarUrl,
         };
         localStorage.setItem('user', JSON.stringify(updated));
+        await refreshChatIdentityCaches();
         if (isCreator) {
           const nextProfile = { ...profile, ...d };
           setCached('creatorMyProfile', nextProfile);
@@ -300,22 +320,34 @@ function FanProfileEdit() {
       <main className="fan-profile-edit-main">
         <form onSubmit={handleSubmit} className="fan-profile-edit-form">
           {isCreator && (
-            <div
-              className="fan-profile-edit-cover-wrap"
-              onClick={() => openPickerFor('cover')}
-              onKeyDown={(e) => e.key === 'Enter' && openPickerFor('cover')}
-              role="button"
-              tabIndex={0}
-              aria-label={t('profileEdit.uploadCoverPhoto')}
-            >
-              <div className="fan-profile-edit-cover-inner">
-                {coverPreview ? (
-                  <img src={coverPreview} alt="" className="fan-profile-edit-cover-img" />
-                ) : (
-                  <span className="fan-profile-edit-cover-placeholder">{t('profileEdit.uploadCoverPhoto')}</span>
-                )}
+            <>
+              <div
+                className="fan-profile-edit-cover-wrap"
+                onClick={() => openPickerFor('cover')}
+                onKeyDown={(e) => e.key === 'Enter' && openPickerFor('cover')}
+                role="button"
+                tabIndex={0}
+                aria-label={t('profileEdit.uploadCoverPhoto')}
+              >
+                <div className="fan-profile-edit-cover-inner">
+                  {coverPreview ? (
+                    <img src={coverPreview} alt="" className="fan-profile-edit-cover-img" />
+                  ) : (
+                    <span className="fan-profile-edit-cover-placeholder">{t('profileEdit.uploadCoverPhoto')}</span>
+                  )}
+                </div>
               </div>
-            </div>
+              {coverPreview && (
+                <button
+                  type="button"
+                  className="fan-profile-edit-remove-picture fan-profile-edit-remove-cover"
+                  onClick={(e) => { e.stopPropagation(); handleRemoveCover(); }}
+                >
+                  <TrashIcon />
+                  {t('profileEdit.removeCoverPhoto')}
+                </button>
+              )}
+            </>
           )}
 
           <div className="fan-profile-edit-avatar-wrap">

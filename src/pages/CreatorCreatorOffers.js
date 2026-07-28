@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import CreatorNav from '../components/CreatorNav';
 import CreatorOffersContent from '../components/CreatorOffersContent';
+import { navTabFromLocationState } from '../utils/navTabFromLocationState';
 import './CreatorOffers.css';
 
 /**
- * Creator viewing another creator's offers — same content as fan "See offers", with creator nav and back link.
+ * Creator viewing another creator's offers — same content as fan "See offers",
+ * including booking (creators can book other creators).
  */
 function CreatorCreatorOffers() {
   const { creatorId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const navTab = navTabFromLocationState(location, 'creator');
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -36,8 +40,13 @@ function CreatorCreatorOffers() {
 
   return (
     <div className="creator-offers-page">
-      <CreatorNav active="search" user={user} onLogout={handleLogout} />
-      <CreatorOffersContent backTo={`/creator/creators/${creatorId}`} />
+      <CreatorNav active={navTab} user={user} onLogout={handleLogout} />
+      <CreatorOffersContent
+        backTo={`/creator/creators/${creatorId}`}
+        backState={{ navTab }}
+        canBook
+        bookingsBasePath="/creator/bookings"
+      />
     </div>
   );
 }

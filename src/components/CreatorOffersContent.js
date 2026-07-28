@@ -7,20 +7,17 @@ import EmptyWidget from '../components/EmptyWidget';
 import ErrorWidget from '../components/ErrorWidget';
 import {
   parseOfferSlotToUTC,
-  formatUTCDateToLocalDay,
   formatUTCDateToLocalTime,
   offerSlotStartToUTCISO,
-  isOfferInFuture,
 } from '../utils/dateTimeUtils';
+import { getFriendlyPaymentError } from '../utils/paymentErrors';
 
 function formatPrice(priceCents, currency = 'EUR') {
   if (priceCents == null) return '—';
   const euros = priceCents / 100;
-  const value = Number.isInteger(euros)
-    ? euros.toString()
-    : euros.toFixed(2).replace('.', ',');
-  const symbol = currency === 'EUR' ? '€' : currency;
-  return `${value}${symbol}`;
+  const value = euros.toFixed(2).replace('.', ',');
+  const code = currency === 'EUR' ? 'EUR' : currency;
+  return `${value} ${code}`;
 }
 
 /** API returns date + startTime/endTime in UTC. Parse as UTC then display in user's local timezone. */
@@ -31,7 +28,17 @@ function formatOfferDay(offer, locale) {
   const dateStr = (offer.date || '').toString().split('T')[0].split(' ')[0].substring(0, 10);
   const utcDate = parseOfferSlotToUTC(dateStr, offer.startTime, OFFER_TIMES_ARE_UTC);
   if (Number.isNaN(utcDate.getTime())) return (offer.date || '').toString();
-  return formatUTCDateToLocalDay(utcDate, locale);
+  return utcDate.toLocaleDateString(locale, {
+    weekday: 'long',
+    month: 'short',
+    day: 'numeric',
+  });
+}
+
+function formatOfferDuration(offer, t) {
+  const minutes = offer.duration ?? offer.durationMinutes;
+  if (minutes == null) return null;
+  return `(${minutes} ${t('offers.minAbbr')})`;
 }
 
 function formatOfferTimeRange(offer) {
@@ -46,9 +53,14 @@ function formatOfferTimeRange(offer) {
 
 /**
  * Shared offers list for a creator. Used by both fan and creator (viewing another creator).
- * @param {{ backTo: string }} props - backTo: URL for the back link
+ * @param {{ backTo: string, backState?: object, canBook?: boolean, bookingsBasePath?: string }} props
  */
-function CreatorOffersContent({ backTo }) {
+function CreatorOffersContent({
+  backTo,
+  backState,
+  canBook = true,
+  bookingsBasePath = '/fan/bookings',
+}) {
   const { t, i18n } = useTranslation();
   const { creatorId } = useParams();
   const navigate = useNavigate();
@@ -57,6 +69,7 @@ function CreatorOffersContent({ backTo }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [bookingInProgress, setBookingInProgress] = useState(null);
+  const [creatorCanReceivePayments, setCreatorCanReceivePayments] = useState(true);
 
   const fetchOffers = useCallback(async () => {
     if (!creatorId) return;
@@ -65,8 +78,11 @@ function CreatorOffersContent({ backTo }) {
     try {
       const id = creatorId.toString().replace(/^creator_/, '');
       const res = await offerAPI.getCreatorScheduledOffers(id, { page: 1, itemsPerPage: 100 });
-      if (res.StatusCode === 200 && res.data) {
+      const ok =
+        (res.StatusCode === 200 || res.statusCode === 200) && res.data;
+      if (ok) {
         setOffers(res.data.offers || []);
+        setCreatorCanReceivePayments(res.data.creatorCanReceivePayments !== false);
       } else {
         setError(res.error || t('offers.failedToLoad'));
         setOffers([]);
@@ -95,27 +111,43 @@ function CreatorOffersContent({ backTo }) {
         offerId: rawOfferId,
         startTime: startTimeISO,
       });
-      if (createRes.StatusCode !== 200 || !createRes.data?.id) {
-        setError(createRes.error || t('offers.failedToCreateBooking'));
+      const createOk =
+        createRes.StatusCode === 200 || createRes.statusCode === 200;
+      if (!createOk || !createRes.data?.id) {
+        setError(getFriendlyPaymentError(createRes.error, t) || t('offers.failedToCreateBooking'));
         return;
       }
-      navigate(`/fan/bookings/${createRes.data.id}/pay`, { replace: true });
+      if (createRes.data.status === 'HOLD') {
+        setError(t('offers.slotTemporarilyReserved'));
+        return;
+      }
+      navigate(`${bookingsBasePath}/${createRes.data.id}/pay`, {
+        replace: true,
+        state: { creatorId: rawCreatorId },
+      });
     } catch (err) {
-      setError(err.response?.data?.error || err.message || t('common.errorGeneric'));
+      setError(getFriendlyPaymentError(err.response?.data?.error || err.message, t));
     } finally {
       setBookingInProgress(null);
     }
   };
 
   const bookableOffers = (offers || []).filter(
-    (offer) => offer.status === 'available' && isOfferInFuture(offer)
+    (offer) => offer.status === 'available'
   );
+
+  const fanCanBook = canBook && creatorCanReceivePayments;
 
   return (
     <main className="creator-offers-main">
       <div className="creator-offers-container">
         <header className="creator-offers-header">
-          <Link to={backTo} className="creator-offers-back" aria-label={t('common.back')}>
+          <Link
+            to={backTo}
+            {...(backState == null ? {} : { state: backState })}
+            className="creator-offers-back"
+            aria-label={t('common.back')}
+          >
             ←
           </Link>
           <h1 className="creator-offers-title">{t('offers.title')}</h1>
@@ -128,44 +160,56 @@ function CreatorOffersContent({ backTo }) {
         ) : loading ? (
           <LoadingSpinner />
         ) : bookableOffers.length === 0 ? (
-          <EmptyWidget text={t('offers.noOffers')} />
+          <EmptyWidget
+            text={
+              canBook && !creatorCanReceivePayments
+                ? t('offers.creatorPayoutNotReadyForFans')
+                : t('offers.noOffers')
+            }
+          />
         ) : (
           <div className="creator-offers-table-wrap">
-            <table className="creator-offers-table">
+            <table className="creator-offers-table creator-offers-table--bookable">
               <thead>
                 <tr>
                   <th className="creator-offers-th-day">{t('availability.day')}</th>
-                  <th>{t('offers.time')}</th>
-                  <th>{t('offers.duration')}</th>
+                  <th className="creator-offers-th-time">{t('offers.time')}</th>
                   <th className="creator-offers-th-price">{t('offers.price')}</th>
-                  <th className="creator-offers-th-action" aria-label={t('common.action')} />
+                  <th className="creator-offers-th-action">{t('offers.bookNow')}</th>
                 </tr>
               </thead>
               <tbody>
-                {bookableOffers.map((offer) => (
-                  <tr key={offer.id}>
-                    <td>{formatOfferDay(offer, locale)}</td>
-                    <td>{formatOfferTimeRange(offer)}</td>
-                    <td>{(offer.duration ?? offer.durationMinutes) != null ? `${offer.duration ?? offer.durationMinutes} ${t('availability.minAbbr')}` : '—'}</td>
-                    <td className="creator-offers-price">
-                      {formatPrice(offer.priceCents, offer.currency)}
-                    </td>
-                    <td className="creator-offers-td-action">
-                      {offer.status === 'available' && (
-                        <span
-                          className="creator-offers-book-btn"
-                          role="button"
-                          tabIndex={0}
-                          onClick={() => handleBookNow(offer)}
-                          onKeyDown={(e) => e.key === 'Enter' && handleBookNow(offer)}
-                          aria-busy={bookingInProgress === offer.id}
-                        >
-                          {bookingInProgress === offer.id ? t('offers.booking') : t('offers.bookNow')}
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                {bookableOffers.map((offer) => {
+                  const durationLabel = formatOfferDuration(offer, t);
+                  return (
+                    <tr key={offer.id}>
+                      <td className="creator-offers-td-day">{formatOfferDay(offer, locale)}</td>
+                      <td className="creator-offers-td-time">
+                        <span className="creator-offers-time-range">{formatOfferTimeRange(offer)}</span>
+                        {durationLabel && (
+                          <span className="creator-offers-time-duration">{durationLabel}</span>
+                        )}
+                      </td>
+                      <td className="creator-offers-price">
+                        {formatPrice(offer.priceCents, offer.currency)}
+                      </td>
+                      <td className="creator-offers-td-action">
+                        {fanCanBook && offer.status === 'available' && (
+                          <span
+                            className="creator-offers-book-btn"
+                            role="button"
+                            tabIndex={0}
+                            onClick={() => handleBookNow(offer)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleBookNow(offer)}
+                            aria-busy={bookingInProgress === offer.id}
+                          >
+                            {bookingInProgress === offer.id ? t('offers.booking') : t('offers.bookNow')}
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
