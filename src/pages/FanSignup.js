@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Trans, useTranslation } from 'react-i18next';
 import { authAPI } from '../services/api';
 import { saveAuthSession } from '../utils/authStorage';
+import { consumeIntendedUrl } from '../utils/intendedUrl';
 import { ButtonLoadingSpinner } from '../components/LoadingSpinner';
 import './AuthForm.css';
 
@@ -71,7 +72,8 @@ function FanSignup() {
           refreshToken: response.data.refreshToken,
           user: response.data.user,
         });
-        navigate('/fan/home', { replace: true });
+        const intended = consumeIntendedUrl('fan');
+        navigate(intended || '/fan/home', { replace: true });
       } else {
         setError(response.error || response.message || t('auth.signupFailed'));
       }

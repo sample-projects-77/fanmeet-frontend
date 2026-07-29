@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Trans, useTranslation } from 'react-i18next';
 import { authAPI } from '../services/api';
 import { saveAuthSession } from '../utils/authStorage';
+import { consumeIntendedUrl } from '../utils/intendedUrl';
 import { ButtonLoadingSpinner } from '../components/LoadingSpinner';
 import './AuthForm.css';
 
@@ -76,7 +77,8 @@ function CreatorSignup() {
           refreshToken: response.data.refreshToken,
           user: response.data.user,
         });
-        navigate('/creator/home', { replace: true });
+        const intended = consumeIntendedUrl('creator');
+        navigate(intended || '/creator/home', { replace: true });
       } else {
         setError(response.error || response.message || t('auth.signupFailed'));
       }

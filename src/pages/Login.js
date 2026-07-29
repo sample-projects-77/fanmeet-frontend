@@ -5,6 +5,7 @@ import { authAPI } from '../services/api';
 import { setAppLanguage, SUPPORTED } from '../i18n';
 import { clearAllCached } from '../utils/routeDataCache';
 import { saveAuthSession } from '../utils/authStorage';
+import { consumeIntendedUrl } from '../utils/intendedUrl';
 import { ButtonLoadingSpinner } from '../components/LoadingSpinner';
 import { useChat } from '../context/ChatContext';
 import './AuthForm.css';
@@ -52,7 +53,8 @@ const Login = () => {
         const lang = response.data.user?.language;
         if (lang && SUPPORTED.includes(lang)) setAppLanguage(lang, true);
         const role = response.data.user?.role || formData.role;
-        navigate(role === 'creator' ? '/creator/home' : '/fan/home', { replace: true });
+        const intended = consumeIntendedUrl(role);
+        navigate(intended || (role === 'creator' ? '/creator/home' : '/fan/home'), { replace: true });
       } else {
         setError(response.error || response.message || t('auth.loginFailed'));
       }

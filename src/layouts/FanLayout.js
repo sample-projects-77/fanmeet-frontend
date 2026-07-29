@@ -4,6 +4,7 @@ import FanNav from '../components/FanNav';
 import { authAPI } from '../services/api';
 import { clearAllCached } from '../utils/routeDataCache';
 import { clearAuthSession, hasAuthSession } from '../utils/authStorage';
+import { redirectToLogin } from '../utils/intendedUrl';
 import { preloadFanData } from '../utils/prefetch';
 import { useChat } from '../context/ChatContext';
 import FanHome from '../pages/FanHome';
@@ -58,15 +59,16 @@ export default function FanLayout() {
   useEffect(() => {
     const userJson = localStorage.getItem('user');
     if (!hasAuthSession() || !userJson) {
-      navigate('/login', { replace: true });
+      redirectToLogin(navigate, location);
       return;
     }
     try {
       setUser(JSON.parse(userJson));
     } catch {
-      navigate('/login', { replace: true });
+      redirectToLogin(navigate, location);
     }
-  }, [navigate]);
+    // Only re-check when the target path changes (deep-link capture needs pathname/search)
+  }, [navigate, location.pathname, location.search]);
 
   // Preload all tab data once after login; tabs then use cached data only (no refetch on tab switch)
   useEffect(() => {
