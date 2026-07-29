@@ -1,0 +1,317 @@
+/* Creator referral invites – matches Fan Session dark profile theme */
+
+.referral-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.referral-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.referral-back {
+  position: absolute;
+  left: 16px;
+  color: var(--text-primary);
+  font-size: 24px;
+  text-decoration: none;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.referral-back:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.referral-header-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0;
+  text-align: center;
+  padding: 0 40px;
+  line-height: 1.3;
+}
+
+.referral-main {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.referral-lead {
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--tertiary-color, #f4c046);
+  margin: 0 0 12px;
+}
+
+.referral-body {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  margin: 0 0 12px;
+}
+
+.referral-steps {
+  margin: 0 0 12px;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.referral-note {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  opacity: 0.9;
+  margin: 0;
+}
+
+.referral-loading {
+  display: flex;
+  justify-content: center;
+  padding: 32px 0;
+}
+
+.referral-banner {
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.referral-banner--error {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #fca5a5;
+}
+
+.referral-retry {
+  margin-left: auto;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: inherit;
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.referral-link-card,
+.referral-invite-card,
+.referral-history-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 18px 16px;
+}
+
+.referral-section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 12px;
+}
+
+.referral-link-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.referral-link-input,
+.referral-email-input {
+  flex: 1;
+  min-width: 0;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: var(--text-primary);
+  padding: 12px 14px;
+  font-size: 13px;
+}
+
+.referral-copy-btn,
+.referral-send-btn {
+  border: none;
+  border-radius: 10px;
+  background: var(--tertiary-color, #f4c046);
+  color: #0f1115;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 0 16px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.referral-copy-btn:hover,
+.referral-send-btn:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.referral-send-btn {
+  width: 100%;
+  padding: 12px 16px;
+  margin-top: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+}
+
+.referral-send-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.referral-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.referral-stat {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+}
+
+.referral-stat-value {
+  display: block;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--tertiary-color, #f4c046);
+}
+
+.referral-stat-label {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.referral-invite-hint {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin: 0 0 14px;
+}
+
+.referral-invite-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.referral-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.referral-form-msg {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.referral-form-msg--error {
+  color: #fca5a5;
+}
+
+.referral-form-msg--ok {
+  color: #86efac;
+}
+
+.referral-empty {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.referral-invite-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.referral-invite-item {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.referral-invite-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.referral-invite-email {
+  font-size: 14px;
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.referral-status {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 4px 8px;
+  border-radius: 999px;
+}
+
+.referral-status--sent {
+  background: rgba(244, 192, 70, 0.15);
+  color: #f4c046;
+}
+
+.referral-status--joined {
+  background: rgba(34, 197, 94, 0.15);
+  color: #86efac;
+}
+
+.referral-invite-meta {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 480px) {
+  .referral-link-row {
+    flex-direction: column;
+  }
+
+  .referral-copy-btn {
+    padding: 12px 16px;
+  }
+}

@@ -39,6 +39,7 @@ import CreatorSearch from './pages/CreatorSearch';
 import CreatorChats from './pages/CreatorChats';
 import CreatorProfile from './pages/CreatorProfile';
 import CreatorPayoutGuide from './pages/CreatorPayoutGuide';
+import CreatorReferrals from './pages/CreatorReferrals';
 import CreatorEditProfile from './pages/CreatorEditProfile';
 import CreatorCreatorProfile from './pages/CreatorCreatorProfile';
 import CreatorLayout from './layouts/CreatorLayout';
@@ -132,6 +133,7 @@ function App() {
             <Route path="profile/language" element={<CreatorProfileLanguage />} />
             <Route path="profile/blocked" element={<CreatorProfileBlocked />} />
             <Route path="profile/payout-guide" element={<CreatorPayoutGuide />} />
+            <Route path="profile/referrals" element={<CreatorReferrals />} />
             <Route path="reviews" element={<CreatorMyReviews />} />
             <Route path="bookings" element={<CreatorAllSessions />} />
             <Route path="bookings/payment-return" element={<FanBookingPaymentReturn />} />

@@ -5,7 +5,7 @@ import { authAPI, profileAPI } from '../services/api';
 import { getCached, setCached } from '../utils/routeDataCache';
 import { DEFAULT_AVATAR_URL } from '../constants';
 import CreatorNav from '../components/CreatorNav';
-import { SettingsIcon, KeyIcon, OutlinedUserIcon, OutgoingIcon, DeleteAccountIcon, BlockedIcon, PayoutIcon, PrivacyIcon, GuideIcon } from '../components/ProfileIcons';
+import { SettingsIcon, KeyIcon, OutlinedUserIcon, OutgoingIcon, DeleteAccountIcon, BlockedIcon, PayoutIcon, PrivacyIcon, GuideIcon, ReferralIcon } from '../components/ProfileIcons';
 import DeleteAccountDialog from '../components/DeleteAccountDialog';
 import { getPublicDisplayName } from '../utils/getPublicDisplayName';
 import useCreatorPayoutStatus from '../hooks/useCreatorPayoutStatus';
@@ -31,7 +31,6 @@ function CreatorProfile({ embedded, user: userProp, onLogout: onLogoutProp }) {
     loading: connectStatusLoading,
     payoutLoading,
     setupPayout,
-    needsReconnect,
     refresh: refreshConnectStatus,
   } = useCreatorPayoutStatus(!!user?.id);
 
@@ -194,6 +193,13 @@ function CreatorProfile({ embedded, user: userProp, onLogout: onLogoutProp }) {
               <span className="fan-profile-setting-label">{t('payoutGuide.menuLabel')}</span>
               <span className="fan-profile-setting-arrow">›</span>
             </Link>
+            <Link to="/creator/profile/referrals" className="fan-profile-setting-row">
+              <span className="fan-profile-setting-icon fan-profile-setting-icon--orange">
+                <ReferralIcon />
+              </span>
+              <span className="fan-profile-setting-label">{t('referral.menuLabel')}</span>
+              <span className="fan-profile-setting-arrow">›</span>
+            </Link>
             <button
               type="button"
               className="fan-profile-setting-row fan-profile-setting-row--button"
@@ -211,8 +217,6 @@ function CreatorProfile({ embedded, user: userProp, onLogout: onLogoutProp }) {
                   ? (t('profile.payoutsConnected') || 'Payouts connected')
                   : connectStatusLoading || payoutLoading
                     ? (t('profile.payoutSetupLoading') || 'Loading...')
-                    : needsReconnect
-                      ? (t('profile.reconnectPayout') || 'Reconnect Mollie')
                     : connectStatus?.onboarded
                       ? (t('profile.payoutSetupPending') || 'Complete Mollie verification')
                       : (t('profile.setupPayout') || 'Setup payout')}

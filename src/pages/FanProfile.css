@@ -212,6 +212,11 @@
   background: #8b5cf6;
 }
 
+/* Referral – orange */
+.fan-profile-setting-icon--orange {
+  background: #ea580c;
+}
+
 .fan-profile-setting-label {
   flex: 1;
   min-width: 0;

@@ -500,4 +500,16 @@ export const contactAPI = {
   },
 };
 
+// Creator referrals – invite other creators and track sent invites
+export const referralAPI = {
+  getMyReferrals: async () => {
+    const response = await api.get('/creators/me/referrals');
+    return response.data;
+  },
+  sendInvite: async (email) => {
+    const response = await api.post('/creators/me/referrals/invite', { email });
+    return response.data;
+  },
+};
+
 export default api;

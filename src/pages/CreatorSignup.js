@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Trans, useTranslation } from 'react-i18next';
 import { authAPI } from '../services/api';
 import { saveAuthSession } from '../utils/authStorage';
@@ -11,6 +11,8 @@ let isSubmitting = false;
 function CreatorSignup() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const referralCode = (searchParams.get('ref') || '').trim();
   const [formData, setFormData] = useState({
     userName: '',
     email: '',
@@ -63,6 +65,9 @@ function CreatorSignup() {
       submitData.append('email', formData.email.trim());
       submitData.append('password', formData.password);
       submitData.append('userName', formData.userName.trim());
+      if (referralCode) {
+        submitData.append('referralCode', referralCode);
+      }
 
       const response = await authAPI.registerCreator(submitData);
       if (response.StatusCode === 200 && response.data && !response.error) {
@@ -97,6 +102,11 @@ function CreatorSignup() {
       <div className="auth-body">
         <h1 className="auth-heading">{t('auth.creatorSetupHeading')}</h1>
         <p className="auth-subtitle">{t('auth.creatorSetupSubtitle')}</p>
+        {referralCode ? (
+          <div className="auth-info" role="status">
+            {t('referral.signupBanner')}
+          </div>
+        ) : null}
         {error && <div className="auth-error">{error}</div>}
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="auth-field">
