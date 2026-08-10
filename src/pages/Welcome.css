@@ -18,6 +18,9 @@
   top: 20px;
   right: 20px;
   z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .welcome-inner {
@@ -68,7 +71,7 @@
 }
 
 .welcome-hero-accent--purple {
-  color: #b794f6;
+  color: var(--accent-purple-text-soft);
 }
 
 .welcome-hero-line2 {
@@ -140,13 +143,13 @@
 
 .welcome-btn--primary {
   background: var(--accent-yellow);
-  color: #1a1a1a;
+  color: var(--on-accent-alt);
   border: 2px solid var(--accent-yellow);
 }
 
 .welcome-btn--primary:hover {
-  background: #ffc933;
-  border-color: #ffc933;
+  background: var(--accent-yellow-hover);
+  border-color: var(--accent-yellow-hover);
   box-shadow: 0 6px 24px rgba(250, 188, 42, 0.4);
 }
 
@@ -157,8 +160,8 @@
 }
 
 .welcome-btn--secondary:hover {
-  border-color: rgba(255, 255, 255, 0.35);
-  background: #252528;
+  border-color: var(--overlay-35);
+  background: var(--surface-raised-alt);
 }
 
 .welcome-login {
@@ -193,7 +196,7 @@
   border-radius: var(--radius-lg);
   border: 1px solid transparent;
   background:
-    linear-gradient(rgba(28, 31, 38, 0.92), rgba(28, 31, 38, 0.92)) padding-box,
+    linear-gradient(var(--nav-bg-translucent-strong), var(--nav-bg-translucent-strong)) padding-box,
     linear-gradient(135deg, rgba(192, 132, 252, 0.65), rgba(56, 189, 248, 0.55)) border-box;
   box-shadow: 0 0 32px rgba(155, 107, 204, 0.12);
   background-clip: padding-box, border-box;
@@ -275,7 +278,7 @@
 }
 
 .welcome-safe-card-title--purple {
-  color: #c4a5f5;
+  color: var(--accent-purple-text);
 }
 
 .welcome-safe-card-body {
@@ -324,7 +327,7 @@
   height: 22px;
   border-radius: 50%;
   background: linear-gradient(135deg, #c084fc 0%, #a855f7 45%, #38bdf8 100%);
-  color: #fff;
+  color: var(--on-status-fill);
   font-size: 11px;
   font-weight: 800;
   display: flex;
@@ -354,7 +357,7 @@
 .welcome-step-title {
   font-size: 15px;
   font-weight: 700;
-  color: #c4a5f5;
+  color: var(--accent-purple-text);
   margin: 0 0 8px;
   line-height: 1.25;
 }

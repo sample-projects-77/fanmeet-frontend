@@ -40,7 +40,7 @@
   display: inline-block;
   padding: 10px 20px;
   background: var(--accent-yellow);
-  color: #1A1A1A;
+  color: var(--on-accent-alt);
   border-radius: var(--radius);
   text-decoration: none;
   font-weight: 600;
@@ -48,7 +48,7 @@
 }
 
 .fan-placeholder-back:hover {
-  background: #FFC933;
+  background: var(--accent-yellow-hover);
 }
 
 @media (max-width: 767px) {

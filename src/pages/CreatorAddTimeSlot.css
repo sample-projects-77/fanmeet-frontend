@@ -38,7 +38,7 @@
 }
 
 .creator-add-slot-back:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--overlay-08);
 }
 
 .creator-add-slot-title {
@@ -246,7 +246,7 @@
 }
 
 .creator-add-slot-duration-pill--active {
-  background: #332D27;
+  background: var(--pill-active-bg);
   border-color: var(--accent-yellow);
   color: var(--accent-yellow);
 }
@@ -307,7 +307,7 @@
 }
 
 .creator-add-slot-submit:hover:not(:disabled) {
-  background: #FFC933;
+  background: var(--accent-yellow-hover);
 }
 
 .creator-add-slot-submit:active:not(:disabled) {
@@ -353,12 +353,12 @@
 }
 
 .creator-add-slot-delete-icon {
-  color: #FF6347;
+  color: var(--error-text-alt);
   font-size: 24px !important;
 }
 
 .creator-add-slot-delete:hover:not(:disabled) .creator-add-slot-delete-icon {
-  color: #ff7a5c;
+  color: var(--error-text-soft);
 }
 
 .creator-add-slot-delete:disabled {

@@ -3,7 +3,7 @@
 .give-review-dialog-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--scrim);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -17,14 +17,14 @@
   padding: 24px;
   width: 100%;
   max-width: 400px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 32px var(--shadow-a40);
 }
 
 .give-review-dialog-title {
   font-family: var(--font-sans);
   font-size: 18px;
   font-weight: 700;
-  color: var(--white);
+  color: var(--text-primary);
   margin: 0 0 24px 0;
 }
 
@@ -38,7 +38,7 @@
   font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 400;
-  color: var(--white);
+  color: var(--text-primary);
   margin-bottom: 12px;
 }
 

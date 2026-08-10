@@ -404,7 +404,7 @@ a.creator-metric-card--rating:hover {
   justify-content: center;
   padding: 6px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--overlay-10);
   color: var(--tertiary-color);
   flex-shrink: 0;
 }

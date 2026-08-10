@@ -12,6 +12,7 @@ import SearchOutlined from '@mui/icons-material/SearchOutlined';
 import CalendarMonthOutlined from '@mui/icons-material/CalendarMonthOutlined';
 import VideocamOutlined from '@mui/icons-material/VideocamOutlined';
 import LanguageSwitcher from '../components/LanguageSwitcher';
+import ThemeToggleButton from '../components/ThemeToggleButton';
 import Footer from '../components/Footer';
 import './Welcome.css';
 
@@ -52,6 +53,7 @@ function Welcome() {
       </svg>
 
       <div className="welcome-language-wrapper">
+        <ThemeToggleButton />
         <LanguageSwitcher />
       </div>
 

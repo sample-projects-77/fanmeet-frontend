@@ -1,4 +1,22 @@
-/* Fan Session – theme aligned with Flutter AppColors */
+/* Fan Session – theme aligned with Flutter AppColors
+ *
+ * THEME ARCHITECTURE
+ * ------------------
+ * `:root` below holds the DARK palette. Every value in it is the original,
+ * approved dark design and must not be changed.
+ *
+ * `:root[data-theme="light"]` further down re-declares the same token names
+ * with light-mode values. Because the semantic tokens (--bg-primary,
+ * --text-secondary, ...) are defined as `var(--base-token)`, overriding a base
+ * token in the light block cascades through the semantic layer automatically.
+ *
+ * Components consume tokens only – never `if (isDark)` branching, never raw
+ * hex for a theme-dependent surface.
+ *
+ * Tokens that are intentionally IDENTICAL in both themes:
+ *   brand accents (--secondary-color, --amber), status fills
+ *   (--green-success, --red, --blue-accent), --on-accent, and modal scrims.
+ */
 
 :root {
   /* ========== Core surfaces (Flutter AppColors) ========== */
@@ -48,7 +66,7 @@
   --border-light: var(--light-grey-shade-3);
   --border-input: var(--text-field-border);
   --border-outline: var(--outline-input-border);
-  --required: var(--red);
+  --required: var(--error-text);
   --radius: 12px;
   --radius-lg: 16px;
   /* Flutter AssetPaths.plusJakartaSans + AppTextStyle */
@@ -65,6 +83,317 @@
   --creator-card-green: #166534;
   --creator-card-blue: #1e3a5f;
   --creator-card-gold: #854d0e;
+
+  /* ========== Added for theming: dark values below are the exact literals
+     that were previously hardcoded across the page/component stylesheets.
+     Introducing them changes nothing in Dark Mode. ========== */
+
+  /* On-brand-fill contrast colour. Text/icons sitting ON amber, on a status
+     fill, or on a light card stay dark in BOTH themes. */
+  --on-accent: #0F1115;
+
+  /* Amber hover state used by every primary button (was #FFC933). */
+  --accent-yellow-hover: #FFC933;
+
+  /* Accent/status colours when used as TEXT rather than as a fill.
+     On a white surface the raw brand values fail contrast, so Light Mode gets
+     darkened variants. The fill tokens themselves never change. */
+  --accent-yellow-text: var(--secondary-color);
+  --success-text: var(--green-success);
+  --error-text: var(--red);
+  --info-text: var(--blue-accent);
+
+  /* Surfaces. --surface-raised sits above --card-bg (menus, popovers, bubbles);
+     --surface-sunken sits below it (wells, track backgrounds). */
+  --surface-raised: #22262F;
+  --surface-sunken: #131720;
+  --nav-bg: var(--dark-blue-shade-3);
+  --chip-bg: var(--input-background);
+  /* Sticky/blurred bars that sit translucently over scrolling content. */
+  --nav-bg-translucent: rgba(28, 31, 38, 0.8);
+  --nav-bg-translucent-strong: rgba(28, 31, 38, 0.92);
+  --border-translucent: rgba(42, 46, 54, 0.5);
+
+  /* Neutral overlays. In Dark Mode these lift a surface with white at low
+     alpha; in Light Mode they must darken instead, which is exactly why the
+     raw rgba(255,255,255,.0x) literals could not stay inline. */
+  --overlay-04: rgba(255, 255, 255, 0.04);
+  --overlay-06: rgba(255, 255, 255, 0.06);
+  --overlay-08: rgba(255, 255, 255, 0.08);
+  --overlay-10: rgba(255, 255, 255, 0.1);
+  --overlay-12: rgba(255, 255, 255, 0.12);
+  --overlay-15: rgba(255, 255, 255, 0.15);
+  --overlay-20: rgba(255, 255, 255, 0.2);
+  --overlay-25: rgba(255, 255, 255, 0.25);
+  --overlay-35: rgba(255, 255, 255, 0.35);
+  --overlay-60: rgba(255, 255, 255, 0.6);
+  --overlay-75: rgba(255, 255, 255, 0.75);
+  --overlay-85: rgba(255, 255, 255, 0.85);
+  --overlay-90: rgba(255, 255, 255, 0.9);
+
+  /* Translucent text ramps (used over images/video and inside chat). */
+  --text-alpha-40: rgba(255, 255, 255, 0.4);
+  --text-alpha-50: rgba(255, 255, 255, 0.5);
+  --text-alpha-55: rgba(255, 255, 255, 0.55);
+  --text-alpha-60: rgba(255, 255, 255, 0.6);
+  --text-alpha-75: rgba(255, 255, 255, 0.75);
+  --text-alpha-85: rgba(255, 255, 255, 0.85);
+  --text-alpha-90: rgba(255, 255, 255, 0.9);
+
+  /* Disabled state. */
+  --disabled-text: var(--dark-grey-text);
+  --disabled-bg: var(--input-background);
+  --disabled-border: var(--outline-input-border);
+
+  /* Status tints (subtle background washes behind status text/badges). */
+  --tint-success: rgba(46, 204, 113, 0.2);
+  --tint-error: rgba(255, 92, 92, 0.12);
+  --tint-info: rgba(91, 159, 255, 0.2);
+  --tint-accent: rgba(244, 192, 70, 0.2);
+  --tint-accent-strong: rgba(244, 192, 70, 0.3);
+  --tint-accent-soft: rgba(244, 192, 70, 0.15);
+  --tint-accent-faint: rgba(244, 192, 70, 0.08);
+
+  /* Scrims + elevation. Modal/backdrop scrims stay dark in both themes –
+     that is the platform convention, not a theme-dependent surface. */
+  --scrim: rgba(0, 0, 0, 0.6);
+  --scrim-soft: rgba(0, 0, 0, 0.4);
+  --scrim-45: rgba(0, 0, 0, 0.45);
+  --scrim-faint: rgba(0, 0, 0, 0.2);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-modal: 0 12px 32px rgba(0, 0, 0, 0.5);
+
+  /* Skeleton / loading placeholder. */
+  --skeleton-bg: var(--overlay-06);
+  --skeleton-shine: var(--overlay-12);
+
+  /* Drop shadows. Dark Mode uses pure black; Light Mode uses a softer, much
+     weaker blue-black so cards do not look smudged on white. */
+  --shadow-a10: rgba(0, 0, 0, 0.1);
+  --shadow-a15: rgba(0, 0, 0, 0.15);
+  --shadow-a20: rgba(0, 0, 0, 0.2);
+  --shadow-a25: rgba(0, 0, 0, 0.25);
+  --shadow-a30: rgba(0, 0, 0, 0.3);
+  --shadow-a35: rgba(0, 0, 0, 0.35);
+  --shadow-a40: rgba(0, 0, 0, 0.4);
+  --shadow-a50: rgba(0, 0, 0, 0.5);
+
+  /* "Wells" – recessed panels that read as darker than their parent card in
+     Dark Mode and as a light grey inset in Light Mode. */
+  --well-bg: rgba(0, 0, 0, 0.2);
+  --well-bg-strong: rgba(0, 0, 0, 0.3);
+  --surface-hover: rgba(37, 37, 40, 0.9);
+  --surface-translucent: rgba(37, 37, 40, 0.9);
+
+  /* Dialog / popover surface (date + time pickers). */
+  --dialog-surface: #2C2C2E;
+  /* Chat side panels + search fields. */
+  --chat-panel-bg: #202228;
+  /* Hover wash inside the chat message/reaction menus. Those menus render on
+     their own light popover surface in BOTH themes, so this stays constant. */
+  --chat-menu-hover: rgba(0, 0, 0, 0.06);
+  --chat-accent: #6c5ce7;      /* chat link/mention accent */
+  --danger-text-alt: #dc3545;  /* chat 'delete message' action */
+  /* Welcome-screen secondary button hover fill. */
+  --surface-raised-alt: #252528;
+  /* Amber-tinted "selected pill" fill. */
+  --pill-active-bg: #332D27;
+
+  /* Contrast colours that sit ON a coloured fill – constant in both themes. */
+  --on-accent-alt: #1A1A1A;   /* text on the amber fill (legacy exact value) */
+  --on-status-fill: #FFFFFF;  /* text on green/orange/red status fills */
+
+  /* Scrim painted over photos + video, constant in both themes. */
+  --media-scrim: rgba(0, 0, 0, 0.5);
+
+  /* In-call header bar. The video tiles stay black in both themes, but this
+     bar carries --text-primary text, so it has to follow the theme. */
+  --videocall-bar-bg: rgba(15, 17, 21, 0.95);
+
+  /* Warning (amber-orange) status ramp, distinct from the amber brand accent. */
+  --warning-text: #ffc107;
+  --tint-warning: rgba(255, 193, 7, 0.12);
+  --tint-warning-strong: rgba(255, 193, 7, 0.18);
+  --border-warning: rgba(255, 193, 7, 0.35);
+
+  /* Decorative purple used by the Welcome / Contact "premium" treatment. */
+  /* Status colours whose legacy literals differ from the brand tokens; each
+     keeps its exact dark value so Dark Mode is untouched. */
+  --success-text-alt: #22c55e;
+  --success-text-alt2: #2ECC71;
+  --error-text-alt: #FF6347;
+  --error-text-soft: #ff7a5c;
+  --gold-star: #d4af37;
+
+  /* Status FILLS (dots, badges, icon circles). Unlike the *-text tokens these
+     stay identical in both themes – a saturated fill reads on white and on
+     near-black alike, and flipping them would change Dark Mode. */
+  --status-green: #22c55e;
+  --status-purple: #8b5cf6;
+
+  --accent-purple-text: #c4a5f5;
+  --accent-purple-text-soft: #b794f6;
+  /* Inline link colour (was an undefined `var(--accent, #6c63ff)` fallback). */
+  --link-color: #6c63ff;
+
+  /* Extra alpha steps needed by a handful of components. */
+  --tertiary-alpha-20: rgba(226, 229, 234, 0.2);
+  --tertiary-alpha-60: rgba(226, 229, 234, 0.6);
+
+  /* Tells the UA to render form controls, scrollbars and the caret for a dark
+     surface. Overridden to `light` in the light block below. */
+  color-scheme: dark;
+}
+
+/* ==========================================================================
+   LIGHT MODE
+   Applied by ThemeProvider via <html data-theme="light">.
+   Same token names, light values. Layout, spacing, sizing and typography are
+   untouched – this block only re-colours.
+   ========================================================================== */
+
+:root[data-theme='light'] {
+  /* ========== Core surfaces ========== */
+  --primary-color: #F6F7F9;          /* scaffold background */
+  --dark-blue-shade-3: #FFFFFF;      /* cards / elevated surfaces */
+  --tertiary-color: #1A1D23;         /* high-emphasis text/icons */
+
+  /* ========== Accents – brand values are deliberately unchanged ========== */
+  /* --secondary-color, --amber, --green-success, --red, --blue-accent and
+     --icon-blue all inherit their dark (brand) values. */
+
+  /* ========== Text ========== */
+  --dark-grey-text: #5C6470;         /* secondary text */
+  --light-grey: #6B7280;             /* hints/subtext */
+
+  /* ========== Borders / dividers ========== */
+  --light-grey-shade-3: #E4E7EC;     /* tile borders/dividers */
+  --text-field-border: #D8DDE4;
+  --outline-input-border: #D0D6DE;
+  --chat-divider: #E6E9EE;
+
+  /* ========== Inputs ========== */
+  --input-background: #FFFFFF;
+
+  /* ========== Effects ========== */
+  --tertiary-alpha-12: rgba(26, 29, 35, 0.12);
+  --shadow-color: rgba(16, 24, 40, 0.08);
+
+  /* ========== Semantic overrides ========== */
+  /* --text-primary is `var(--white)` in dark, so it needs an explicit value
+     here rather than inheriting a re-pointed base token. */
+  --text-primary: #0F1115;
+  --accent-yellow-alt: #E0A92B;
+
+  /* Dashboard / UI accents */
+  --accent-green-dim: rgba(46, 204, 113, 0.16);
+  --card-bg-blue: #E8F0FA;
+  --creator-card-green: #DCFCE7;
+  --creator-card-blue: #DBEAFE;
+  --creator-card-gold: #FDF0CD;
+
+  /* ========== Added theming tokens ========== */
+  /* --on-accent and --accent-yellow-hover stay dark/brand in both themes. */
+
+  /* Accent + status colours as TEXT, darkened for contrast on white. */
+  --accent-yellow-text: #8A6400;
+  --success-text: #0B7A1D;
+  --error-text: #D92D20;
+  --info-text: #1F6FD0;
+
+  --surface-raised: #FFFFFF;
+  --surface-sunken: #EEF0F4;
+  --chip-bg: #F1F3F7;
+  --nav-bg-translucent: rgba(255, 255, 255, 0.82);
+  --nav-bg-translucent-strong: rgba(255, 255, 255, 0.94);
+  --border-translucent: rgba(16, 24, 40, 0.08);
+
+  /* Overlays darken instead of lighten. */
+  --overlay-04: rgba(16, 24, 40, 0.03);
+  --overlay-06: rgba(16, 24, 40, 0.04);
+  --overlay-08: rgba(16, 24, 40, 0.06);
+  --overlay-10: rgba(16, 24, 40, 0.07);
+  --overlay-12: rgba(16, 24, 40, 0.08);
+  --overlay-15: rgba(16, 24, 40, 0.1);
+  --overlay-20: rgba(16, 24, 40, 0.13);
+  --overlay-25: rgba(16, 24, 40, 0.16);
+  --overlay-35: rgba(16, 24, 40, 0.22);
+  --overlay-60: rgba(16, 24, 40, 0.34);
+  --overlay-75: rgba(16, 24, 40, 0.42);
+  --overlay-85: rgba(16, 24, 40, 0.5);
+  --overlay-90: rgba(16, 24, 40, 0.55);
+
+  --text-alpha-40: rgba(15, 17, 21, 0.42);
+  --text-alpha-50: rgba(15, 17, 21, 0.5);
+  --text-alpha-55: rgba(15, 17, 21, 0.55);
+  --text-alpha-60: rgba(15, 17, 21, 0.6);
+  --text-alpha-75: rgba(15, 17, 21, 0.72);
+  --text-alpha-85: rgba(15, 17, 21, 0.82);
+  --text-alpha-90: rgba(15, 17, 21, 0.88);
+
+  --disabled-bg: #F1F3F7;
+  --disabled-border: #E4E7EC;
+
+  --tint-success: rgba(20, 184, 44, 0.14);
+  --tint-error: rgba(217, 45, 32, 0.1);
+  --tint-info: rgba(91, 159, 255, 0.16);
+  --tint-accent: rgba(244, 192, 70, 0.22);
+  --tint-accent-strong: rgba(244, 192, 70, 0.34);
+  --tint-accent-soft: rgba(244, 192, 70, 0.18);
+  --tint-accent-faint: rgba(244, 192, 70, 0.12);
+
+  /* Scrims stay dark – a light scrim would not read as a backdrop. */
+  --shadow-card: 0 1px 3px rgba(16, 24, 40, 0.1), 0 1px 2px rgba(16, 24, 40, 0.06);
+  --shadow-modal: 0 12px 32px rgba(16, 24, 40, 0.16);
+
+  --skeleton-bg: rgba(16, 24, 40, 0.06);
+  --skeleton-shine: rgba(16, 24, 40, 0.11);
+
+  /* Shadows: same geometry, far lower alpha and a cooler hue. */
+  --shadow-a10: rgba(16, 24, 40, 0.05);
+  --shadow-a15: rgba(16, 24, 40, 0.06);
+  --shadow-a20: rgba(16, 24, 40, 0.07);
+  --shadow-a25: rgba(16, 24, 40, 0.09);
+  --shadow-a30: rgba(16, 24, 40, 0.1);
+  --shadow-a35: rgba(16, 24, 40, 0.12);
+  --shadow-a40: rgba(16, 24, 40, 0.14);
+  --shadow-a50: rgba(16, 24, 40, 0.18);
+
+  /* Wells invert: a darkening wash becomes a light grey inset. */
+  --well-bg: #F1F3F7;
+  --well-bg-strong: rgba(16, 24, 40, 0.06);
+  --surface-hover: #FAFBFD;
+  --surface-translucent: rgba(255, 255, 255, 0.92);
+
+  --dialog-surface: #FFFFFF;
+  --chat-panel-bg: #F1F3F7;
+  --surface-raised-alt: #FFFFFF;
+  --chat-accent: #4F46E5;
+  --danger-text-alt: #B42318;
+  --pill-active-bg: rgba(244, 192, 70, 0.2);
+
+  /* --on-accent-alt, --on-status-fill and --media-scrim stay constant. */
+  --videocall-bar-bg: rgba(255, 255, 255, 0.95);
+
+  --warning-text: #8A5B00;
+  --tint-warning: rgba(255, 193, 7, 0.16);
+  --tint-warning-strong: rgba(255, 193, 7, 0.24);
+  --border-warning: rgba(197, 148, 0, 0.4);
+
+  --success-text-alt: #15803D;
+  --success-text-alt2: #15803D;
+  --error-text-alt: #C2410C;
+  --error-text-soft: #C2410C;
+  --gold-star: #8A6600;
+
+  --accent-purple-text: #7C3AED;
+  --accent-purple-text-soft: #8B5CF6;
+  --link-color: #4F46E5;
+
+  --tertiary-alpha-20: rgba(26, 29, 35, 0.16);
+  --tertiary-alpha-60: rgba(26, 29, 35, 0.66);
+
+  color-scheme: light;
 }
 
 /* ========== AppTextStyle (Flutter typography – Plus Jakarta Sans) ========== */
@@ -74,9 +403,9 @@
 }
 
 /* Headlines – default on dark (white) */
-.h1 { font-family: var(--font-sans); font-size: 28px; font-weight: 700; color: var(--white); }
-.h2 { font-family: var(--font-sans); font-size: 24px; font-weight: 600; color: var(--white); }
-.h3 { font-family: var(--font-sans); font-size: 18px; font-weight: 700; color: var(--white); }
+.h1 { font-family: var(--font-sans); font-size: 28px; font-weight: 700; color: var(--text-primary); }
+.h2 { font-family: var(--font-sans); font-size: 24px; font-weight: 600; color: var(--text-primary); }
+.h3 { font-family: var(--font-sans); font-size: 18px; font-weight: 700; color: var(--text-primary); }
 
 /* Headlines on light background */
 .h1-on-light { font-family: var(--font-sans); font-size: 28px; font-weight: 700; color: var(--black); }
@@ -84,55 +413,55 @@
 .h3-on-light { font-family: var(--font-sans); font-size: 18px; font-weight: 700; color: var(--black); }
 
 /* Titles */
-.t1 { font-family: var(--font-sans); font-size: 18px; font-weight: 700; color: var(--white); }
-.t2 { font-family: var(--font-sans); font-size: 16px; font-weight: 500; color: var(--white); }
-.t3 { font-family: var(--font-sans); font-size: 14px; font-weight: 400; color: var(--white); }
+.t1 { font-family: var(--font-sans); font-size: 18px; font-weight: 700; color: var(--text-primary); }
+.t2 { font-family: var(--font-sans); font-size: 16px; font-weight: 500; color: var(--text-primary); }
+.t3 { font-family: var(--font-sans); font-size: 14px; font-weight: 400; color: var(--text-primary); }
 
 .t1-on-light { font-family: var(--font-sans); font-size: 18px; font-weight: 700; color: var(--black); }
 .t2-on-light { font-family: var(--font-sans); font-size: 16px; font-weight: 500; color: var(--black); }
 .t3-on-light { font-family: var(--font-sans); font-size: 14px; font-weight: 400; color: var(--black); }
 
 .t2-muted { font-family: var(--font-sans); font-size: 16px; font-weight: 500; color: var(--dark-grey-text); }
-.t2-accent { font-family: var(--font-sans); font-size: 16px; font-weight: 500; color: var(--secondary-color); }
+.t2-accent { font-family: var(--font-sans); font-size: 16px; font-weight: 500; color: var(--accent-yellow-text); }
 
 /* Body */
-.b1 { font-family: var(--font-sans); font-size: 14px; font-weight: 700; color: var(--white); }
-.b2 { font-family: var(--font-sans); font-size: 12px; font-weight: 400; color: var(--white); }
-.b3 { font-family: var(--font-sans); font-size: 10px; font-weight: 500; color: var(--white); }
+.b1 { font-family: var(--font-sans); font-size: 14px; font-weight: 700; color: var(--text-primary); }
+.b2 { font-family: var(--font-sans); font-size: 12px; font-weight: 400; color: var(--text-primary); }
+.b3 { font-family: var(--font-sans); font-size: 10px; font-weight: 500; color: var(--text-primary); }
 
 .b1-on-light { font-family: var(--font-sans); font-size: 14px; font-weight: 700; color: var(--black); }
 .b2-on-light { font-family: var(--font-sans); font-size: 12px; font-weight: 400; color: var(--black); }
 .b3-on-light { font-family: var(--font-sans); font-size: 10px; font-weight: 500; color: var(--black); }
 
 .b2-muted { font-family: var(--font-sans); font-size: 12px; font-weight: 400; color: var(--dark-grey-text); }
-.b3-muted { font-family: var(--font-sans); font-size: 10px; font-weight: 500; color: var(--light-grey); }
-.b2-accent { font-family: var(--font-sans); font-size: 12px; font-weight: 400; color: var(--secondary-color); }
-.b2-success { font-family: var(--font-sans); font-size: 12px; font-weight: 400; color: var(--green-success); }
-.b2-error { font-family: var(--font-sans); font-size: 12px; font-weight: 400; color: var(--red); }
+.b3-muted { font-family: var(--font-sans); font-size: 10px; font-weight: 500; color: var(--text-muted); }
+.b2-accent { font-family: var(--font-sans); font-size: 12px; font-weight: 400; color: var(--accent-yellow-text); }
+.b2-success { font-family: var(--font-sans); font-size: 12px; font-weight: 400; color: var(--success-text); }
+.b2-error { font-family: var(--font-sans); font-size: 12px; font-weight: 400; color: var(--error-text); }
 
 /* Labels */
-.l1 { font-family: var(--font-sans); font-size: 12px; font-weight: 600; color: var(--white); }
-.l2 { font-family: var(--font-sans); font-size: 10px; font-weight: 400; color: var(--white); }
-.l3 { font-family: var(--font-sans); font-size: 8px; font-weight: 400; color: var(--white); }
+.l1 { font-family: var(--font-sans); font-size: 12px; font-weight: 600; color: var(--text-primary); }
+.l2 { font-family: var(--font-sans); font-size: 10px; font-weight: 400; color: var(--text-primary); }
+.l3 { font-family: var(--font-sans); font-size: 8px; font-weight: 400; color: var(--text-primary); }
 
 .l1-on-light { font-family: var(--font-sans); font-size: 12px; font-weight: 600; color: var(--black); }
 .l2-on-light { font-family: var(--font-sans); font-size: 10px; font-weight: 400; color: var(--black); }
 .l3-on-light { font-family: var(--font-sans); font-size: 8px; font-weight: 400; color: var(--black); }
 
 .l2-muted { font-family: var(--font-sans); font-size: 10px; font-weight: 400; color: var(--dark-grey-text); }
-.l3-muted { font-family: var(--font-sans); font-size: 8px; font-weight: 400; color: var(--light-grey); }
-.l2-accent { font-family: var(--font-sans); font-size: 10px; font-weight: 400; color: var(--secondary-color); }
+.l3-muted { font-family: var(--font-sans); font-size: 8px; font-weight: 400; color: var(--text-muted); }
+.l2-accent { font-family: var(--font-sans); font-size: 10px; font-weight: 400; color: var(--accent-yellow-text); }
 
 /* Specials */
-.thick-text { font-family: var(--font-sans); font-size: 16px; font-weight: 900; color: var(--white); }
-.light-text { font-family: var(--font-sans); font-size: 16px; font-weight: 300; color: var(--white); }
-.extra-light-text { font-family: var(--font-sans); font-size: 16px; font-weight: 200; color: var(--white); }
+.thick-text { font-family: var(--font-sans); font-size: 16px; font-weight: 900; color: var(--text-primary); }
+.light-text { font-family: var(--font-sans); font-size: 16px; font-weight: 300; color: var(--text-primary); }
+.extra-light-text { font-family: var(--font-sans); font-size: 16px; font-weight: 200; color: var(--text-primary); }
 
 .thick-text-on-light { font-family: var(--font-sans); font-size: 16px; font-weight: 900; color: var(--black); }
 .light-text-on-light { font-family: var(--font-sans); font-size: 16px; font-weight: 300; color: var(--black); }
 .extra-light-text-on-light { font-family: var(--font-sans); font-size: 16px; font-weight: 200; color: var(--black); }
 
-.italic-body { font-family: var(--font-sans); font-size: 12px; font-weight: 400; font-style: italic; color: var(--white); }
+.italic-body { font-family: var(--font-sans); font-size: 12px; font-weight: 400; font-style: italic; color: var(--text-primary); }
 
 /* ========== TNSTextField-aligned (app-wide text fields) ========== */
 
@@ -144,7 +473,7 @@
 }
 
 .tns-text-field-label .required {
-  color: var(--red);
+  color: var(--error-text);
 }
 
 .tns-text-field,
@@ -183,14 +512,14 @@ textarea.tns-text-field:focus {
 .tns-text-field-wrap.has-error input,
 .tns-text-field-wrap.has-error textarea {
   border-color: var(--red);
-  color: var(--red);
+  color: var(--error-text);
 }
 
 .tns-text-field-error {
   margin-top: 6px;
   font-size: 13px;
   font-weight: 500;
-  color: var(--red);
+  color: var(--error-text);
 }
 
 /* ========== TNSButton-aligned: primary, secondary, tertiary ========== */
@@ -228,19 +557,19 @@ textarea.tns-text-field:focus {
 /* Primary: TNSButton default – amber fill, dark text */
 .btn-primary {
   background: var(--secondary-color);
-  color: var(--primary-color);
+  color: var(--on-accent);
   border-color: var(--secondary-color);
   font-size: 16px;
   font-weight: 700;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #FFC933;
-  border-color: #FFC933;
+  background: var(--accent-yellow-hover);
+  border-color: var(--accent-yellow-hover);
 }
 
 .btn-primary:disabled {
-  color: var(--dark-grey-text);
+  color: var(--disabled-text);
   background: rgba(244, 192, 70, 0.5);
   border-color: rgba(244, 192, 70, 0.5);
 }
@@ -261,15 +590,15 @@ textarea.tns-text-field:focus {
 }
 
 .btn-secondary:disabled {
-  color: var(--dark-grey-text);
-  background: var(--input-background);
-  border-color: var(--outline-input-border);
+  color: var(--disabled-text);
+  background: var(--disabled-bg);
+  border-color: var(--disabled-border);
 }
 
 /* Tertiary: TNSButton.tertiary – danger/red outline */
 .btn-tertiary {
-  background: var(--primary-color);
-  color: var(--red);
+  background: var(--bg-primary);
+  color: var(--error-text);
   border-color: var(--red);
   font-size: 14px;
   font-weight: 700;
@@ -281,7 +610,7 @@ textarea.tns-text-field:focus {
 }
 
 .btn-tertiary:disabled {
-  color: var(--dark-grey-text);
-  background: var(--input-background);
+  color: var(--disabled-text);
+  background: var(--disabled-bg);
   border-color: rgba(255, 92, 92, 0.5);
 }

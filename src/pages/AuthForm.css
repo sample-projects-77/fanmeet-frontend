@@ -12,7 +12,7 @@
   justify-content: center;
   position: relative;
   padding: 16px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--overlay-06);
 }
 
 .auth-back {
@@ -27,7 +27,7 @@
 }
 
 .auth-back:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--overlay-08);
   color: var(--text-primary);
 }
 
@@ -35,6 +35,15 @@
   font-size: 17px;
   font-weight: 600;
   margin: 0;
+}
+
+/* Pre-auth theme toggle – mirrors .auth-back on the opposite edge so the
+   centred title keeps its exact position. */
+.auth-theme-toggle {
+  position: absolute;
+  right: 20px;
+  width: 34px;
+  height: 34px;
 }
 
 .auth-body {
@@ -203,7 +212,7 @@
 }
 
 .auth-submit:hover:not(:disabled) {
-  background: #FFC933;
+  background: var(--accent-yellow-hover);
 }
 
 .auth-submit:active:not(:disabled) {
@@ -396,12 +405,12 @@
 }
 
 .auth-consent-link:hover {
-  color: #FFC933;
+  color: var(--accent-yellow-hover);
 }
 
 .auth-consent-note {
   font-size: 12px;
-  color: var(--text-muted, var(--dark-grey-text));
+  color: var(--text-muted);
   line-height: 1.4;
   margin: 2px 0 0 28px;
 }

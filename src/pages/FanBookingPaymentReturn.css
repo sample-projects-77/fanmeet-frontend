@@ -50,7 +50,7 @@
 .fan-booking-payment-return-title {
   font-size: 22px;
   font-weight: 600;
-  color: var(--white);
+  color: var(--text-primary);
   margin: 0 0 12px 0;
 }
 
@@ -74,7 +74,7 @@
 }
 
 .fan-booking-payment-return-link:hover {
-  background: #FFC933;
+  background: var(--accent-yellow-hover);
 }
 
 .fan-booking-payment-return-redirect {

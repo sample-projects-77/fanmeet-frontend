@@ -11,6 +11,29 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet" />
     <title>Fan Session</title>
+    <script>
+      /* Resolve and stamp the theme before the first paint so a light-mode user
+         never sees a flash of the dark UI while the bundle loads.
+         Mirrors resolveInitialTheme() in src/utils/themeStorage.js:
+           localStorage 'theme' -> cached user.theme_mode -> 'light' (default).
+         Dark Mode removes the attribute, leaving the original :root palette. */
+      (function () {
+        try {
+          var ok = function (v) { return v === 'light' || v === 'dark' ? v : null; };
+          var mode = ok(localStorage.getItem('theme'));
+          if (!mode) {
+            var raw = localStorage.getItem('user');
+            if (raw) mode = ok(JSON.parse(raw).theme_mode);
+          }
+          mode = mode || 'light';
+          if (mode === 'light') document.documentElement.setAttribute('data-theme', 'light');
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', mode === 'light' ? '#F6F7F9' : '#000000');
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

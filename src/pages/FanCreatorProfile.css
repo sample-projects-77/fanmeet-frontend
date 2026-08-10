@@ -48,7 +48,7 @@
   justify-content: space-between;
   padding: 12px 16px 14px;
   background: var(--bg-primary);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--overlay-06);
 }
 
 .fan-creator-details-top-bar .fan-creator-details-back {
@@ -64,7 +64,7 @@
 }
 
 .fan-creator-details-top-bar .fan-creator-details-back:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--overlay-08);
   color: var(--text-primary);
 }
 
@@ -88,7 +88,7 @@
 }
 
 .fan-creator-details-dots-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--overlay-08);
   color: var(--text-primary);
 }
 
@@ -99,10 +99,10 @@
   margin-top: 4px;
   min-width: 180px;
   padding: 6px 0;
-  background: var(--dark-blue-shade-3, #1e2229);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--dark-blue-shade-3);
+  border: 1px solid var(--overlay-10);
   border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 24px var(--shadow-a40);
   z-index: 10;
 }
 
@@ -124,11 +124,11 @@
 }
 
 .fan-creator-details-dropdown-item:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--overlay-06);
 }
 
 .fan-creator-details-dropdown-item--block {
-  color: var(--red, #e57373);
+  color: var(--red);
 }
 
 .fan-creator-details-dropdown-item--block:hover:not(:disabled) {
@@ -172,7 +172,7 @@
   height: 100px;
   border-radius: 50%;
   border: 3px solid var(--primary-color);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px var(--shadow-a20);
   overflow: hidden;
   background: var(--dark-blue-shade-3);
   flex-shrink: 0;
@@ -190,7 +190,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-alpha-50);
 }
 
 .fan-creator-details-avatar-placeholder svg {
@@ -338,7 +338,7 @@
   justify-content: center;
   padding: 6px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--overlay-10);
   color: var(--tertiary-color);
   flex-shrink: 0;
 }

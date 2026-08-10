@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Trans, useTranslation } from 'react-i18next';
 import { authAPI } from '../services/api';
 import { saveAuthSession } from '../utils/authStorage';
+import { useTheme } from '../context/ThemeContext';
 import { ButtonLoadingSpinner } from '../components/LoadingSpinner';
 import './AuthForm.css';
 
@@ -11,6 +12,7 @@ let isSubmitting = false;
 function FanSignup() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { theme, applyAuthenticatedTheme } = useTheme();
   const [formData, setFormData] = useState({
     userName: '',
     email: '',
@@ -63,6 +65,8 @@ function FanSignup() {
       submitData.append('email', formData.email.trim());
       submitData.append('password', formData.password);
       submitData.append('userName', formData.userName.trim());
+      // Carry the theme the user picked before signing up.
+      submitData.append('theme_mode', theme);
 
       const response = await authAPI.registerFan(submitData);
       if (response.StatusCode === 200 && response.data && !response.error) {
@@ -71,6 +75,8 @@ function FanSignup() {
           refreshToken: response.data.refreshToken,
           user: response.data.user,
         });
+        // Backend echoes the persisted preference – treat it as authoritative.
+        applyAuthenticatedTheme(response.data.user?.theme_mode || theme);
         navigate('/fan/home', { replace: true });
       } else {
         setError(response.error || response.message || t('auth.signupFailed'));

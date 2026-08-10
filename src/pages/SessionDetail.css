@@ -28,7 +28,7 @@
 .session-detail-back {
   position: absolute;
   left: 0;
-  color: var(--white);
+  color: var(--text-primary);
   font-size: 24px;
   text-decoration: none;
   line-height: 1;
@@ -37,15 +37,15 @@
 }
 
 .session-detail-back:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--white);
+  background: var(--overlay-08);
+  color: var(--text-primary);
 }
 
 .session-detail-title {
   font-family: var(--font-sans);
   font-size: 24px;
   font-weight: 700;
-  color: var(--white);
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -81,7 +81,7 @@
 }
 
 .session-detail-row--price .session-detail-label {
-  color: #d4af37; /* golden/amber to match Flutter */
+  color: var(--gold-star); /* golden/amber to match Flutter */
   font-weight: 600;
 }
 
@@ -110,7 +110,7 @@
   text-transform: capitalize;
   padding: 2px 8px;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--overlay-08);
 }
 
 .session-detail-status--paid,

@@ -30,7 +30,7 @@
   font-family: var(--font-sans);
   font-size: 1.75rem;
   font-weight: 700;
-  color: var(--white);
+  color: var(--text-primary);
   margin: 0 0 8px 0;
   letter-spacing: -0.02em;
 }
@@ -57,7 +57,7 @@
   font-family: var(--font-sans);
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--white);
+  color: var(--text-primary);
   margin: 0 0 16px 0;
 }
 
