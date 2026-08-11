@@ -4,6 +4,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { authAPI } from '../services/api';
 import { saveAuthSession } from '../utils/authStorage';
 import { useTheme } from '../context/ThemeContext';
+import { consumeIntendedUrl } from '../utils/intendedUrl';
 import { ButtonLoadingSpinner } from '../components/LoadingSpinner';
 import './AuthForm.css';
 
@@ -77,7 +78,8 @@ function FanSignup() {
         });
         // Backend echoes the persisted preference – treat it as authoritative.
         applyAuthenticatedTheme(response.data.user?.theme_mode || theme);
-        navigate('/fan/home', { replace: true });
+        const intended = consumeIntendedUrl('fan');
+        navigate(intended || '/fan/home', { replace: true });
       } else {
         setError(response.error || response.message || t('auth.signupFailed'));
       }

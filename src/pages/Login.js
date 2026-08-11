@@ -5,6 +5,7 @@ import { authAPI } from '../services/api';
 import { setAppLanguage, SUPPORTED } from '../i18n';
 import { clearAllCached } from '../utils/routeDataCache';
 import { saveAuthSession } from '../utils/authStorage';
+import { consumeIntendedUrl } from '../utils/intendedUrl';
 import { ButtonLoadingSpinner } from '../components/LoadingSpinner';
 import { useChat } from '../context/ChatContext';
 import { useTheme } from '../context/ThemeContext';
@@ -57,7 +58,8 @@ const Login = () => {
         // The saved preference on the account wins over the local one.
         applyAuthenticatedTheme(response.data.user?.theme_mode);
         const role = response.data.user?.role || formData.role;
-        navigate(role === 'creator' ? '/creator/home' : '/fan/home', { replace: true });
+        const intended = consumeIntendedUrl(role);
+        navigate(intended || (role === 'creator' ? '/creator/home' : '/fan/home'), { replace: true });
       } else {
         setError(response.error || response.message || t('auth.loginFailed'));
       }

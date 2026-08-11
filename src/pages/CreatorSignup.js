@@ -1,9 +1,10 @@
-import React, { useState, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Trans, useTranslation } from 'react-i18next';
 import { authAPI } from '../services/api';
 import { saveAuthSession } from '../utils/authStorage';
 import { useTheme } from '../context/ThemeContext';
+import { consumeIntendedUrl } from '../utils/intendedUrl';
 import { ButtonLoadingSpinner } from '../components/LoadingSpinner';
 import './AuthForm.css';
 
@@ -13,6 +14,8 @@ function CreatorSignup() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { theme, applyAuthenticatedTheme } = useTheme();
+  const [searchParams] = useSearchParams();
+  const referralCode = (searchParams.get('ref') || '').trim();
   const [formData, setFormData] = useState({
     userName: '',
     email: '',
@@ -67,6 +70,9 @@ function CreatorSignup() {
       submitData.append('userName', formData.userName.trim());
       // Carry the theme the user picked before signing up.
       submitData.append('theme_mode', theme);
+      if (referralCode) {
+        submitData.append('referralCode', referralCode);
+      }
 
       const response = await authAPI.registerCreator(submitData);
       if (response.StatusCode === 200 && response.data && !response.error) {
@@ -77,7 +83,8 @@ function CreatorSignup() {
         });
         // Backend echoes the persisted preference – treat it as authoritative.
         applyAuthenticatedTheme(response.data.user?.theme_mode || theme);
-        navigate('/creator/home', { replace: true });
+        const intended = consumeIntendedUrl('creator');
+        navigate(intended || '/creator/home', { replace: true });
       } else {
         setError(response.error || response.message || t('auth.signupFailed'));
       }
@@ -103,6 +110,11 @@ function CreatorSignup() {
       <div className="auth-body">
         <h1 className="auth-heading">{t('auth.creatorSetupHeading')}</h1>
         <p className="auth-subtitle">{t('auth.creatorSetupSubtitle')}</p>
+        {referralCode ? (
+          <div className="auth-info" role="status">
+            {t('referral.signupBanner')}
+          </div>
+        ) : null}
         {error && <div className="auth-error">{error}</div>}
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="auth-field">
