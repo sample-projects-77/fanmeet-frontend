@@ -150,7 +150,7 @@
   "referral.step1": "Copy your referral link or enter an email below.",
   "referral.step2": "They create a Session Provider account using your invite.",
   "referral.step3": "Their signup appears in your invite history below.",
-  "referral.earningsNote": "When a Session Provider you invited completes paid sessions within 6 months of joining, you earn 5% of each session payment. The host keeps 80% and Fan Session keeps 15%.",
+  "referral.earningsNote": "When a Session Provider you invited completes paid sessions within 6 months of joining, you earn 10% of each session payment. The host keeps 80% and Fan Session keeps 10%.",
   "referral.yourLink": "Your referral link",
   "referral.copy": "Copy",
   "referral.copied": "Copied",

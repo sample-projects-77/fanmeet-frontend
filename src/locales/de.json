@@ -150,7 +150,7 @@
   "referral.step1": "Kopiere deinen Empfehlungslink oder gib unten eine E-Mail-Adresse ein.",
   "referral.step2": "Die Person erstellt über deine Einladung ein Session-Provider-Konto.",
   "referral.step3": "Die Registrierung erscheint unten in deiner Einladungsliste.",
-  "referral.earningsNote": "Wenn ein von dir eingeladener Session Provider innerhalb von 6 Monaten nach der Registrierung bezahlte Sessions abschließt, erhältst du 5 % jeder Session-Zahlung. Der Host behält 80 %, Fan Session 15 %.",
+  "referral.earningsNote": "Wenn ein von dir eingeladener Session Provider innerhalb von 6 Monaten nach der Registrierung bezahlte Sessions abschließt, erhältst du 10 % jeder Session-Zahlung. Der Host behält 80 %, Fan Session 10 %.",
   "referral.yourLink": "Dein Empfehlungslink",
   "referral.copy": "Kopieren",
   "referral.copied": "Kopiert",

@@ -159,7 +159,7 @@
 .creator-chats-name {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--on-status-fill);
+  color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

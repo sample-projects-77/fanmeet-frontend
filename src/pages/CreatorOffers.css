@@ -640,7 +640,7 @@
   padding: 12px;
   font-size: 12px;
   font-weight: 400;
-  color: var(--secondary-color);
+  color: var(--accent-yellow-text);
   font-family: var(--font-sans);
 }
 
