@@ -25,12 +25,12 @@
   margin-bottom: 24px;
   background: linear-gradient(
     to bottom right,
-    rgba(244, 192, 70, 0.15),
-    rgba(244, 192, 70, 0.05),
+    var(--dashboard-welcome-from),
+    var(--dashboard-welcome-mid),
     transparent
   );
   border-radius: 20px;
-  border: 1px solid rgba(244, 192, 70, 0.2);
+  border: 1px solid var(--dashboard-welcome-border);
   box-sizing: border-box;
 }
 
@@ -44,8 +44,8 @@
   padding: 12px;
   background: linear-gradient(
     to bottom right,
-    rgba(244, 192, 70, 0.3),
-    rgba(244, 192, 70, 0.1)
+    var(--dashboard-welcome-badge-from),
+    var(--dashboard-welcome-badge-to)
   );
   border-radius: 16px;
   font-size: 28px;
@@ -68,8 +68,8 @@
 
 .creator-dashboard-welcome-subtitle {
   font-size: 13px;
-  font-weight: 400;
-  color: var(--dark-grey-text);
+  font-weight: 500;
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -136,8 +136,8 @@
   grid-column: 1 / -1;
   background: linear-gradient(
     to bottom right,
-    rgba(46, 204, 113, 0.20),
-    transparent
+    var(--dashboard-metric-earnings-from),
+    var(--dashboard-metric-earnings-to)
   );
   box-shadow: 0 4px 20px rgba(46, 204, 113, 0.1);
 }
@@ -145,8 +145,8 @@
 .creator-metric-card--sessions {
   background: linear-gradient(
     to bottom right,
-    rgba(91, 159, 255, 0.20),
-    transparent
+    var(--dashboard-metric-sessions-from),
+    var(--dashboard-metric-sessions-to)
   );
   box-shadow: 0 4px 20px rgba(91, 159, 255, 0.1);
   text-decoration: none;
@@ -170,8 +170,8 @@ a.creator-metric-card--rating:hover {
 .creator-metric-card--rating {
   background: linear-gradient(
     to bottom right,
-    rgba(244, 192, 70, 0.20),
-    transparent
+    var(--dashboard-metric-rating-from),
+    var(--dashboard-metric-rating-to)
   );
   box-shadow: 0 4px 20px rgba(244, 192, 70, 0.1);
 }
@@ -194,28 +194,28 @@ a.creator-metric-card--rating:hover {
 .creator-metric-icon-wrap--earnings {
   background: linear-gradient(
     to bottom right,
-    rgba(46, 204, 113, 0.2),
-    rgba(46, 204, 113, 0.05)
+    var(--dashboard-metric-icon-earnings-from),
+    var(--dashboard-metric-icon-earnings-to)
   );
-  color: var(--green-success);
+  color: var(--dashboard-metric-icon-earnings-fg);
 }
 
 .creator-metric-icon-wrap--sessions {
   background: linear-gradient(
     to bottom right,
-    rgba(91, 159, 255, 0.2),
-    rgba(91, 159, 255, 0.05)
+    var(--dashboard-metric-icon-sessions-from),
+    var(--dashboard-metric-icon-sessions-to)
   );
-  color: var(--blue-accent);
+  color: var(--dashboard-metric-icon-sessions-fg);
 }
 
 .creator-metric-icon-wrap--rating {
   background: linear-gradient(
     to bottom right,
-    rgba(244, 192, 70, 0.2),
-    rgba(244, 192, 70, 0.05)
+    var(--dashboard-metric-icon-rating-from),
+    var(--dashboard-metric-icon-rating-to)
   );
-  color: var(--secondary-color);
+  color: var(--dashboard-metric-icon-rating-fg);
 }
 
 /* Value: h2.copyWith(fontWeight: w800) */
@@ -232,11 +232,11 @@ a.creator-metric-card--rating:hover {
   font-size: 2rem;
 }
 
-/* Label: b2, darkGreyTextColor, fontSize 13 */
+/* Label: b2, high-emphasis so Earnings / Sessions / Rating stay readable */
 .creator-metric-label {
   font-size: 13px;
-  font-weight: 400;
-  color: var(--dark-grey-text);
+  font-weight: 500;
+  color: var(--text-primary);
 }
 
 /* ----- DashboardActionButton (My Offers) + ShareProfileButton (Share) – Flutter match ----- */
@@ -266,8 +266,8 @@ a.creator-metric-card--rating:hover {
   gap: 14px;
   background: linear-gradient(
     to bottom right,
-    var(--dark-blue-shade-3),
-    rgba(28, 31, 38, 0.8)
+    var(--dashboard-action-from),
+    var(--dashboard-action-to)
   );
   border: 1.5px solid rgba(91, 159, 255, 0.3);
   box-shadow: 0 4px 15px rgba(91, 159, 255, 0.15);
@@ -311,8 +311,8 @@ a.creator-metric-card--rating:hover {
   gap: 14px;
   background: linear-gradient(
     to bottom right,
-    var(--dark-blue-shade-3),
-    rgba(28, 31, 38, 0.8)
+    var(--dashboard-action-from),
+    var(--dashboard-action-to)
   );
   border: 1.5px solid rgba(244, 192, 70, 0.3);
   box-shadow: 0 4px 15px rgba(244, 192, 70, 0.15);
@@ -334,8 +334,8 @@ a.creator-metric-card--rating:hover {
   justify-content: center;
   padding: 8px;
   border-radius: 10px;
-  background: rgba(244, 192, 70, 0.2);
-  color: var(--secondary-color);
+  background: var(--dashboard-action-icon-bg);
+  color: var(--dashboard-action-icon-fg);
   flex-shrink: 0;
 }
 
@@ -358,8 +358,8 @@ a.creator-metric-card--rating:hover {
   gap: 14px;
   background: linear-gradient(
     to bottom right,
-    var(--dark-blue-shade-3),
-    rgba(28, 31, 38, 0.8)
+    var(--dashboard-action-from),
+    var(--dashboard-action-to)
   );
   border: 1.5px solid rgba(244, 192, 70, 0.3);
   box-shadow: 0 4px 15px rgba(244, 192, 70, 0.15);
@@ -380,8 +380,8 @@ a.creator-metric-card--rating:hover {
   justify-content: center;
   padding: 8px;
   border-radius: 10px;
-  background: rgba(244, 192, 70, 0.2);
-  color: var(--secondary-color);
+  background: var(--dashboard-action-icon-bg);
+  color: var(--dashboard-action-icon-fg);
   flex-shrink: 0;
 }
 
