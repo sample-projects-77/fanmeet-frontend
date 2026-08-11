@@ -277,8 +277,8 @@
   padding: 18px 20px;
   background: linear-gradient(
     to bottom right,
-    var(--dark-blue-shade-3),
-    rgba(28, 31, 38, 0.8)
+    var(--dashboard-action-from),
+    var(--dashboard-action-to)
   );
   border: 1.5px solid rgba(244, 192, 70, 0.3);
   border-radius: 16px;
@@ -315,8 +315,8 @@
   justify-content: center;
   padding: 8px;
   border-radius: 10px;
-  background: rgba(244, 192, 70, 0.2);
-  color: var(--secondary-color);
+  background: var(--dashboard-action-icon-bg);
+  color: var(--dashboard-action-icon-fg);
   flex-shrink: 0;
 }
 
