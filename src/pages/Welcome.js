@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
-import GppGood from '@mui/icons-material/GppGood';
 import GppGoodOutlined from '@mui/icons-material/GppGoodOutlined';
 import VerifiedUserOutlined from '@mui/icons-material/VerifiedUserOutlined';
 import CancelOutlined from '@mui/icons-material/CancelOutlined';
@@ -21,6 +20,12 @@ import SpaOutlined from '@mui/icons-material/SpaOutlined';
 import MusicNoteOutlined from '@mui/icons-material/MusicNoteOutlined';
 import PaletteOutlined from '@mui/icons-material/PaletteOutlined';
 import TheaterComedyOutlined from '@mui/icons-material/TheaterComedyOutlined';
+import RocketLaunchOutlined from '@mui/icons-material/RocketLaunchOutlined';
+import CheckCircleOutline from '@mui/icons-material/CheckCircleOutline';
+import StarRounded from '@mui/icons-material/StarRounded';
+import PeopleAltOutlined from '@mui/icons-material/PeopleAltOutlined';
+import EventAvailableOutlined from '@mui/icons-material/EventAvailableOutlined';
+import EuroOutlined from '@mui/icons-material/EuroOutlined';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import ThemeToggleButton from '../components/ThemeToggleButton';
 import Footer from '../components/Footer';
@@ -29,7 +34,6 @@ import './Welcome.css';
 /** Purple → sky-blue gradient for landing icons (matches SVG defs id below). */
 const GRADIENT_ICON_SX = { fill: 'url(#welcome-icon-gradient)' };
 
-const TRUST_ICONS = [GppGoodOutlined, VerifiedUserOutlined, LockOutlined];
 const SAFE_ICONS = [GppGoodOutlined, VerifiedUserOutlined, CancelOutlined, LockOutlined];
 const STEP_ICONS = [PersonAddAlt1Outlined, LocalOfferOutlined, CalendarMonthOutlined, VideocamOutlined];
 const USE_CASES = [
@@ -85,8 +89,12 @@ function VideoCallMock({ t }) {
             draggable="false"
           />
         </div>
-        <div className="welcome-mock-live">{t('welcome.heroMockLive')}</div>
-        <div className="welcome-mock-badge">{t('welcome.heroMockBadge')}</div>
+        <div className="welcome-mock-earnings">
+          <Trans
+            i18nKey="welcome.heroMockEarnings"
+            components={{ amount: <strong className="welcome-mock-earnings-amount" /> }}
+          />
+        </div>
         <div className="welcome-mock-controls">
           <span className="welcome-mock-btn"><VideocamOutlined fontSize="small" /></span>
           <span className="welcome-mock-btn"><MicOutlined fontSize="small" /></span>
@@ -102,50 +110,66 @@ function ExplainerVideo({ t }) {
     () => parseExplainerMedia(process.env.REACT_APP_EXPLAINER_VIDEO_URL),
     [],
   );
+  const hasMedia = Boolean(media);
 
   return (
     <section className="welcome-video" aria-labelledby="welcome-video-heading">
-      <h2 id="welcome-video-heading" className="welcome-section-title">
-        {t('welcome.videoTitle')}
-      </h2>
-      <p className="welcome-section-lead">{t('welcome.videoBody')}</p>
-      <div className="welcome-video-frame">
-        {media?.type === 'youtube' && (
-          <iframe
-            className="welcome-video-embed"
-            src={`https://www.youtube-nocookie.com/embed/${media.id}?rel=0`}
-            title={t('welcome.videoTitle')}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
-        )}
-        {media?.type === 'vimeo' && (
-          <iframe
-            className="welcome-video-embed"
-            src={`https://player.vimeo.com/video/${media.id}`}
-            title={t('welcome.videoTitle')}
-            allow="autoplay; fullscreen; picture-in-picture"
-            allowFullScreen
-          />
-        )}
-        {media?.type === 'file' && (
-          <video className="welcome-video-embed" controls playsInline preload="metadata">
-            <source src={media.src} />
-          </video>
-        )}
-        {!media && (
-          <div className="welcome-video-placeholder">
-            <div className="welcome-video-placeholder-steps" aria-hidden="true">
-              {[1, 2, 3, 4].map((n) => (
-                <span key={n} className="welcome-video-placeholder-step">{n}</span>
-              ))}
+      <div className="welcome-video-layout">
+        <div className="welcome-video-frame">
+          {media?.type === 'youtube' && (
+            <iframe
+              className="welcome-video-embed"
+              src={`https://www.youtube-nocookie.com/embed/${media.id}?rel=0`}
+              title={t('welcome.videoTitle')}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          )}
+          {media?.type === 'vimeo' && (
+            <iframe
+              className="welcome-video-embed"
+              src={`https://player.vimeo.com/video/${media.id}`}
+              title={t('welcome.videoTitle')}
+              allow="autoplay; fullscreen; picture-in-picture"
+              allowFullScreen
+            />
+          )}
+          {media?.type === 'file' && (
+            <video className="welcome-video-embed" controls playsInline preload="metadata">
+              <source src={media.src} />
+            </video>
+          )}
+          {!media && (
+            <div className="welcome-video-placeholder">
+              <div className="welcome-video-placeholder-steps" aria-hidden="true">
+                {[1, 2, 3, 4].map((n) => (
+                  <span key={n} className="welcome-video-placeholder-step">{n}</span>
+                ))}
+              </div>
+              <div className="welcome-video-play" aria-hidden="true">
+                <PlayArrowRounded />
+              </div>
+              <p className="welcome-video-soon">{t('welcome.videoSoon')}</p>
             </div>
-            <div className="welcome-video-play" aria-hidden="true">
-              <PlayArrowRounded />
-            </div>
-            <p className="welcome-video-soon">{t('welcome.videoSoon')}</p>
-          </div>
-        )}
+          )}
+        </div>
+        <div className="welcome-video-copy">
+          <h2 id="welcome-video-heading" className="welcome-section-title welcome-section-title--left">
+            {t('welcome.videoTitle')}
+          </h2>
+          <p className="welcome-section-lead welcome-section-lead--left">{t('welcome.videoBody')}</p>
+          {hasMedia ? (
+            <a className="welcome-video-watch" href="#welcome-video-heading">
+              <PlayArrowRounded aria-hidden />
+              {t('welcome.videoWatch')}
+            </a>
+          ) : (
+            <span className="welcome-video-watch welcome-video-watch--disabled">
+              <PlayArrowRounded aria-hidden />
+              {t('welcome.videoWatch')}
+            </span>
+          )}
+        </div>
       </div>
     </section>
   );
@@ -254,10 +278,22 @@ function CtaBlock({ t, variant = 'default' }) {
 function Welcome() {
   const { t, i18n } = useTranslation();
 
-  const trustKeys = [
-    { title: 'welcome.trust1Title', body: 'welcome.trust1Body' },
-    { title: 'welcome.trust2Title', body: 'welcome.trust2Body' },
-    { title: 'welcome.trust3Title', body: 'welcome.trust3Body' },
+  const featureItems = [
+    {
+      line1: 'welcome.featurePriceLine1',
+      line2: 'welcome.featurePriceLine2',
+      Icon: LocalOfferOutlined,
+    },
+    {
+      line1: 'welcome.featureScheduleLine1',
+      line2: 'welcome.featureScheduleLine2',
+      Icon: CalendarMonthOutlined,
+    },
+    {
+      line1: 'welcome.featureFreeLine1',
+      line2: 'welcome.featureFreeLine2',
+      Icon: RocketLaunchOutlined,
+    },
   ];
 
   const safeKeys = [
@@ -272,6 +308,13 @@ function Welcome() {
     { title: 'welcome.step2Title', body: 'welcome.step2Body' },
     { title: 'welcome.step3Title', body: 'welcome.step3Body' },
     { title: 'welcome.step4Title', body: 'welcome.step4Body' },
+  ];
+
+  const supportKeys = ['welcome.support1', 'welcome.support2', 'welcome.support3'];
+  const badgeKeys = [
+    { key: 'welcome.badgePay', Icon: LockOutlined },
+    { key: 'welcome.badgeNoSub', Icon: CancelOutlined },
+    { key: 'welcome.badgePrivacy', Icon: VerifiedUserOutlined },
   ];
 
   return (
@@ -304,28 +347,39 @@ function Welcome() {
       <div className="welcome-inner">
         <section className="welcome-hero">
           <div className="welcome-hero-copy">
+            <p className="welcome-eyebrow">{t('welcome.eyebrow')}</p>
             <h1 className="welcome-headline">
               <Trans
                 i18nKey="welcome.headline"
-                components={{ success: <span className="welcome-headline-accent" /> }}
+                components={{
+                  money: <span className="welcome-headline-accent" />,
+                  followers: <span className="welcome-headline-accent" />,
+                }}
               />
             </h1>
-            <p className="welcome-hero-what">{t('welcome.heroWhat')}</p>
             <p className="welcome-hero-line1">
               <Trans
                 i18nKey="welcome.heroLine1"
                 components={{
-                  coaching: <span className="welcome-hero-accent welcome-hero-accent--blue" />,
-                  advice: <span className="welcome-hero-accent welcome-hero-accent--purple" />,
+                  calls: <span className="welcome-hero-accent welcome-hero-accent--purple" />,
                 }}
               />
             </p>
             <p className="welcome-hero-line2">{t('welcome.heroLine2')}</p>
 
-            <div className="welcome-moderation" role="note">
-              <GppGood className="welcome-moderation-icon" aria-hidden />
-              <span>{t('welcome.moderationBanner')}</span>
-            </div>
+            <ul className="welcome-features" aria-label={t('welcome.trustAria')}>
+              {featureItems.map(({ line1, line2, Icon }) => (
+                <li key={line1} className="welcome-feature">
+                  <span className="welcome-feature-icon" aria-hidden>
+                    <Icon className="welcome-feature-icon-svg" sx={GRADIENT_ICON_SX} />
+                  </span>
+                  <span className="welcome-feature-text">
+                    <span className="welcome-feature-line1">{t(line1)}</span>
+                    <span className="welcome-feature-line2">{t(line2)}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
 
             <CtaBlock t={t} />
           </div>
@@ -333,25 +387,10 @@ function Welcome() {
           <VideoCallMock t={t} />
         </section>
 
-        <section className="welcome-trust" aria-label={t('welcome.trustAria')}>
-          {trustKeys.map((item, i) => {
-            const Icon = TRUST_ICONS[i];
-            return (
-              <div key={item.title} className="welcome-trust-item">
-                <div className="welcome-trust-icon-wrap" aria-hidden>
-                  <Icon className="welcome-trust-icon" sx={GRADIENT_ICON_SX} />
-                </div>
-                <h3 className="welcome-trust-title">{t(item.title)}</h3>
-                <p className="welcome-trust-body">{t(item.body)}</p>
-              </div>
-            );
-          })}
-        </section>
-
         <ExplainerVideo t={t} />
 
         <section className="welcome-how" aria-labelledby="welcome-how-heading">
-          <h2 id="welcome-how-heading" className="welcome-section-title">
+          <h2 id="welcome-how-heading" className="welcome-section-title welcome-section-title--sr">
             {t('welcome.howTitle')}
           </h2>
           <div className="welcome-steps">
@@ -376,6 +415,81 @@ function Welcome() {
                 </React.Fragment>
               );
             })}
+          </div>
+        </section>
+
+        <section className="welcome-stats" aria-label={t('welcome.trustAria')}>
+          <div className="welcome-stats-rating">
+            <div className="welcome-stats-avatars" aria-hidden>
+              {[0, 1, 2, 3, 4].map((i) => (
+                <span key={i} className={`welcome-stats-avatar welcome-stats-avatar--${i}`} />
+              ))}
+            </div>
+            <div className="welcome-stats-rating-copy">
+              <span className="welcome-stats-stars" aria-hidden>
+                {[0, 1, 2, 3, 4].map((i) => (
+                  <StarRounded key={i} fontSize="inherit" />
+                ))}
+              </span>
+              <p className="welcome-stats-rating-text">
+                <strong>{t('welcome.statsScore')}</strong>
+                {' '}
+                <span>{t('welcome.statsRatingLabel')}</span>
+              </p>
+            </div>
+          </div>
+
+          <div className="welcome-stats-metrics">
+            <div className="welcome-stats-metric">
+              <PeopleAltOutlined className="welcome-stats-metric-icon" aria-hidden />
+              <div className="welcome-stats-metric-copy">
+                <strong>{t('welcome.statsCreatorsValue')}</strong>
+                <span>{t('welcome.statsCreatorsLabel')}</span>
+              </div>
+            </div>
+            <div className="welcome-stats-metric">
+              <EventAvailableOutlined className="welcome-stats-metric-icon" aria-hidden />
+              <div className="welcome-stats-metric-copy">
+                <strong>{t('welcome.statsSessionsValue')}</strong>
+                <span>{t('welcome.statsSessionsLabel')}</span>
+              </div>
+            </div>
+            <div className="welcome-stats-metric">
+              <EuroOutlined className="welcome-stats-metric-icon" aria-hidden />
+              <div className="welcome-stats-metric-copy">
+                <strong>{t('welcome.statsPayoutsValue')}</strong>
+                <span>{t('welcome.statsPayoutsLabel')}</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="welcome-reassure">
+          <div className="welcome-reassure-col">
+            <h2 className="welcome-reassure-title">{t('welcome.safeTitle')}</h2>
+            <ul className="welcome-reassure-list">
+              {safeKeys.slice(0, 3).map((item) => (
+                <li key={item.title}>
+                  <CheckCircleOutline className="welcome-reassure-check" aria-hidden />
+                  <span>
+                    <strong>{t(item.title)}</strong>
+                    {' — '}
+                    {t(item.body)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="welcome-reassure-col">
+            <h2 className="welcome-reassure-title">{t('welcome.supportTitle')}</h2>
+            <ul className="welcome-reassure-list">
+              {supportKeys.map((key) => (
+                <li key={key}>
+                  <CheckCircleOutline className="welcome-reassure-check" aria-hidden />
+                  <span>{t(key)}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
 
@@ -436,6 +550,15 @@ function Welcome() {
           <p className="welcome-final-body">{t('welcome.ctaBody')}</p>
           <CtaBlock t={t} variant="onAccent" />
         </section>
+
+        <div className="welcome-trust-badges" aria-label={t('welcome.trustAria')}>
+          {badgeKeys.map(({ key, Icon }) => (
+            <div key={key} className="welcome-trust-badge">
+              <Icon className="welcome-trust-badge-icon" aria-hidden />
+              <span>{t(key)}</span>
+            </div>
+          ))}
+        </div>
 
         <footer className="welcome-footer-wrap">
           <Footer />
