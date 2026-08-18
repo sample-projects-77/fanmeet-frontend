@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import GppGoodOutlined from '@mui/icons-material/GppGoodOutlined';
@@ -61,6 +61,9 @@ function formatEuro(amount, language) {
   }).format(amount);
 }
 
+const DEFAULT_EXPLAINER_VIDEO_URL =
+  'https://s3-fanmeet-bucket.s3.us-east-1.amazonaws.com/FAN+SESSION+V1.mp4';
+
 function parseExplainerMedia(url) {
   if (!url || typeof url !== 'string') return null;
   const trimmed = url.trim();
@@ -105,17 +108,34 @@ function VideoCallMock({ t }) {
   );
 }
 
-function ExplainerVideo({ t }) {
+function ExplainerVideo({ t, steps }) {
+  const videoRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
   const media = useMemo(
-    () => parseExplainerMedia(process.env.REACT_APP_EXPLAINER_VIDEO_URL),
+    () => parseExplainerMedia(
+      process.env.REACT_APP_EXPLAINER_VIDEO_URL || DEFAULT_EXPLAINER_VIDEO_URL,
+    ),
     [],
   );
-  const hasMedia = Boolean(media);
+  const hasFileVideo = media?.type === 'file';
+
+  const playExplainerVideo = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const playPromise = video.play();
+    if (playPromise && typeof playPromise.catch === 'function') {
+      playPromise.catch(() => {
+        video.muted = true;
+        video.play().catch(() => {});
+      });
+    }
+  };
 
   return (
     <section className="welcome-video" aria-labelledby="welcome-video-heading">
       <div className="welcome-video-layout">
-        <div className="welcome-video-frame">
+        <div id="welcome-explainer-video" className="welcome-video-frame">
           {media?.type === 'youtube' && (
             <iframe
               className="welcome-video-embed"
@@ -134,10 +154,32 @@ function ExplainerVideo({ t }) {
               allowFullScreen
             />
           )}
-          {media?.type === 'file' && (
-            <video className="welcome-video-embed" controls playsInline preload="metadata">
-              <source src={media.src} />
-            </video>
+          {hasFileVideo && (
+            <>
+              <video
+                ref={videoRef}
+                className="welcome-video-embed"
+                controls
+                playsInline
+                preload="metadata"
+                title={t('welcome.videoTitle')}
+                onPlay={() => setIsPlaying(true)}
+                onPause={() => setIsPlaying(false)}
+                onEnded={() => setIsPlaying(false)}
+              >
+                <source src={media.src} type="video/mp4" />
+              </video>
+              {!isPlaying && (
+                <button
+                  type="button"
+                  className="welcome-video-center-play"
+                  onClick={playExplainerVideo}
+                  aria-label={t('welcome.videoWatch')}
+                >
+                  <PlayArrowRounded />
+                </button>
+              )}
+            </>
           )}
           {!media && (
             <div className="welcome-video-placeholder">
@@ -158,17 +200,37 @@ function ExplainerVideo({ t }) {
             {t('welcome.videoTitle')}
           </h2>
           <p className="welcome-section-lead welcome-section-lead--left">{t('welcome.videoBody')}</p>
-          {hasMedia ? (
-            <a className="welcome-video-watch" href="#welcome-video-heading">
+          {hasFileVideo && (
+            <button
+              type="button"
+              className="welcome-video-watch"
+              onClick={playExplainerVideo}
+            >
               <PlayArrowRounded aria-hidden />
               {t('welcome.videoWatch')}
-            </a>
-          ) : (
-            <span className="welcome-video-watch welcome-video-watch--disabled">
-              <PlayArrowRounded aria-hidden />
-              {t('welcome.videoWatch')}
-            </span>
+            </button>
           )}
+        </div>
+        <div className="welcome-how welcome-how--beside" aria-label={t('welcome.howTitle')}>
+          <div className="welcome-steps">
+            {steps.map((item, i) => {
+              const Icon = STEP_ICONS[i];
+              return (
+                <div key={item.title} className="welcome-step">
+                  <div className="welcome-step-visual">
+                    <div className="welcome-step-icon-stack">
+                      <span className="welcome-step-num">{i + 1}</span>
+                      <div className="welcome-step-icon-ring">
+                        <Icon className="welcome-step-icon" sx={GRADIENT_ICON_SX} />
+                      </div>
+                    </div>
+                  </div>
+                  <h3 className="welcome-step-title">{t(item.title)}</h3>
+                  <p className="welcome-step-body">{t(item.body)}</p>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>
@@ -387,36 +449,7 @@ function Welcome() {
           <VideoCallMock t={t} />
         </section>
 
-        <ExplainerVideo t={t} />
-
-        <section className="welcome-how" aria-labelledby="welcome-how-heading">
-          <h2 id="welcome-how-heading" className="welcome-section-title welcome-section-title--sr">
-            {t('welcome.howTitle')}
-          </h2>
-          <div className="welcome-steps">
-            {stepKeys.map((item, i) => {
-              const Icon = STEP_ICONS[i];
-              const isLast = i === stepKeys.length - 1;
-              return (
-                <React.Fragment key={item.title}>
-                  <div className="welcome-step">
-                    <div className="welcome-step-visual">
-                      <div className="welcome-step-icon-stack">
-                        <span className="welcome-step-num">{i + 1}</span>
-                        <div className="welcome-step-icon-ring">
-                          <Icon className="welcome-step-icon" sx={GRADIENT_ICON_SX} />
-                        </div>
-                      </div>
-                    </div>
-                    <h3 className="welcome-step-title">{t(item.title)}</h3>
-                    <p className="welcome-step-body">{t(item.body)}</p>
-                  </div>
-                  {!isLast && <div className="welcome-step-connector" aria-hidden />}
-                </React.Fragment>
-              );
-            })}
-          </div>
-        </section>
+        <ExplainerVideo t={t} steps={stepKeys} />
 
         <section className="welcome-stats" aria-label={t('welcome.trustAria')}>
           <div className="welcome-stats-rating">
