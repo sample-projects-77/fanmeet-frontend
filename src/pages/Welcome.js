@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import GppGoodOutlined from '@mui/icons-material/GppGoodOutlined';
@@ -104,7 +104,9 @@ function VideoCallMock() {
 
 function ExplainerVideo({ t, steps }) {
   const videoRef = useRef(null);
+  const sectionRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [preloadMode, setPreloadMode] = useState('metadata');
   const media = useMemo(
     () => parseExplainerMedia(
       process.env.REACT_APP_EXPLAINER_VIDEO_URL || DEFAULT_EXPLAINER_VIDEO_URL,
@@ -113,21 +115,115 @@ function ExplainerVideo({ t, steps }) {
   );
   const hasFileVideo = media?.type === 'file';
 
+  // Warm the connection + start buffering as soon as the landing page mounts,
+  // then bump to full preload when the section is near the viewport.
+  useEffect(() => {
+    if (!hasFileVideo || !media?.src) return undefined;
+
+    const origin = (() => {
+      try {
+        return new URL(media.src).origin;
+      } catch {
+        return null;
+      }
+    })();
+
+    const links = [];
+    const addLink = (attrs) => {
+      const el = document.createElement('link');
+      Object.entries(attrs).forEach(([k, v]) => {
+        if (v != null) el.setAttribute(k, v);
+      });
+      document.head.appendChild(el);
+      links.push(el);
+    };
+
+    if (origin) {
+      addLink({ rel: 'preconnect', href: origin, crossorigin: '' });
+      addLink({ rel: 'dns-prefetch', href: origin });
+    }
+    addLink({ rel: 'preload', as: 'video', href: media.src, type: 'video/mp4' });
+
+    const startBuffering = () => {
+      setPreloadMode('auto');
+    };
+
+    // Let the hero paint first, then begin downloading the MP4.
+    const idleId =
+      typeof window.requestIdleCallback === 'function'
+        ? window.requestIdleCallback(startBuffering, { timeout: 1200 })
+        : null;
+    const timeoutId = idleId == null ? window.setTimeout(startBuffering, 400) : null;
+
+    return () => {
+      links.forEach((el) => el.remove());
+      if (idleId != null && typeof window.cancelIdleCallback === 'function') {
+        window.cancelIdleCallback(idleId);
+      }
+      if (timeoutId != null) window.clearTimeout(timeoutId);
+    };
+  }, [hasFileVideo, media?.src]);
+
+  useEffect(() => {
+    if (!hasFileVideo || !sectionRef.current) return undefined;
+
+    const node = sectionRef.current;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setPreloadMode('auto');
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '400px 0px', threshold: 0.01 },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [hasFileVideo]);
+
   const playExplainerVideo = () => {
     const video = videoRef.current;
     if (!video) return;
-    video.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    const playPromise = video.play();
-    if (playPromise && typeof playPromise.catch === 'function') {
-      playPromise.catch(() => {
-        video.muted = true;
-        video.play().catch(() => {});
-      });
+
+    if (video.preload !== 'auto') {
+      setPreloadMode('auto');
+      video.preload = 'auto';
     }
+
+    video.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    const tryPlay = () => {
+      const playPromise = video.play();
+      if (playPromise && typeof playPromise.catch === 'function') {
+        playPromise.catch(() => {
+          video.muted = true;
+          video.play().catch(() => {});
+        });
+      }
+    };
+
+    if (video.readyState >= 2) {
+      tryPlay();
+      return;
+    }
+
+    const onCanPlay = () => {
+      video.removeEventListener('canplay', onCanPlay);
+      tryPlay();
+    };
+    video.addEventListener('canplay', onCanPlay);
+    window.setTimeout(() => {
+      video.removeEventListener('canplay', onCanPlay);
+      tryPlay();
+    }, 2500);
   };
 
   return (
-    <section className="welcome-video" aria-labelledby="welcome-video-heading">
+    <section
+      ref={sectionRef}
+      className="welcome-video"
+      aria-labelledby="welcome-video-heading"
+    >
       <div className="welcome-video-layout">
         <div className="welcome-video-copy">
           <p className="welcome-video-badge">{t('welcome.videoBadge')}</p>
@@ -178,7 +274,7 @@ function ExplainerVideo({ t, steps }) {
                 className="welcome-video-embed"
                 controls
                 playsInline
-                preload="metadata"
+                preload={preloadMode}
                 title={t('welcome.videoTitle')}
                 onPlay={() => setIsPlaying(true)}
                 onPause={() => setIsPlaying(false)}
