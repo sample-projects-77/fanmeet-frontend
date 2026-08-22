@@ -11,8 +11,7 @@ import LocalOfferOutlined from '@mui/icons-material/LocalOfferOutlined';
 import CalendarMonthOutlined from '@mui/icons-material/CalendarMonthOutlined';
 import VideocamOutlined from '@mui/icons-material/VideocamOutlined';
 import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded';
-import MicOutlined from '@mui/icons-material/MicOutlined';
-import CallEnd from '@mui/icons-material/CallEnd';
+import ChevronRightRounded from '@mui/icons-material/ChevronRightRounded';
 import FitnessCenterOutlined from '@mui/icons-material/FitnessCenterOutlined';
 import WorkOutline from '@mui/icons-material/WorkOutline';
 import SchoolOutlined from '@mui/icons-material/SchoolOutlined';
@@ -44,6 +43,14 @@ const USE_CASES = [
   { labelKey: 'category.Music & Performing Arts', Icon: MusicNoteOutlined },
   { labelKey: 'category.Art & Design', Icon: PaletteOutlined },
   { labelKey: 'category.Entertainment & Influencing', Icon: TheaterComedyOutlined },
+];
+
+const REVIEW_AVATARS = [
+  '/images/reviews/review-avatar-1.png',
+  '/images/reviews/review-avatar-2.png',
+  '/images/reviews/review-avatar-3.png',
+  '/images/reviews/review-avatar-4.png',
+  '/images/reviews/review-avatar-5.png',
 ];
 
 const PRICE_MIN = 10;
@@ -80,29 +87,16 @@ function parseExplainerMedia(url) {
   return { type: 'file', src: trimmed };
 }
 
-function VideoCallMock({ t }) {
+function VideoCallMock() {
   return (
     <div className="welcome-mock" aria-hidden="true">
-      <div className="welcome-mock-screen">
-        <div className="welcome-mock-person">
-          <img
-            src="/images/welcome-mock-person.jpg"
-            alt=""
-            className="welcome-mock-avatar"
-            draggable="false"
-          />
-        </div>
-        <div className="welcome-mock-earnings">
-          <Trans
-            i18nKey="welcome.heroMockEarnings"
-            components={{ amount: <strong className="welcome-mock-earnings-amount" /> }}
-          />
-        </div>
-        <div className="welcome-mock-controls">
-          <span className="welcome-mock-btn"><VideocamOutlined fontSize="small" /></span>
-          <span className="welcome-mock-btn"><MicOutlined fontSize="small" /></span>
-          <span className="welcome-mock-btn welcome-mock-btn--end"><CallEnd fontSize="small" /></span>
-        </div>
+      <div className="welcome-mock-screen welcome-mock-screen--photo">
+        <img
+          src="/images/welcome-mock-call.png"
+          alt=""
+          className="welcome-mock-photo"
+          draggable="false"
+        />
       </div>
     </div>
   );
@@ -135,6 +129,29 @@ function ExplainerVideo({ t, steps }) {
   return (
     <section className="welcome-video" aria-labelledby="welcome-video-heading">
       <div className="welcome-video-layout">
+        <div className="welcome-video-copy">
+          <p className="welcome-video-badge">{t('welcome.videoBadge')}</p>
+          <h2 id="welcome-video-heading" className="welcome-video-headline">
+            <Trans
+              i18nKey="welcome.videoHeadline"
+              components={{
+                creator: <span className="welcome-video-accent" />,
+                earn: <span className="welcome-video-accent" />,
+              }}
+            />
+          </h2>
+          <p className="welcome-video-sub">{t('welcome.videoSub')}</p>
+          {hasFileVideo && (
+            <button
+              type="button"
+              className="welcome-video-watch"
+              onClick={playExplainerVideo}
+            >
+              <PlayArrowRounded aria-hidden />
+              {t('welcome.videoWatch')}
+            </button>
+          )}
+        </div>
         <div id="welcome-explainer-video" className="welcome-video-frame">
           {media?.type === 'youtube' && (
             <iframe
@@ -195,39 +212,28 @@ function ExplainerVideo({ t, steps }) {
             </div>
           )}
         </div>
-        <div className="welcome-video-copy">
-          <h2 id="welcome-video-heading" className="welcome-section-title welcome-section-title--left">
-            {t('welcome.videoTitle')}
-          </h2>
-          <p className="welcome-section-lead welcome-section-lead--left">{t('welcome.videoBody')}</p>
-          {hasFileVideo && (
-            <button
-              type="button"
-              className="welcome-video-watch"
-              onClick={playExplainerVideo}
-            >
-              <PlayArrowRounded aria-hidden />
-              {t('welcome.videoWatch')}
-            </button>
-          )}
-        </div>
         <div className="welcome-how welcome-how--beside" aria-label={t('welcome.howTitle')}>
           <div className="welcome-steps">
             {steps.map((item, i) => {
               const Icon = STEP_ICONS[i];
               return (
-                <div key={item.title} className="welcome-step">
-                  <div className="welcome-step-visual">
-                    <div className="welcome-step-icon-stack">
-                      <span className="welcome-step-num">{i + 1}</span>
-                      <div className="welcome-step-icon-ring">
-                        <Icon className="welcome-step-icon" sx={GRADIENT_ICON_SX} />
+                <React.Fragment key={item.title}>
+                  <div className="welcome-step">
+                    <div className="welcome-step-visual">
+                      <div className="welcome-step-icon-stack">
+                        <span className="welcome-step-num">{i + 1}</span>
+                        <div className="welcome-step-icon-ring">
+                          <Icon className="welcome-step-icon" sx={GRADIENT_ICON_SX} />
+                        </div>
                       </div>
                     </div>
+                    <h3 className="welcome-step-title">{t(item.title)}</h3>
+                    <p className="welcome-step-body">{t(item.body)}</p>
                   </div>
-                  <h3 className="welcome-step-title">{t(item.title)}</h3>
-                  <p className="welcome-step-body">{t(item.body)}</p>
-                </div>
+                  {i < steps.length - 1 && (
+                    <div className="welcome-step-connector" aria-hidden />
+                  )}
+                </React.Fragment>
               );
             })}
           </div>
@@ -306,6 +312,40 @@ function CtaBlock({ t, variant = 'default' }) {
     variant === 'onAccent'
       ? 'welcome-btn welcome-btn--on-accent-secondary'
       : 'welcome-btn welcome-btn--secondary';
+  const showChevron = variant === 'onAccent';
+
+  if (variant === 'onAccent') {
+    return (
+      <>
+        <div className="welcome-actions">
+          <Link to="/signup/creator" className={primaryClass}>
+            <span className="welcome-btn-icon-badge" aria-hidden>
+              <PersonOutline className="welcome-btn-icon" />
+            </span>
+            <span className="welcome-btn-copy">
+              <span className="welcome-btn-title">{t('welcome.signUpCreator')}</span>
+              <span className="welcome-btn-hint">{t('welcome.signUpCreatorHint')}</span>
+            </span>
+            <ChevronRightRounded className="welcome-btn-chevron" aria-hidden />
+          </Link>
+          <Link to="/signup/fan" className={secondaryClass}>
+            <span className="welcome-btn-icon-badge" aria-hidden>
+              <PersonOutline className="welcome-btn-icon" />
+            </span>
+            <span className="welcome-btn-copy">
+              <span className="welcome-btn-title">{t('welcome.signUpFan')}</span>
+              <span className="welcome-btn-hint">{t('welcome.signUpFanHint')}</span>
+            </span>
+            <ChevronRightRounded className="welcome-btn-chevron" aria-hidden />
+          </Link>
+        </div>
+        <p className="welcome-login">
+          {t('welcome.alreadyHaveAccount')}{' '}
+          <Link to="/login" className="welcome-login-link">{t('welcome.logIn')}</Link>
+        </p>
+      </>
+    );
+  }
 
   return (
     <>
@@ -408,47 +448,49 @@ function Welcome() {
 
       <div className="welcome-inner">
         <section className="welcome-hero">
-          <div className="welcome-hero-copy">
-            <p className="welcome-eyebrow">{t('welcome.eyebrow')}</p>
-            <h1 className="welcome-headline">
-              <Trans
-                i18nKey="welcome.headline"
-                components={{
-                  money: <span className="welcome-headline-accent" />,
-                  followers: <span className="welcome-headline-accent" />,
-                }}
-              />
-            </h1>
-            <p className="welcome-hero-line1">
-              <Trans
-                i18nKey="welcome.heroLine1"
-                components={{
-                  calls: <span className="welcome-hero-accent welcome-hero-accent--purple" />,
-                }}
-              />
-            </p>
-            <p className="welcome-hero-line2">{t('welcome.heroLine2')}</p>
+          <div className="welcome-hero-main">
+            <div className="welcome-hero-copy">
+              <p className="welcome-eyebrow">{t('welcome.eyebrow')}</p>
+              <h1 className="welcome-headline">
+                <Trans
+                  i18nKey="welcome.headline"
+                  components={{
+                    money: <span className="welcome-headline-accent" />,
+                    followers: <span className="welcome-headline-accent" />,
+                  }}
+                />
+              </h1>
+              <p className="welcome-hero-line1">
+                <Trans
+                  i18nKey="welcome.heroLine1"
+                  components={{
+                    calls: <span className="welcome-hero-accent welcome-hero-accent--purple" />,
+                  }}
+                />
+              </p>
+              <p className="welcome-hero-line2">{t('welcome.heroLine2')}</p>
+            </div>
+
+            <ul className="welcome-features" aria-label={t('welcome.trustAria')}>
+              {featureItems.map(({ line1, line2, Icon }) => (
+                <li key={line1} className="welcome-feature">
+                  <span className="welcome-feature-icon" aria-hidden>
+                    <Icon className="welcome-feature-icon-svg" sx={GRADIENT_ICON_SX} />
+                  </span>
+                  <span className="welcome-feature-text">
+                    <span className="welcome-feature-line1">{t(line1)}</span>
+                    <span className="welcome-feature-line2">{t(line2)}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="welcome-hero-cta">
+              <CtaBlock t={t} />
+            </div>
           </div>
 
-          <ul className="welcome-features" aria-label={t('welcome.trustAria')}>
-            {featureItems.map(({ line1, line2, Icon }) => (
-              <li key={line1} className="welcome-feature">
-                <span className="welcome-feature-icon" aria-hidden>
-                  <Icon className="welcome-feature-icon-svg" sx={GRADIENT_ICON_SX} />
-                </span>
-                <span className="welcome-feature-text">
-                  <span className="welcome-feature-line1">{t(line1)}</span>
-                  <span className="welcome-feature-line2">{t(line2)}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
-
-          <div className="welcome-hero-cta">
-            <CtaBlock t={t} />
-          </div>
-
-          <VideoCallMock t={t} />
+          <VideoCallMock />
         </section>
 
         <ExplainerVideo t={t} steps={stepKeys} />
@@ -456,8 +498,10 @@ function Welcome() {
         <section className="welcome-stats" aria-label={t('welcome.trustAria')}>
           <div className="welcome-stats-rating">
             <div className="welcome-stats-avatars" aria-hidden>
-              {[0, 1, 2, 3, 4].map((i) => (
-                <span key={i} className={`welcome-stats-avatar welcome-stats-avatar--${i}`} />
+              {REVIEW_AVATARS.map((src, i) => (
+                <span key={src} className={`welcome-stats-avatar welcome-stats-avatar--${i}`}>
+                  <img src={src} alt="" className="welcome-stats-avatar-img" draggable="false" />
+                </span>
               ))}
             </div>
             <div className="welcome-stats-rating-copy">
@@ -549,32 +593,30 @@ function Welcome() {
         </section>
 
         <section className="welcome-safe" aria-labelledby="welcome-safe-heading">
-          <h2 id="welcome-safe-heading" className="welcome-section-title">
-            {t('welcome.safeTitle')}
+          <h2 id="welcome-safe-heading" className="welcome-safe-headline">
+            <Trans
+              i18nKey="welcome.safeHeadline"
+              components={{
+                coach: <span className="welcome-safe-headline-accent" />,
+              }}
+            />
           </h2>
-          <p className="welcome-section-lead">{t('welcome.safeIntro')}</p>
           <p className="welcome-safe-ban">{t('welcome.safeBan')}</p>
-          <div className="welcome-safe-grid">
-            {safeKeys.map((item, i) => {
-              const Icon = SAFE_ICONS[i];
-              return (
-                <div key={item.title} className="welcome-safe-card">
-                  <div className="welcome-safe-icon-wrap" aria-hidden>
-                    <Icon className="welcome-safe-icon" sx={GRADIENT_ICON_SX} />
+          <div className="welcome-safe-panel">
+            <div className="welcome-safe-grid">
+              {safeKeys.map((item, i) => {
+                const Icon = SAFE_ICONS[i];
+                return (
+                  <div key={item.title} className="welcome-safe-card">
+                    <div className="welcome-safe-icon-wrap" aria-hidden>
+                      <Icon className="welcome-safe-icon" sx={{ color: '#7c3aed' }} />
+                    </div>
+                    <h3 className="welcome-safe-card-title">{t(item.title)}</h3>
+                    <p className="welcome-safe-card-body">{t(item.body)}</p>
                   </div>
-                  <h3
-                    className={
-                      item.accent === 'purple'
-                        ? 'welcome-safe-card-title welcome-safe-card-title--purple'
-                        : 'welcome-safe-card-title welcome-safe-card-title--blue'
-                    }
-                  >
-                    {t(item.title)}
-                  </h3>
-                  <p className="welcome-safe-card-body">{t(item.body)}</p>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </section>
 
