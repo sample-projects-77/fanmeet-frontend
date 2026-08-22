@@ -43,7 +43,7 @@
 .fan-booking-payment-title {
   font-size: 24px;
   font-weight: 600;
-  color: var(--white);
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -79,7 +79,7 @@
 
 .fan-booking-payment-summary {
   font-size: 18px;
-  color: var(--white);
+  color: var(--text-primary);
   margin: 0 0 8px 0;
 }
 
@@ -134,7 +134,7 @@
 }
 
 .fan-booking-payment-submit:hover:not(:disabled) {
-  background: #FFC933;
+  background: var(--accent-yellow-hover);
 }
 
 .fan-booking-payment-submit:active:not(:disabled) {

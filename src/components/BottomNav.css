@@ -15,7 +15,7 @@
     background: var(--bg-secondary);
     border-top: 1px solid rgba(244, 192, 70, 0.2);
     padding-bottom: env(safe-area-inset-bottom, 0);
-    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 -2px 12px var(--shadow-a20);
   }
 
   .bottom-nav-inner {

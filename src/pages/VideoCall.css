@@ -33,7 +33,7 @@
   column-gap: 12px;
   row-gap: 10px;
   flex-shrink: 0;
-  background: rgba(15, 17, 21, 0.95);
+  background: var(--videocall-bar-bg);
   padding: max(12px, env(safe-area-inset-top, 0px)) 12px 12px;
   border-bottom: 1px solid var(--light-grey-shade-3);
 }
@@ -62,7 +62,7 @@
 }
 
 .video-call-back {
-  color: var(--white);
+  color: var(--text-primary);
   font-size: 16px;
   text-decoration: none;
   padding: 6px 8px;
@@ -72,8 +72,8 @@
 }
 
 .video-call-back:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--white);
+  background: var(--overlay-08);
+  color: var(--text-primary);
 }
 
 .video-call-title-row {
@@ -87,7 +87,7 @@
   font-size: 16px;
   font-weight: 700;
   margin: 0;
-  color: var(--white);
+  color: var(--text-primary);
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -175,7 +175,7 @@
   margin: 0 0 10px;
   font-size: 13px;
   line-height: 1.4;
-  color: var(--red, #ff5c5c);
+  color: var(--red);
 }
 
 .video-call-lobby-mic-hint {
@@ -198,7 +198,7 @@
 .video-call-lobby-mic-meter-track {
   height: 10px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--overlay-08);
   overflow: hidden;
 }
 
@@ -210,7 +210,7 @@
 }
 
 .video-call-lobby-mic-meter-fill.is-hot {
-  background: #22c55e;
+  background: var(--status-green);
 }
 
 .video-call-lobby-mic-meter-label {
@@ -322,7 +322,7 @@
 }
 
 .video-call-lobby-preview-start:hover:not(:disabled) {
-  color: var(--white);
+  color: var(--text-primary);
 }
 
 .video-call-lobby-preview-start:disabled {

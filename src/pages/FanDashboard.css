@@ -40,7 +40,7 @@
   margin-bottom: 40px;
   background: var(--card-bg);
   border-radius: var(--radius-lg);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--overlay-06);
   overflow: hidden;
 }
 
@@ -126,7 +126,7 @@
   position: relative;
   padding: 18px;
   border-radius: 16px;
-  border: 1px solid rgba(42, 46, 54, 0.5); /* lightGreyShade3 alpha 0.5 */
+  border: 1px solid var(--border-translucent); /* lightGreyShade3 alpha 0.5 */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -247,7 +247,7 @@ a.fan-stat-card--blue:hover {
   min-height: 72px;
   box-sizing: border-box;
   background: var(--card-bg);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--overlay-06);
   border-radius: var(--radius);
   color: var(--text-primary);
   text-decoration: none;
@@ -257,7 +257,7 @@ a.fan-stat-card--blue:hover {
 
 .fan-action-card:hover {
   border-color: rgba(250, 188, 42, 0.35);
-  background: rgba(37, 37, 40, 0.9);
+  background: var(--surface-hover);
   transform: translateY(-2px);
 }
 

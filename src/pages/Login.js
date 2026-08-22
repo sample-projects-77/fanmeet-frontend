@@ -5,8 +5,11 @@ import { authAPI } from '../services/api';
 import { setAppLanguage, SUPPORTED } from '../i18n';
 import { clearAllCached } from '../utils/routeDataCache';
 import { saveAuthSession } from '../utils/authStorage';
+import { consumeIntendedUrl } from '../utils/intendedUrl';
 import { ButtonLoadingSpinner } from '../components/LoadingSpinner';
 import { useChat } from '../context/ChatContext';
+import { useTheme } from '../context/ThemeContext';
+import ThemeToggleButton from '../components/ThemeToggleButton';
 import './AuthForm.css';
 
 let isSubmitting = false;
@@ -15,6 +18,7 @@ const Login = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { disconnect } = useChat();
+  const { theme, applyAuthenticatedTheme } = useTheme();
 
   useEffect(() => {
     clearAllCached();
@@ -42,7 +46,7 @@ const Login = () => {
     setLoading(true);
     try {
       await disconnect();
-      const response = await authAPI.login(formData.email, formData.password, formData.role);
+      const response = await authAPI.login(formData.email, formData.password, formData.role, theme);
       if (response.StatusCode === 200 && response.data && !response.error) {
         saveAuthSession({
           token: response.data.token,
@@ -51,8 +55,11 @@ const Login = () => {
         });
         const lang = response.data.user?.language;
         if (lang && SUPPORTED.includes(lang)) setAppLanguage(lang, true);
+        // The saved preference on the account wins over the local one.
+        applyAuthenticatedTheme(response.data.user?.theme_mode);
         const role = response.data.user?.role || formData.role;
-        navigate(role === 'creator' ? '/creator/home' : '/fan/home', { replace: true });
+        const intended = consumeIntendedUrl(role);
+        navigate(intended || (role === 'creator' ? '/creator/home' : '/fan/home'), { replace: true });
       } else {
         setError(response.error || response.message || t('auth.loginFailed'));
       }
@@ -74,6 +81,7 @@ const Login = () => {
       <header className="auth-header">
         <Link to="/" className="auth-back" aria-label={t('common.back')}>←</Link>
         <h2 className="auth-screen-title">{t('auth.logIn')}</h2>
+        <ThemeToggleButton className="auth-theme-toggle" />
       </header>
       <div className="auth-body">
         <div className="auth-logo-wrap">

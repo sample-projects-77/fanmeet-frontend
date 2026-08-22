@@ -3,7 +3,7 @@
 .date-picker-dialog-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--scrim);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -12,17 +12,17 @@
 }
 
 .date-picker-dialog {
-  background: #2C2C2E;
+  background: var(--dialog-surface);
   border-radius: 16px;
   padding: 20px;
   max-width: 360px;
   width: 100%;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 32px var(--shadow-a50);
 }
 
 .date-picker-dialog-label {
   font-size: 14px;
-  color: var(--white);
+  color: var(--text-primary);
   margin: 0 0 8px 0;
   font-weight: 500;
 }
@@ -30,7 +30,7 @@
 .date-picker-dialog-selected {
   font-size: 18px;
   font-weight: 700;
-  color: var(--white);
+  color: var(--text-primary);
   margin-bottom: 20px;
   display: flex;
   align-items: center;
@@ -71,7 +71,7 @@
 .date-picker-dialog-chevron {
   background: transparent;
   border: none;
-  color: var(--white);
+  color: var(--text-primary);
   font-size: 20px;
   cursor: pointer;
   padding: 4px 8px;
@@ -80,7 +80,7 @@
 }
 
 .date-picker-dialog-chevron:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--overlay-10);
 }
 
 .date-picker-dialog-days-row {
@@ -125,7 +125,7 @@
 }
 
 .date-picker-dialog-cell--day:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--overlay-08);
 }
 
 .date-picker-dialog-cell--selected {

@@ -22,14 +22,14 @@
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  background: var(--dark-blue-shade-3, #1C1F26);
+  background: var(--dark-blue-shade-3);
   flex-shrink: 0;
 }
 
 .image-cropper-title {
   font-size: 1rem;
   font-weight: 600;
-  color: var(--text-primary, #fff);
+  color: var(--text-primary);
 }
 
 .image-cropper-cancel,
@@ -46,20 +46,20 @@
 
 .image-cropper-cancel {
   background: transparent;
-  color: var(--dark-grey-text, #AEB3BD);
+  color: var(--dark-grey-text);
 }
 
 .image-cropper-cancel:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--overlay-08);
 }
 
 .image-cropper-done {
-  background: var(--accent-yellow, #F4C046);
-  color: var(--black, #000);
+  background: var(--accent-yellow);
+  color: var(--black);
 }
 
 .image-cropper-done:hover:not(:disabled) {
-  background: #FFC933;
+  background: var(--accent-yellow-hover);
 }
 
 .image-cropper-done:disabled {
@@ -82,16 +82,16 @@
   justify-content: center;
   gap: 8px;
   padding: 12px 16px;
-  background: var(--dark-blue-shade-3, #1C1F26);
+  background: var(--dark-blue-shade-3);
   flex-shrink: 0;
 }
 
 .image-cropper-preset {
   padding: 8px 18px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid var(--overlay-15);
   border-radius: 20px;
   background: transparent;
-  color: var(--dark-grey-text, #AEB3BD);
+  color: var(--dark-grey-text);
   font-size: 0.8125rem;
   font-weight: 500;
   font-family: var(--font-sans);
@@ -100,18 +100,18 @@
 }
 
 .image-cropper-preset:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--overlay-06);
 }
 
 .image-cropper-preset--active {
-  background: var(--accent-yellow, #F4C046);
-  color: var(--black, #000);
-  border-color: var(--accent-yellow, #F4C046);
+  background: var(--accent-yellow);
+  color: var(--black);
+  border-color: var(--accent-yellow);
   font-weight: 600;
 }
 
 .image-cropper-preset--active:hover {
-  background: #FFC933;
+  background: var(--accent-yellow-hover);
 }
 
 /* ── Zoom slider ── */
@@ -120,13 +120,13 @@
   align-items: center;
   gap: 12px;
   padding: 10px 24px calc(10px + env(safe-area-inset-bottom, 0px));
-  background: var(--dark-blue-shade-3, #1C1F26);
+  background: var(--dark-blue-shade-3);
   flex-shrink: 0;
 }
 
 .image-cropper-zoom svg {
   flex-shrink: 0;
-  color: var(--dark-grey-text, #AEB3BD);
+  color: var(--dark-grey-text);
 }
 
 .image-cropper-zoom-slider {
@@ -135,7 +135,7 @@
   appearance: none;
   height: 4px;
   border-radius: 2px;
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--overlay-15);
   outline: none;
 }
 
@@ -145,18 +145,18 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: var(--accent-yellow, #F4C046);
+  background: var(--accent-yellow);
   cursor: pointer;
   border: none;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 6px var(--shadow-a30);
 }
 
 .image-cropper-zoom-slider::-moz-range-thumb {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: var(--accent-yellow, #F4C046);
+  background: var(--accent-yellow);
   cursor: pointer;
   border: none;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 6px var(--shadow-a30);
 }

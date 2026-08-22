@@ -150,7 +150,7 @@
 }
 
 .fan-profile-setting-row:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--overlay-04);
 }
 
 .fan-profile-setting-row--button {
@@ -179,7 +179,7 @@
 .fan-profile-setting-icon svg {
   width: 22px;
   height: 22px;
-  color: #fff;
+  color: var(--on-status-fill);
 }
 
 /* Flutter: Change Password -> iconBlue */
@@ -204,12 +204,12 @@
 
 /* Setup payout – green (success / money) */
 .fan-profile-setting-icon--green {
-  background: #22c55e;
+  background: var(--status-green);
 }
 
 /* Privacy Policy – purple */
 .fan-profile-setting-icon--purple {
-  background: #8b5cf6;
+  background: var(--status-purple);
 }
 
 .fan-profile-setting-label {

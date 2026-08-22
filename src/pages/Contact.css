@@ -181,8 +181,8 @@
 }
 
 .contact-submit:hover {
-  background: #FFC933;
-  border-color: #FFC933;
+  background: var(--accent-yellow-hover);
+  border-color: var(--accent-yellow-hover);
   box-shadow: 0 6px 24px rgba(250, 188, 42, 0.3);
 }
 

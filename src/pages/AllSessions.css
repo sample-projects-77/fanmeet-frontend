@@ -30,7 +30,7 @@
 .all-sessions-back {
   position: absolute;
   left: 0;
-  color: var(--white);
+  color: var(--text-primary);
   font-size: 24px;
   text-decoration: none;
   line-height: 1;
@@ -39,15 +39,15 @@
 }
 
 .all-sessions-back:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--white);
+  background: var(--overlay-08);
+  color: var(--text-primary);
 }
 
 .all-sessions-title {
   font-family: var(--font-sans);
   font-size: 24px;
   font-weight: 700;
-  color: var(--white);
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -82,7 +82,7 @@
 }
 
 .all-sessions-tab--active:hover {
-  background: #FFC933;
+  background: var(--accent-yellow-hover);
   color: var(--black);
 }
 
@@ -167,23 +167,23 @@
 
 /* Paid: same as before – green text on subtle background */
 .all-sessions-card-status--paid {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--overlay-08);
   color: var(--green-success);
 }
 
 .all-sessions-card-status--confirmed {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--overlay-08);
   color: var(--green-success);
 }
 
 .all-sessions-card-status--in_progress {
   background: rgba(255, 193, 7, 0.12);
-  color: var(--accent-yellow, #ffc107);
+  color: var(--accent-yellow);
 }
 
 /* Completed: previous styling – subtle background, grey text */
 .all-sessions-card-status--completed {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--overlay-08);
   color: var(--dark-grey-text);
 }
 
@@ -193,7 +193,7 @@
 }
 
 .all-sessions-card-status--no_show {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--overlay-08);
   color: var(--dark-grey-text);
 }
 
@@ -243,7 +243,7 @@
 }
 
 .all-sessions-join-btn--enabled:hover {
-  background: #FFC933;
+  background: var(--accent-yellow-hover);
 }
 
 .all-sessions-join-btn--enabled:active {
@@ -270,7 +270,7 @@
 }
 
 .all-sessions-give-review-btn:hover {
-  background: #FFC933;
+  background: var(--accent-yellow-hover);
 }
 
 .all-sessions-give-review-btn:active {

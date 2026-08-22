@@ -83,7 +83,7 @@
 }
 
 .shared-empty-icon-letter {
-  color: var(--white);
+  color: var(--text-primary);
   font-size: 32px;
   font-weight: 400;
   font-style: normal;

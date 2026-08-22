@@ -33,7 +33,7 @@
   margin-bottom: 28px;
   background: var(--bg-input);
   border-radius: var(--radius);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--overlay-06);
 }
 
 .fan-search-icon {
@@ -133,7 +133,7 @@
   padding: 16px 18px;
   background: var(--bg-input);
   border-radius: var(--radius);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--overlay-06);
   color: var(--text-primary);
   text-decoration: none;
   transition: border-color 0.15s, background 0.15s;
@@ -150,7 +150,7 @@
   height: 52px;
   border-radius: 50%;
   overflow: hidden;
-  background: #1e2a38;
+  background: var(--card-bg-blue);
 }
 
 .fan-creator-avatar-img {
@@ -165,7 +165,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-alpha-50);
 }
 
 .fan-creator-avatar-placeholder svg {

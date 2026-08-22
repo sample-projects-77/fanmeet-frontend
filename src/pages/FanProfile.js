@@ -5,6 +5,7 @@ import { authAPI } from '../services/api';
 import { DEFAULT_AVATAR_URL } from '../constants';
 import FanNav from '../components/FanNav';
 import { SettingsIcon, KeyIcon, OutlinedUserIcon, OutgoingIcon, DeleteAccountIcon, BlockedIcon, PrivacyIcon } from '../components/ProfileIcons';
+import { AppearanceIcon } from '../components/ThemeIcons';
 import DeleteAccountDialog from '../components/DeleteAccountDialog';
 import { getPublicDisplayName } from '../utils/getPublicDisplayName';
 import './FanProfile.css';
@@ -103,6 +104,13 @@ function FanProfile({ embedded, user: userProp, onLogout: onLogoutProp }) {
                 <SettingsIcon />
               </span>
               <span className="fan-profile-setting-label">{t('profile.changeLanguage')}</span>
+              <span className="fan-profile-setting-arrow">›</span>
+            </Link>
+            <Link to="/fan/profile/appearance" className="fan-profile-setting-row">
+              <span className="fan-profile-setting-icon fan-profile-setting-icon--blue">
+                <AppearanceIcon />
+              </span>
+              <span className="fan-profile-setting-label">{t('appearance.title')}</span>
               <span className="fan-profile-setting-arrow">›</span>
             </Link>
             <Link to="/fan/profile/blocked" className="fan-profile-setting-row">

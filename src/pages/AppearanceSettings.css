@@ -1,0 +1,89 @@
+/* Appearance (theme) settings screen.
+   Layout, header and page chrome are reused from FanProfileEdit.css – only the
+   two option cards are new, so this screen matches the Language screen exactly. */
+
+.appearance-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.appearance-option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  background: var(--card-bg);
+  color: var(--text-high);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s, transform 0.1s;
+}
+
+.appearance-option:hover {
+  border-color: var(--accent-yellow);
+}
+
+.appearance-option:active {
+  transform: scale(0.99);
+}
+
+.appearance-option:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--focus-ring);
+}
+
+.appearance-option.selected {
+  border-color: var(--accent-yellow);
+  background: var(--tint-accent);
+}
+
+.appearance-option-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--chip-bg);
+  color: var(--accent-yellow);
+}
+
+.appearance-option.selected .appearance-option-icon {
+  background: var(--accent-yellow);
+  color: var(--on-accent);
+}
+
+.appearance-option-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.appearance-option-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-high);
+}
+
+.appearance-option-desc {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+.appearance-option-check {
+  flex-shrink: 0;
+  color: var(--accent-yellow);
+  font-size: 18px;
+  line-height: 1;
+}
