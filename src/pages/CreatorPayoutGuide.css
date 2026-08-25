@@ -13,7 +13,7 @@
   justify-content: center;
   position: relative;
   padding: 16px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--overlay-06);
 }
 
 .payout-guide-back {
@@ -28,7 +28,7 @@
 }
 
 .payout-guide-back:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--overlay-08);
 }
 
 .payout-guide-header-title {
@@ -106,7 +106,7 @@
   padding: 16px;
   border-radius: 16px;
   margin-bottom: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--overlay-08);
 }
 
 .payout-guide-status--connected {
@@ -120,7 +120,7 @@
 }
 
 .payout-guide-status--not-started {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--overlay-04);
 }
 
 .payout-guide-status-dot {
@@ -132,7 +132,7 @@
 }
 
 .payout-guide-status--connected .payout-guide-status-dot {
-  background: #22c55e;
+  background: var(--status-green);
 }
 
 .payout-guide-status--pending .payout-guide-status-dot {
@@ -175,10 +175,10 @@
 .payout-guide-note {
   font-size: 13px;
   line-height: 1.55;
-  color: var(--text-muted, var(--dark-grey-text));
+  color: var(--text-muted);
   margin: 14px 0 0;
   padding-top: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid var(--overlay-06);
 }
 
 /* Cards */
@@ -191,7 +191,7 @@
   background: var(--dark-blue-shade-3);
   border-radius: 16px;
   padding: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--overlay-06);
 }
 
 .payout-guide-card-title,
@@ -201,7 +201,7 @@
   color: var(--tertiary-color);
   margin: 0 0 14px;
   padding-bottom: 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--overlay-08);
 }
 
 .payout-guide-card-body {
@@ -287,7 +287,7 @@
   height: 20px;
   border-radius: 50%;
   background: rgba(34, 197, 94, 0.15);
-  color: #22c55e;
+  color: var(--success-text-alt);
   font-size: 11px;
   font-weight: 700;
   display: flex;
@@ -312,7 +312,7 @@
   background: var(--dark-blue-shade-3);
   border-radius: 16px;
   padding: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--overlay-06);
 }
 
 .payout-guide-step-number {
@@ -381,7 +381,7 @@
 .payout-guide-table td {
   padding: 10px 12px;
   text-align: left;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--overlay-08);
   vertical-align: top;
 }
 
@@ -412,8 +412,8 @@
 .payout-guide-trouble-item {
   padding: 14px;
   border-radius: 12px;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--well-bg);
+  border: 1px solid var(--overlay-06);
 }
 
 .payout-guide-trouble-problem {
@@ -458,7 +458,7 @@
 }
 
 .payout-guide-cta:hover:not(:disabled) {
-  background: #ffc933;
+  background: var(--accent-yellow-hover);
 }
 
 .payout-guide-cta:active:not(:disabled) {
@@ -478,7 +478,7 @@
   padding: 14px 24px;
   border-radius: var(--radius);
   border: 1px solid rgba(250, 188, 42, 0.45);
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--well-bg);
   color: var(--secondary-color);
   font-size: 15px;
   font-weight: 600;
@@ -542,9 +542,9 @@
     display: block;
     margin-bottom: 12px;
     padding: 14px;
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--well-bg);
     border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--overlay-06);
   }
 
   .payout-guide-table tbody tr:last-child {

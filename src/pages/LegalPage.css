@@ -88,8 +88,8 @@
 }
 
 .legal-card:hover {
-  border-color: rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--overlay-20);
+  background: var(--overlay-04);
 }
 
 .legal-card:active {

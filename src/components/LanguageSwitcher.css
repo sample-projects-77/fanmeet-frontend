@@ -20,9 +20,9 @@
 }
 
 .lang-switcher-trigger:hover {
-  border-color: rgba(255, 255, 255, 0.25);
+  border-color: var(--overlay-25);
   color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--overlay-06);
 }
 
 .lang-switcher-icon {
@@ -64,7 +64,7 @@
   background: var(--bg-secondary);
   border: 1px solid var(--border-light);
   border-radius: var(--radius);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 12px 40px var(--shadow-a40);
   z-index: 100;
   animation: lang-popup-in 0.2s ease;
 }
@@ -96,7 +96,7 @@
 }
 
 .lang-switcher-option:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--overlay-08);
 }
 
 .lang-switcher-option.selected {

@@ -17,6 +17,13 @@ import { videoAPI, bookingAPI } from '../services/api';
 import { DEFAULT_AVATAR_URL } from '../constants';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorWidget from '../components/ErrorWidget';
+import {
+  preparePlayAndRecordAudioSession,
+  enableMicrophoneWithRecovery,
+  enableCameraBestEffort,
+  enableLobbyMedia,
+  isMicrophoneLive,
+} from '../utils/videoCallMedia';
 import './VideoCall.css';
 
 const STREAM_API_KEY = process.env.REACT_APP_STREAM_VIDEO_API_KEY || process.env.REACT_APP_STREAM_API_KEY;
@@ -65,27 +72,33 @@ function VideoCallMediaOffReminder() {
 }
 
 /**
- * Stream disables mic/camera when the browser permission state is "denied" (!hasBrowserPermission).
- * Show a clickable path that runs getUserMedia in a real click handler so Chrome / others can prompt again.
+ * Stream disables mic/camera when the browser permission state is "denied".
+ * Re-enable via Stream managers under a real click (no getUserMedia+stop).
  */
 function VideoCallBrowserPermissionBar() {
   const { useMicrophoneState, useCameraState } = useCallStateHooks();
   const { hasBrowserPermission: micOk, microphone } = useMicrophoneState();
   const { hasBrowserPermission: camOk, camera } = useCameraState();
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
 
   if (micOk && camOk) return null;
 
   const requestAccess = async () => {
     setBusy(true);
+    setError('');
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-      stream.getTracks().forEach((t) => t.stop());
-      await microphone.enable().catch(() => {});
-      await camera.enable().catch(() => {});
+      const result = await enableLobbyMedia(microphone, camera);
+      if (!result.ok) {
+        setError(
+          result.errors?.[0] ||
+            'Permission was blocked. Allow microphone & camera in browser settings, or open this page in Safari/Chrome.'
+        );
+      }
     } catch (e) {
       // eslint-disable-next-line no-console
       console.warn('Media permission retry:', e);
+      setError(e?.message || 'Could not request microphone and camera access');
     } finally {
       setBusy(false);
     }
@@ -96,6 +109,11 @@ function VideoCallBrowserPermissionBar() {
       <p className="video-call-permission-bar-text">
         Microphone or camera is blocked in the browser. Click below to open the permission prompt again.
       </p>
+      {error ? (
+        <p className="video-call-permission-bar-error" role="alert">
+          {error}
+        </p>
+      ) : null}
       <button
         type="button"
         className="btn-primary video-call-permission-bar-btn"
@@ -104,6 +122,85 @@ function VideoCallBrowserPermissionBar() {
       >
         {busy ? 'Requesting…' : 'Allow microphone & camera'}
       </button>
+    </div>
+  );
+}
+
+/** Live mic level in the lobby so users know capture works before joining (Zoom-like). */
+function LobbyMicMeter() {
+  const { useMicrophoneState } = useCallStateHooks();
+  const { mediaStream, isEnabled } = useMicrophoneState();
+  const [level, setLevel] = useState(0);
+
+  useEffect(() => {
+    if (!isEnabled || !mediaStream) {
+      setLevel(0);
+      return undefined;
+    }
+
+    let raf = 0;
+    let audioCtx = null;
+    let source = null;
+    let cancelled = false;
+
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return undefined;
+      audioCtx = new AudioCtx();
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(() => {});
+      }
+      source = audioCtx.createMediaStreamSource(mediaStream);
+      const analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 256;
+      source.connect(analyser);
+      const data = new Uint8Array(analyser.frequencyBinCount);
+
+      const tick = () => {
+        if (cancelled) return;
+        analyser.getByteFrequencyData(data);
+        let sum = 0;
+        for (let i = 0; i < data.length; i += 1) sum += data[i];
+        setLevel(Math.min(1, sum / (data.length * 60)));
+        raf = requestAnimationFrame(tick);
+      };
+      tick();
+    } catch {
+      return undefined;
+    }
+
+    return () => {
+      cancelled = true;
+      if (raf) cancelAnimationFrame(raf);
+      try {
+        source?.disconnect();
+      } catch {
+        /* ignore */
+      }
+      audioCtx?.close?.().catch(() => {});
+    };
+  }, [isEnabled, mediaStream]);
+
+  if (!isEnabled) {
+    return (
+      <p className="video-call-lobby-mic-hint">
+        Turn on your microphone above, then speak — the meter should move before you join.
+      </p>
+    );
+  }
+
+  const hearing = level > 0.04;
+  return (
+    <div className="video-call-lobby-mic-meter" aria-live="polite">
+      <div className="video-call-lobby-mic-meter-track">
+        <div
+          className={`video-call-lobby-mic-meter-fill${hearing ? ' is-hot' : ''}`}
+          style={{ width: `${Math.max(4, Math.round(level * 100))}%` }}
+        />
+      </div>
+      <span className="video-call-lobby-mic-meter-label">
+        {hearing ? 'We can hear you — good to join' : 'Speak to test your microphone'}
+      </span>
     </div>
   );
 }
@@ -192,18 +289,26 @@ function LobbyVideoPreview() {
  */
 function VideoCallLobby({ onJoin, joiningCall, joinError, backUrl, backLabel }) {
   const { useMicrophoneState, useCameraState } = useCallStateHooks();
-  const { hasBrowserPermission: micOk } = useMicrophoneState();
-  const { hasBrowserPermission: camOk } = useCameraState();
+  const { hasBrowserPermission: micOk, microphone, isEnabled: micOn } = useMicrophoneState();
+  const { hasBrowserPermission: camOk, camera } = useCameraState();
   const [busy, setBusy] = useState(false);
+  const [accessError, setAccessError] = useState('');
 
   const requestAccess = async () => {
     setBusy(true);
+    setAccessError('');
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-      stream.getTracks().forEach((t) => t.stop());
+      const result = await enableLobbyMedia(microphone, camera);
+      if (!result.ok) {
+        setAccessError(
+          result.errors?.[0] ||
+            'Could not enable microphone/camera. Allow access when prompted, or open in Safari/Chrome.'
+        );
+      }
     } catch (e) {
       // eslint-disable-next-line no-console
       console.warn('Media permission request:', e);
+      setAccessError(e?.message || 'Could not request microphone and camera access');
     } finally {
       setBusy(false);
     }
@@ -217,7 +322,8 @@ function VideoCallLobby({ onJoin, joiningCall, joinError, backUrl, backLabel }) 
       </div>
       <div className="video-call-lobby-body">
         <p className="video-call-lobby-lead">
-          Check your camera and microphone, then join the meeting.
+          Check your camera and microphone, then join the meeting. Speak and confirm the mic meter moves
+          before you join.
         </p>
         <div className="video-call-lobby-preview">
           <LobbyVideoPreview />
@@ -226,12 +332,18 @@ function VideoCallLobby({ onJoin, joiningCall, joinError, backUrl, backLabel }) 
           <ToggleAudioPreviewButton caption="Mic" />
           <ToggleVideoPreviewButton caption="Camera" />
         </div>
+        <LobbyMicMeter />
         {(!micOk || !camOk) && (
           <div className="video-call-permission-bar video-call-lobby-permission">
             <p className="video-call-permission-bar-text">
               Allow camera and microphone when your browser asks. If you previously blocked access, use the button
               below or open this page in Safari or Chrome (not an in-app browser such as WhatsApp).
             </p>
+            {accessError ? (
+              <p className="video-call-permission-bar-error" role="alert">
+                {accessError}
+              </p>
+            ) : null}
             <button
               type="button"
               className="btn-primary video-call-permission-bar-btn"
@@ -253,10 +365,11 @@ function VideoCallLobby({ onJoin, joiningCall, joinError, backUrl, backLabel }) 
           onClick={onJoin}
           disabled={joiningCall}
         >
-          {joiningCall ? 'Joining…' : 'Join meeting'}
+          {joiningCall ? 'Starting microphone…' : micOn ? 'Join meeting' : 'Enable mic & join'}
         </button>
         <p className="video-call-lobby-tip">
           Tip: For the best experience on mobile, open fan-session.com in Safari or Chrome instead of an in-app browser.
+          Built-in mic should work without AirPods.
         </p>
       </div>
     </div>
@@ -359,15 +472,30 @@ function VideoCallContent({ bookingId, booking, user, onLeave, backUrl, backLabe
 
     try {
       // User gesture context — required on mobile for getUserMedia / publish tracks.
-      try {
-        await streamCall.microphone.enable();
-      } catch {
-        /* Permission bar + Stream controls can retry in-call */
+      preparePlayAndRecordAudioSession();
+
+      const micResult = await enableMicrophoneWithRecovery(streamCall);
+      if (!micResult.ok) {
+        setJoinError(
+          micResult.error ||
+            'Microphone did not start. Allow microphone access, then try again. Prefer Safari or Chrome (not WhatsApp’s in-app browser).'
+        );
+        return;
       }
-      try {
-        await streamCall.camera.enable();
-      } catch {
-        /* same */
+
+      if (!isMicrophoneLive(streamCall)) {
+        // Final guard — do not join while muted/silent after a false-positive enable
+        setJoinError(
+          'Microphone is not capturing audio yet. Toggle Mic on, speak to test the meter, then try Join again.'
+        );
+        return;
+      }
+
+      const cameraOk = await enableCameraBestEffort(streamCall);
+      if (!cameraOk) {
+        // Camera is optional for join; warn but continue so audio sessions still work
+        // eslint-disable-next-line no-console
+        console.warn('Camera did not start; joining with microphone only');
       }
 
       await streamCall.join({ create: true });

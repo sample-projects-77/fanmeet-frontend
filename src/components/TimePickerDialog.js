@@ -245,7 +245,7 @@ export function TimePickerDialog({ value, onConfirm, onCancel }) {
                         y={y}
                         textAnchor="middle"
                         dominantBaseline="central"
-                        fill={isHighlighted ? 'var(--black)' : 'var(--white)'}
+                        fill={isHighlighted ? 'var(--on-accent)' : 'var(--text-primary)'}
                         fontSize={isHighlighted ? 14 : 13}
                         fontWeight={isHighlighted ? 700 : 500}
                       >
@@ -270,7 +270,7 @@ export function TimePickerDialog({ value, onConfirm, onCancel }) {
                         y={y}
                         textAnchor="middle"
                         dominantBaseline="central"
-                        fill={isHighlighted ? 'var(--black)' : 'var(--white)'}
+                        fill={isHighlighted ? 'var(--on-accent)' : 'var(--text-primary)'}
                         fontSize={isHighlighted ? 14 : 13}
                         fontWeight={isHighlighted ? 700 : 500}
                       >

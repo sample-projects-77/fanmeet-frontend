@@ -3,7 +3,7 @@
 .time-picker-dialog-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--scrim);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -18,12 +18,12 @@
 }
 
 .time-picker-dialog {
-  background: #1C1F26;
+  background: var(--dark-blue-shade-3);
   border-radius: 20px;
   padding: 24px;
   max-width: 320px;
   width: 100%;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 32px var(--shadow-a50);
   animation: time-picker-dialog-in 0.25s ease-out;
 }
 
@@ -51,7 +51,7 @@
 .time-picker-dialog-minute {
   appearance: none;
   background: transparent;
-  color: var(--white);
+  color: var(--text-primary);
   padding: 10px 16px;
   border-radius: 12px;
   font-size: 28px;
@@ -68,25 +68,25 @@
 
 .time-picker-dialog-hour:hover,
 .time-picker-dialog-minute:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--overlay-08);
 }
 
 .time-picker-dialog-hour:focus-visible,
 .time-picker-dialog-minute:focus-visible {
-  outline: 2px solid #F4C046;
+  outline: 2px solid var(--secondary-color);
   outline-offset: 2px;
 }
 
 /* Same selected UI for both hour and minute: yellow background, dark text, rounded border */
 .time-picker-dialog-display--mode-hour .time-picker-dialog-hour,
 .time-picker-dialog-display--mode-minute .time-picker-dialog-minute {
-  background: #F4C046;
+  background: var(--secondary-color);
   color: var(--black);
-  border: 2px solid #F4C046;
+  border: 2px solid var(--secondary-color);
 }
 
 .time-picker-dialog-colon {
-  color: var(--white);
+  color: var(--text-primary);
   font-size: 24px;
   font-weight: 500;
   user-select: none;
@@ -102,7 +102,7 @@
 .time-picker-dialog-ampm-btn {
   background: transparent;
   border: none;
-  color: var(--white);
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 500;
   padding: 6px 12px;
@@ -112,19 +112,19 @@
 }
 
 .time-picker-dialog-ampm-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--overlay-08);
 }
 
 .time-picker-dialog-ampm-btn--active {
   background: #20C997 !important;
-  color: #050608 !important;
+  color: var(--black) !important;
 }
 
 .time-picker-dialog-ampm-btn--active:hover,
 .time-picker-dialog-ampm-btn--active:focus,
 .time-picker-dialog-ampm-btn--active:active {
   background: #26d9a3 !important;
-  color: #050608 !important;
+  color: var(--black) !important;
 }
 
 .time-picker-dialog-clock {
@@ -176,7 +176,7 @@
 .time-picker-dialog-cancel {
   background: transparent;
   border: none;
-  color: var(--white);
+  color: var(--text-primary);
   font-size: 16px;
   font-weight: 500;
   cursor: pointer;
@@ -189,12 +189,12 @@
 }
 
 .time-picker-dialog-cancel:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--overlay-08);
   color: var(--tertiary-color);
 }
 
 .time-picker-dialog-ok {
-  background: #F4C046;
+  background: var(--secondary-color);
   color: var(--black);
   border: none;
   font-size: 16px;

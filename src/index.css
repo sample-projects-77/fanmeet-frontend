@@ -40,7 +40,7 @@ body {
 }
 
 .Toastify__toast--success {
-  background: #14B82C; /* AppColors.greenSuccess */
+  background: var(--green-success); /* AppColors.greenSuccess */
   color: #F1F0F1;      /* AppColors.offWhite */
 }
 
@@ -50,7 +50,7 @@ body {
 }
 
 .Toastify__toast--info {
-  background: #FFBF00; /* AppColors.amber */
+  background: var(--amber); /* AppColors.amber */
   color: #F1F0F1;      /* AppColors.offWhite */
 }
 

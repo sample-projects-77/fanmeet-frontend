@@ -3,7 +3,7 @@
 .delete-account-dialog-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--scrim);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -17,14 +17,14 @@
   padding: 24px;
   max-width: 360px;
   width: 100%;
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 24px 48px var(--shadow-a40);
 }
 
 .delete-account-dialog-title {
   font-family: var(--font-sans);
   font-size: 18px;
   font-weight: 700;
-  color: var(--white);
+  color: var(--text-primary);
   margin: 0 0 12px 0;
 }
 
@@ -32,7 +32,7 @@
   font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 400;
-  color: var(--white);
+  color: var(--text-primary);
   margin: 0 0 24px 0;
   line-height: 1.5;
 }
@@ -65,7 +65,7 @@
 }
 
 .delete-account-dialog-btn--cancel:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--overlay-08);
 }
 
 .delete-account-dialog-btn--confirm {

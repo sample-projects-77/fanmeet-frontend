@@ -6,6 +6,7 @@ import { getCached, setCached } from '../utils/routeDataCache';
 import { DEFAULT_AVATAR_URL } from '../constants';
 import CreatorNav from '../components/CreatorNav';
 import { SettingsIcon, KeyIcon, OutlinedUserIcon, OutgoingIcon, DeleteAccountIcon, BlockedIcon, PayoutIcon, PrivacyIcon, GuideIcon, ReferralIcon } from '../components/ProfileIcons';
+import { AppearanceIcon } from '../components/ThemeIcons';
 import DeleteAccountDialog from '../components/DeleteAccountDialog';
 import { getPublicDisplayName } from '../utils/getPublicDisplayName';
 import useCreatorPayoutStatus from '../hooks/useCreatorPayoutStatus';
@@ -177,6 +178,13 @@ function CreatorProfile({ embedded, user: userProp, onLogout: onLogoutProp }) {
                 <SettingsIcon />
               </span>
               <span className="fan-profile-setting-label">{t('profile.changeLanguage')}</span>
+              <span className="fan-profile-setting-arrow">›</span>
+            </Link>
+            <Link to="/creator/profile/appearance" className="fan-profile-setting-row">
+              <span className="fan-profile-setting-icon fan-profile-setting-icon--blue">
+                <AppearanceIcon />
+              </span>
+              <span className="fan-profile-setting-label">{t('appearance.title')}</span>
               <span className="fan-profile-setting-arrow">›</span>
             </Link>
             <Link to="/creator/profile/blocked" className="fan-profile-setting-row">

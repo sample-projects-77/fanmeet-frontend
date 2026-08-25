@@ -123,11 +123,12 @@ api.interceptors.response.use(
 // Auth API functions
 export const authAPI = {
   // Login (role required: 'fan' | 'creator')
-  login: async (email, password, role = 'fan') => {
+  login: async (email, password, role = 'fan', themeMode) => {
     const response = await api.post('/auth/login', {
       email,
       password,
       role,
+      ...(themeMode ? { theme_mode: themeMode } : {}),
     });
     return response.data;
   },
@@ -200,6 +201,13 @@ export const authAPI = {
 export const userAPI = {
   updateLanguage: async (locale) => {
     const response = await api.patch('/user/language', { locale });
+    return response.data;
+  },
+
+  // Persist the user's theme preference ('light' | 'dark').
+  // Called fire-and-forget by ThemeContext – the UI has already switched.
+  updateTheme: async (themeMode) => {
+    const response = await api.patch('/user/theme', { theme_mode: themeMode });
     return response.data;
   },
 

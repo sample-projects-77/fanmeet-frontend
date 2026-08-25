@@ -33,7 +33,7 @@
   column-gap: 12px;
   row-gap: 10px;
   flex-shrink: 0;
-  background: rgba(15, 17, 21, 0.95);
+  background: var(--videocall-bar-bg);
   padding: max(12px, env(safe-area-inset-top, 0px)) 12px 12px;
   border-bottom: 1px solid var(--light-grey-shade-3);
 }
@@ -62,7 +62,7 @@
 }
 
 .video-call-back {
-  color: var(--white);
+  color: var(--text-primary);
   font-size: 16px;
   text-decoration: none;
   padding: 6px 8px;
@@ -72,8 +72,8 @@
 }
 
 .video-call-back:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--white);
+  background: var(--overlay-08);
+  color: var(--text-primary);
 }
 
 .video-call-title-row {
@@ -87,7 +87,7 @@
   font-size: 16px;
   font-weight: 700;
   margin: 0;
-  color: var(--white);
+  color: var(--text-primary);
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -169,6 +169,55 @@
 
 .video-call-permission-bar-btn {
   min-width: 220px;
+}
+
+.video-call-permission-bar-error {
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--red);
+}
+
+.video-call-lobby-mic-hint {
+  margin: 0 0 4px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.video-call-lobby-mic-meter {
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: stretch;
+}
+
+.video-call-lobby-mic-meter-track {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--overlay-08);
+  overflow: hidden;
+}
+
+.video-call-lobby-mic-meter-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: rgba(244, 192, 70, 0.55);
+  transition: width 80ms linear, background 160ms ease;
+}
+
+.video-call-lobby-mic-meter-fill.is-hot {
+  background: var(--status-green);
+}
+
+.video-call-lobby-mic-meter-label {
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--text-secondary);
+  text-align: center;
 }
 
 .video-call-content {
@@ -273,7 +322,7 @@
 }
 
 .video-call-lobby-preview-start:hover:not(:disabled) {
-  color: var(--white);
+  color: var(--text-primary);
 }
 
 .video-call-lobby-preview-start:disabled {

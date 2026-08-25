@@ -33,7 +33,7 @@
 }
 
 .imprint-link {
-  color: var(--accent, #6c63ff);
+  color: var(--link-color);
   text-decoration: none;
 }
 

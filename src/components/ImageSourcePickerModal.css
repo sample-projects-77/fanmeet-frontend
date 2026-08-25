@@ -4,7 +4,7 @@
   position: fixed;
   inset: 0;
   z-index: 1000;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--scrim);
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -19,7 +19,7 @@
 .image-source-picker-sheet {
   width: 100%;
   max-width: 440px;
-  background: var(--dark-blue-shade-3, #1C1F26);
+  background: var(--dark-blue-shade-3);
   border-radius: 20px 20px 0 0;
   padding: 12px 20px calc(20px + env(safe-area-inset-bottom, 0px));
   display: flex;
@@ -37,7 +37,7 @@
   width: 36px;
   height: 4px;
   border-radius: 2px;
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--overlay-20);
   margin: 0 auto 12px;
 }
 
@@ -50,7 +50,7 @@
   border: none;
   border-radius: 12px;
   background: transparent;
-  color: var(--text-primary, #fff);
+  color: var(--text-primary);
   font-size: 1rem;
   font-weight: 500;
   font-family: var(--font-sans);
@@ -59,26 +59,26 @@
 }
 
 .image-source-picker-option:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--overlay-08);
 }
 
 .image-source-picker-option:active {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--overlay-12);
 }
 
 .image-source-picker-option svg {
   flex-shrink: 0;
-  color: var(--accent-yellow, #F4C046);
+  color: var(--accent-yellow);
 }
 
 .image-source-picker-cancel {
   width: 100%;
   padding: 14px 12px;
   margin-top: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--overlay-10);
   border-radius: 12px;
   background: transparent;
-  color: var(--dark-grey-text, #AEB3BD);
+  color: var(--dark-grey-text);
   font-size: 0.9375rem;
   font-weight: 500;
   font-family: var(--font-sans);
@@ -87,7 +87,7 @@
 }
 
 .image-source-picker-cancel:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--overlay-06);
 }
 
 .image-source-picker-hidden {
