@@ -160,7 +160,13 @@ const Login = () => {
           </button>
         </form>
         <p className="auth-footer-text">
-          {t('auth.dontHaveAccount')} <Link to="/" className="auth-footer-link">{t('auth.signUp')}</Link>
+          {t('auth.dontHaveAccount')}{' '}
+          <Link
+            to={formData.role === 'creator' ? '/signup/creator' : '/signup/fan'}
+            className="auth-footer-link"
+          >
+            {t('auth.signUp')}
+          </Link>
         </p>
       </div>
     </div>
