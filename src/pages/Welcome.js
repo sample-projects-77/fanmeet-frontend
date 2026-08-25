@@ -36,13 +36,13 @@ const GRADIENT_ICON_SX = { fill: 'url(#welcome-icon-gradient)' };
 const SAFE_ICONS = [GppGoodOutlined, VerifiedUserOutlined, CancelOutlined, LockOutlined];
 const STEP_ICONS = [PersonAddAlt1Outlined, LocalOfferOutlined, CalendarMonthOutlined, VideocamOutlined];
 const USE_CASES = [
+  { labelKey: 'category.Entertainment & Influencing', Icon: TheaterComedyOutlined },
   { labelKey: 'category.Fitness & Personal Training', Icon: FitnessCenterOutlined },
   { labelKey: 'category.Business & Consulting', Icon: WorkOutline },
   { labelKey: 'category.Education & Tutoring', Icon: SchoolOutlined },
   { labelKey: 'category.Health & Wellness', Icon: SpaOutlined },
   { labelKey: 'category.Music & Performing Arts', Icon: MusicNoteOutlined },
   { labelKey: 'category.Art & Design', Icon: PaletteOutlined },
-  { labelKey: 'category.Entertainment & Influencing', Icon: TheaterComedyOutlined },
 ];
 
 const REVIEW_AVATARS = [
@@ -106,7 +106,8 @@ function ExplainerVideo({ t, steps }) {
   const videoRef = useRef(null);
   const sectionRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [preloadMode, setPreloadMode] = useState('metadata');
+  const [preloadMode, setPreloadMode] = useState('auto');
+  const [hasVideoFrame, setHasVideoFrame] = useState(false);
   const media = useMemo(
     () => parseExplainerMedia(
       process.env.REACT_APP_EXPLAINER_VIDEO_URL || DEFAULT_EXPLAINER_VIDEO_URL,
@@ -193,6 +194,13 @@ function ExplainerVideo({ t, steps }) {
     video.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
     const tryPlay = () => {
+      if (video.currentTime > 0.05) {
+        try {
+          video.currentTime = 0;
+        } catch (_) {
+          /* ignore */
+        }
+      }
       const playPromise = video.play();
       if (playPromise && typeof playPromise.catch === 'function') {
         playPromise.catch(() => {
@@ -271,16 +279,28 @@ function ExplainerVideo({ t, steps }) {
             <>
               <video
                 ref={videoRef}
-                className="welcome-video-embed"
+                className={`welcome-video-embed${hasVideoFrame ? ' welcome-video-embed--ready' : ''}`}
                 controls
                 playsInline
                 preload={preloadMode}
                 title={t('welcome.videoTitle')}
+                onLoadedData={(e) => {
+                  const video = e.currentTarget;
+                  if (!isPlaying && video.currentTime < 0.05) {
+                    try {
+                      video.currentTime = 0.12;
+                    } catch (_) {
+                      /* ignore seek errors */
+                    }
+                  }
+                  setHasVideoFrame(true);
+                }}
+                onSeeked={() => setHasVideoFrame(true)}
                 onPlay={() => setIsPlaying(true)}
                 onPause={() => setIsPlaying(false)}
                 onEnded={() => setIsPlaying(false)}
               >
-                <source src={media.src} type="video/mp4" />
+                <source src={`${media.src}#t=0.1`} type="video/mp4" />
               </video>
               {!isPlaying && (
                 <button
@@ -731,8 +751,10 @@ function Welcome() {
         <div className="welcome-trust-badges" aria-label={t('welcome.trustAria')}>
           {badgeKeys.map(({ key, Icon }) => (
             <div key={key} className="welcome-trust-badge">
-              <Icon className="welcome-trust-badge-icon" aria-hidden />
-              <span>{t(key)}</span>
+              <span className="welcome-trust-badge-icon-wrap" aria-hidden>
+                <Icon className="welcome-trust-badge-icon" />
+              </span>
+              <span className="welcome-trust-badge-text">{t(key)}</span>
             </div>
           ))}
         </div>
